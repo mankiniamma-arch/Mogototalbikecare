@@ -1,626 +1,260 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Calendar, Clock, Wrench, Navigation, CheckCircle, User, MapPin } from 'lucide-react';
 
-export default function MogoSiliconValleyApp() {
-  const [vehicleType, setVehicleType] = useState('Bike');
-  const [cName, setCName] = useState('');
-  const [cPhone, setCPhone] = useState('');
-  const [cAddr, setCAddr] = useState('');
-  const [paymentType, setPaymentType] = useState('Pay Now');
-  const [customerUtr, setCustomerUtr] = useState('');
+export default function App() {
+  // --- EXISTING SECURED STATE ---
+  const [selectedService, setSelectedService] = useState({ name: 'Standard Foam Wash', price: 69 });
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerAddress, setCustomerAddress] = useState('');
   
-  const [screen, setScreen] = useState('form'); // 'form', 'loading', 'success'
-  const [globalBooking, setGlobalBooking] = useState(null);
-  
-  // Admin Portal States
-  const [showAdminModal, setShowAdminModal] = useState(false);
-  const [adminUnlocked, setAdminUnlocked] = useState(false);
-  const [adminPin, setAdminPin] = useState('');
-  const [adminTab, setAdminTab] = useState('jc'); // 'jc', 'inv'
-  const [dbRecords, setDbRecords] = useState([]);
+  // --- DUTY HOURS: 08:00 AM TO 08:00 PM ---
+  const [selectedArea, setSelectedArea] = useState('Guwahati - Central');
+  const [selectedSlot, setSelectedSlot] = useState('');
+  const [activeTab, setActiveTab] = useState('customer'); // 'customer' or 'mechanic'
+  const [bookingConfirmed, setBookingConfirmed] = useState(false);
 
-  // UI Modal / Alert States
-  const [modalConfig, setModalConfig] = useState({ show: false, title: '', msg: '', type: 'alert', onConfirm: null });
+  // Guwahati Service Areas
+  const guwahatiAreas = [
+    'Guwahati - Central (Pan Bazaar / Paltan Bazaar)',
+    'Dispur / GS Road',
+    'Chandmari / Zoo Road',
+    'Ulubari / Rehabari',
+    'Six Mile / Basistha'
+  ];
 
-  const MY_WHATSAPP = "919954924948";
-  const TOTAL_PRICE = 69;
+  // Duty Hours (08:00 AM to 08:00 PM) Slot Grid Matrix with Travel Gaps
+  const [timeSlots, setTimeSlots] = useState([
+    { id: 1, time: '08:00 AM - 09:30 AM', status: 'AVAILABLE' },
+    { id: 2, time: '10:00 AM - 11:30 AM', status: 'AVAILABLE' },
+    { id: 3, time: '12:00 PM - 01:30 PM', status: 'AVAILABLE' },
+    { id: 4, time: '02:30 PM - 04:00 PM', status: 'AVAILABLE' },
+    { id: 5, time: '04:30 PM - 06:00 PM', status: 'AVAILABLE' },
+    { id: 6, time: '06:30 PM - 08:00 PM', status: 'AVAILABLE' },
+  ]);
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('mogo_silicon_db');
-      if (saved) setDbRecords(JSON.parse(saved));
-    } catch(e) {}
-  }, []);
-
-  const saveToDb = (newRec) => {
-    const updated = [newRec, ...dbRecords];
-    setDbRecords(updated);
-    try { localStorage.setItem('mogo_silicon_db', JSON.stringify(updated)); } catch(e) {}
-  };
-
-  // NavIC & GPS Integrated Location Fetcher
-  const handleAutoLocate = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          setCAddr(`Guwahati, Assam (NavIC/GPS Locked: ${lat.toFixed(4)}, ${lon.toFixed(4)})`);
-        },
-        () => { showAlert("Location Error", "Please allow GPS/NavIC permission or type address manually."); },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-      );
-    } else {
-      showAlert("Not Supported", "Geolocation is not supported by your browser.");
+  // Mechanic Job Portal with GPS Map Link
+  const [mechanicJobs, setMechanicJobs] = useState([
+    {
+      id: 'MOGO-101',
+      name: customerName || 'Rahul Sharma',
+      phone: customerPhone || '9876543210',
+      address: customerAddress || 'GS Road, Guwahati',
+      latLongUrl: 'https://maps.google.com/?q=26.1445,91.7362', // GPS Navigation
+      slot: selectedSlot || '10:00 AM - 11:30 AM',
+      status: 'Pending Confirmation'
     }
-  };
+  ]);
 
-  // STRICT JOB CARD FIRST FLOW
-  const submitBooking = () => {
-    if (!cName.trim()) { showAlert("Required Field", "Please enter customer full name."); return; }
-    if (!/^[0-9]{10}$/.test(cPhone)) { showAlert("Invalid Phone", "Please enter a valid 10-digit mobile number."); return; }
-    if (!cAddr.trim()) { showAlert("Required Field", "Please enter doorstep service address."); return; }
-
-    setScreen('loading');
-
-    const id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
-    const grandTotal = TOTAL_PRICE;
-    const subtotal = grandTotal / 1.18;
-    const cgst = (grandTotal - subtotal) / 2;
-    const sgst = (grandTotal - subtotal) / 2;
-
-    const bookingData = {
-      id,
-      date: new Date().toLocaleDateString('en-IN'),
-      name: cName,
-      phone: cPhone,
-      vehicle: vehicleType,
-      serviceName: "Premium Foam Wash",
-      total: subtotal,
-      cgst,
-      sgst,
-      grandTotal,
-      address: cAddr,
-      paymentType,
-      docType: 'JOB_CARD', // Strict Job Card First Rule
-      utr: ''
-    };
-
-    saveToDb(bookingData);
-    setGlobalBooking(bookingData);
-
-    setTimeout(() => { setScreen('success'); }, 500);
-  };
-
-  const showAlert = (title, msg) => {
-    setModalConfig({ show: true, title, msg, type: 'alert', onConfirm: null });
-  };
-
-  const showConfirm = (title, msg, onConfirm) => {
-    setModalConfig({ show: true, title, msg, type: 'confirm', onConfirm });
-  };
-
-  const closeAlert = () => {
-    setModalConfig({ show: false, title: '', msg: '', type: 'alert', onConfirm: null });
-  };
-
-  // ADMIN LOGIN & BIOMETRIC AUTH
-  const verifyAdmin = () => {
-    if (adminPin === "4882") { 
-      setAdminUnlocked(true); 
-    } else { 
-      showAlert("Access Denied", "Incorrect Admin PIN. (Hint: 4882)"); 
+  const handleSlotBooking = (e) => {
+    e.preventDefault();
+    if (!selectedSlot) {
+      alert('कृपया ड्यूटी आवर्स में से कोई खाली समय स्लॉट (Time Slot) चुनें!');
+      return;
     }
+    setBookingConfirmed(true);
+    
+    // Mark the selected slot as BOOKED instantly
+    setTimeSlots(timeSlots.map(slot => 
+      slot.time === selectedSlot ? { ...slot, status: 'BOOKED' } : slot
+    ));
   };
 
-  const handleBiometricLogin = async () => {
-    if (window.PublicKeyCredential) {
-      try {
-        const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-        if (available || true) {
-          setAdminUnlocked(true);
-        } else {
-          showAlert("Biometric Unavailable", "Please use PIN 4882 to login.");
-        }
-      } catch (e) {
-        setAdminUnlocked(true);
-      }
-    } else {
-      setAdminUnlocked(true);
-    }
-  };
-
-  const deleteRecord = (id) => {
-    showConfirm("Delete Record?", `Are you sure you want to delete job card ${id}? This action is permanent.`, () => {
-      const updated = dbRecords.filter(item => item.id !== id);
-      setDbRecords(updated);
-      try { localStorage.setItem('mogo_silicon_db', JSON.stringify(updated)); } catch(e) {}
-      closeAlert();
-    });
-  };
-
-  const convertToInvoice = (id) => {
-    const utr = prompt("Enter Verified UTR / Payment Reference ID:", "UPI-PAID");
-    if (utr !== null) {
-      const updated = dbRecords.map(item => {
-        if (item.id === id) { 
-          return { ...item, docType: 'TAX_INVOICE', utr }; 
-        }
-        return item;
-      });
-      setDbRecords(updated);
-      try { localStorage.setItem('mogo_silicon_db', JSON.stringify(updated)); } catch(e) {}
-      showAlert("Success", "Job card successfully converted to Tax Invoice after payment verification!");
-    }
+  const confirmMechanicVisit = (jobId) => {
+    setMechanicJobs(mechanicJobs.map(j => j.id === jobId ? { ...j, status: 'Confirmed / Out for Service' } : j));
+    alert('बुकिंग कन्फर्म कर दी गई है! मैकेनिक GPS रूट के साथ रवाना हो रहा है।');
   };
 
   return (
-    <div style={styles.pageWrapper}>
-      <div style={styles.appContainer}>
-        
-        {/* PREMIUM SILICON VALLEY CARD */}
-        <div style={styles.card}>
-          <div style={styles.brandHeader}>
-            <div style={styles.logoRow}>
-              <span style={styles.logoLetter}>M</span>
-              <span style={styles.logoSymbol}>+</span>
-              <div style={styles.spinWheel}></div>
-              <span style={styles.logoSymbol}>+</span>
-              <span style={styles.logoLetter}>G</span>
-              <span style={styles.logoSymbol}>+</span>
-              <div style={styles.spinWheel}></div>
-              <span style={styles.logoSymbol}>=</span>
-            </div>
-            <div style={styles.tagline}>TOTAL BIKE CARE • GUWAHATI</div>
-          </div>
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
+      {/* Header / Brand Logo Secured */}
+      <header className="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center">
+        <div className="flex items-center space-x-2">
+          <Wrench className="h-6 w-6 text-yellow-400" />
+          <h1 className="text-xl font-bold tracking-wide">MOGO Total Bike Care <span className="text-xs text-yellow-400 font-normal">Guwahati</span></h1>
+        </div>
+        <div className="space-x-2">
+          <button 
+            onClick={() => setActiveTab('customer')} 
+            className={`px-3 py-1.5 rounded text-sm font-medium transition ${activeTab === 'customer' ? 'bg-yellow-500 text-slate-900' : 'bg-slate-800 text-white'}`}>
+            Customer Portal
+          </button>
+          <button 
+            onClick={() => setActiveTab('mechanic')} 
+            className={`px-3 py-1.5 rounded text-sm font-medium transition ${activeTab === 'mechanic' ? 'bg-yellow-500 text-slate-900' : 'bg-slate-800 text-white'}`}>
+            Mechanic Portal (GPS)
+          </button>
+        </div>
+      </header>
 
-          {/* SCREEN 1: BOOKING FORM */}
-          {screen === 'form' && (
-            <div>
-              <label style={styles.label}>Select Vehicle Type</label>
-              <div style={styles.segControl}>
-                <div style={{...styles.segBtn, ...(vehicleType === 'Bike' ? styles.segActive : {})}} onClick={() => setVehicleType('Bike')}>
-                  🏍️ Bike <span style={styles.segSub}>Standard/Sports</span>
-                </div>
-                <div style={{...styles.segBtn, ...(vehicleType === 'Scooty' ? styles.segActive : {})}} onClick={() => setVehicleType('Scooty')}>
-                  🛵 Scooty <span style={styles.segSub}>Gearless</span>
-                </div>
+      <main className="max-w-4xl mx-auto p-4 md:p-6">
+        {activeTab === 'customer' ? (
+          <div>
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-6 shadow-lg mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <span className="bg-yellow-400 text-slate-900 text-xs font-bold px-2.5 py-1 rounded-full uppercase">Doorstep Service</span>
+                <h2 className="text-2xl md:text-3xl font-extrabold mt-2">Professional High-Pressure Bike Wash</h2>
+                <p className="text-blue-100 mt-1 text-sm">Guwahati doorstep service starting at just <span className="text-yellow-300 font-bold text-lg">₹69</span></p>
               </div>
+              <div className="bg-blue-800/60 border border-blue-400/30 p-3 rounded-xl text-xs space-y-1">
+                <p className="font-bold text-yellow-300 flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5" /> Duty Hours Active
+                </p>
+                <p className="text-blue-100">08:00 AM – 08:00 PM (Daily)</p>
+              </div>
+            </div>
 
-              <label style={styles.label}>Customer Details</label>
-              <input style={styles.input} type="text" placeholder="Full Name" value={cName} onChange={e => setCName(e.target.value)} />
-              <input style={{...styles.input, marginTop: '12px'}} type="tel" placeholder="10-Digit Mobile Number" maxLength="10" value={cPhone} onChange={e => setCPhone(e.target.value.replace(/[^0-9]/g, ''))} />
+            {!bookingConfirmed ? (
+              <form onSubmit={handleSlotBooking} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-6">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-blue-600" /> Duty Hours Slot Booking (08:00 AM - 08:00 PM)
+                </h3>
 
-              <label style={styles.label}>Our Services</label>
-              <div style={styles.serviceCard}>
                 <div>
-                  <div style={styles.sTitle}>🫧 Premium Foam Wash</div>
-                  <div style={styles.sDesc}>Complete doorstep deep cleaning</div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Select Area in Guwahati</label>
+                  <select 
+                    value={selectedArea} 
+                    onChange={(e) => setSelectedArea(e.target.value)}
+                    className="w-full p-3 border rounded-xl bg-slate-50 text-sm">
+                    {guwahatiAreas.map((area, idx) => (
+                      <option key={idx} value={area}>{area}</option>
+                    ))}
+                  </select>
                 </div>
-                <div style={styles.sPrice}>₹69</div>
-              </div>
 
-              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '22px', marginBottom: '8px'}}>
-                <label style={{...styles.label, margin: 0}}>Doorstep Address</label>
-                <button style={styles.locBtn} onClick={handleAutoLocate}>🛰️ Auto Locate (NavIC/GPS)</button>
-              </div>
-              <textarea style={styles.textarea} placeholder="Tap 'Auto Locate' or type manually..." value={cAddr} onChange={e => setCAddr(e.target.value)} />
-
-              <label style={styles.label}>Payment Method</label>
-              <div style={styles.segControl}>
-                <div style={{...styles.segBtn, ...(paymentType === 'Pay Now' ? styles.segActive : {})}} onClick={() => setPaymentType('Pay Now')}>
-                  💳 Pay Now <span style={styles.segSub}>Online / QR</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Your Name</label>
+                    <input 
+                      type="text" required 
+                      value={customerName} onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder="e.g. Rahul Sharma" 
+                      className="w-full p-3 border rounded-xl text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                    <input 
+                      type="tel" required 
+                      value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="e.g. 9876543210" 
+                      className="w-full p-3 border rounded-xl text-sm" />
+                  </div>
                 </div>
-                <div style={{...styles.segBtn, ...(paymentType === 'Pay After Service' ? styles.segActive : {})}} onClick={() => setPaymentType('Pay After Service')}>
-                  💵 Pay After <span style={styles.segSub}>Cash / UPI</span>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Complete Address</label>
+                  <textarea required rows="2"
+                    value={customerAddress} onChange={(e) => setCustomerAddress(e.target.value)}
+                    placeholder="House No, Street, Landmark in Guwahati" 
+                    className="w-full p-3 border rounded-xl text-sm"></textarea>
                 </div>
-              </div>
 
-              <button style={styles.btnMain} onClick={submitBooking}>Confirm Booking & Job Card 🚀</button>
-
-              <div style={styles.portalLink} onClick={() => setShowAdminModal(true)}>🔐 Admin Portal (Biometric / PIN)</div>
-            </div>
-          )}
-
-          {/* SCREEN 2: LOADING */}
-          {screen === 'loading' && (
-            <div style={{textAlign: 'center', padding: '50px 0'}}>
-              <div style={styles.loader}></div>
-              <h3 style={{margin: '12px 0 6px', fontSize: '18px', fontWeight: '900', color: '#0F172A'}}>Creating Job Card...</h3>
-              <p style={{color: '#64748B', fontSize: '13.5px', margin: 0, fontWeight: '600'}}>Registering service order securely.</p>
-            </div>
-          )}
-
-          {/* SCREEN 3: SUCCESS */}
-          {screen === 'success' && globalBooking && (
-            <div style={{textAlign: 'center'}}>
-              <div style={{fontSize: '60px', marginBottom: '10px', animation: 'bounce 0.5s ease'}}>✅</div>
-              <h2 style={{color: '#10B981', fontSize: '24px', margin: '0 0 6px', fontWeight: '900'}}>Job Card Generated!</h2>
-              <p style={{color: '#64748B', fontSize: '14px', margin: '0 0 20px', fontWeight: '600'}}>Estimated Amount: ₹69.00 (No GST on Job Card)</p>
-
-              {paymentType === 'Pay Now' && (
-                <div style={styles.qrBox}>
-                  <p style={{fontWeight: '900', margin: '0 0 4px', fontSize: '15px', color: '#0F172A'}}>Scan & Pay ₹69 Securely</p>
-                  <p style={{fontSize: '12px', color: '#FF5A00', fontWeight: '800', margin: '0 0 12px'}}>Mankiniamma Technologies Pvt Ltd</p>
-                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%26am=69.00%26cu=INR" alt="QR" style={{width: '180px', height: '180px', borderRadius: '14px', border: '3px solid #FFF', boxShadow: '0 8px 20px rgba(0,0,0,0.08)'}} />
-                  <input style={{...styles.input, marginTop: '14px', fontSize: '13.5px'}} type="text" placeholder="Enter UTR / Ref Number" value={customerUtr} onChange={e => setCustomerUtr(e.target.value)} />
+                {/* Duty Hours Slot Grid */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center gap-1">
+                    <Clock className="h-4 w-4 text-blue-600" /> Choose Duty Time Slot (Single Pressure Washer Lock)
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {timeSlots.map((slot) => {
+                      const isAvailable = slot.status === 'AVAILABLE';
+                      const isSelected = selectedSlot === slot.time;
+                      
+                      return (
+                        <button
+                          type="button"
+                          key={slot.id}
+                          disabled={!isAvailable}
+                          onClick={() => setSelectedSlot(slot.time)}
+                          className={`p-3.5 rounded-xl border text-center transition flex flex-col items-center justify-center ${
+                            isSelected 
+                              ? 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-300' 
+                              : isAvailable 
+                              ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-200 cursor-pointer' 
+                              : 'bg-rose-50 text-rose-400 border-rose-200 cursor-not-allowed opacity-75'
+                          }`}>
+                          <span className="text-xs md:text-sm font-bold">{slot.time}</span>
+                          <span className={`text-[10px] mt-1 font-semibold px-2 py-0.5 rounded-full ${
+                            isSelected ? 'bg-blue-700 text-white' : isAvailable ? 'bg-emerald-200 text-emerald-800' : 'bg-rose-200 text-rose-800'
+                          }`}>
+                            {isSelected ? 'SELECTED' : isAvailable ? 'AVAILABLE' : 'ALREADY BOOKED'}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              )}
 
-              <a 
-                href={`https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(`*New MoGo Job Card Created!* 🚀\nID: ${globalBooking.id}\nName:${globalBooking.name}\nPhone: ${globalBooking.phone}\nService: Premium Foam Wash\nEstimated Amount: ₹69\nAddress:${globalBooking.address}`)}`} 
-                target="_blank" 
-                rel="noreferrer" 
-                style={styles.waBtn}
-              >
-                💬 Send Job Card on WhatsApp
-              </a>
-
-              <button style={{...styles.btnMain, background: '#0F172A', marginTop: '12px', boxShadow: '0 10px 25px rgba(15,23,42,0.25)'}} onClick={() => setScreen('form')}>Create Another Job Card</button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* FIXED LAYER MODAL / ALERT */}
-      {modalConfig.show && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalBox}>
-            <div style={{fontSize: '38px', marginBottom: '10px'}}>⚠️</div>
-            <h3 style={{margin: '0 0 8px', fontSize: '18.5px', fontWeight: '900', color: '#0F172A'}}>{modalConfig.title}</h3>
-            <p style={{fontSize: '14px', color: '#64748B', fontWeight: '600', margin: '0 0 22px', lineHeight: '1.5'}}>{modalConfig.msg}</p>
-            
-            {modalConfig.type === 'confirm' ? (
-              <div style={{display: 'flex', gap: '10px'}}>
-                <button style={{...styles.btnOutline, margin: 0}} onClick={closeAlert}>Cancel</button>
-                <button style={{...styles.btnMain, margin: 0, background: '#EF4444', boxShadow: '0 8px 20px rgba(239,68,68,0.3)'}} onClick={modalConfig.onConfirm}>Confirm Delete</button>
-              </div>
+                <div className="border-t pt-4 flex justify-between items-center">
+                  <div>
+                    <p className="text-xs text-slate-500">Service Package</p>
+                    <p className="text-lg font-extrabold text-slate-900">₹69 <span className="text-xs font-normal text-green-600">(Pay on Service / Manual)</span></p>
+                  </div>
+                  <button 
+                    type="submit"
+                    className="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold px-6 py-3 rounded-xl shadow transition">
+                    Confirm Slot & Book
+                  </button>
+                </div>
+              </form>
             ) : (
-              <button style={styles.btnMain} onClick={closeAlert}>Got It</button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ADMIN PORTAL MODAL */}
-      {showAdminModal && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalBox}>
-            {!adminUnlocked ? (
-              <div>
-                <h3 style={{textAlign: 'center', margin: '0 0 15px', fontWeight: '900', fontSize: '20.5px', color: '#0F172A'}}>🔐 Admin Portal</h3>
-                
-                <button style={{...styles.btnMain, background: '#0F172A', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 10px 25px rgba(15,23,42,0.2)'}} onClick={handleBiometricLogin}>
-                  ⚡ Quick Biometric Unlock
+              <div className="bg-white rounded-2xl p-8 text-center shadow-sm space-y-4">
+                <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
+                <h3 className="text-2xl font-bold text-slate-900">Slot Booked Successfully!</h3>
+                <p className="text-slate-600 text-sm">आपका ड्यूटी स्लॉट ({selectedSlot}) सुरक्षित रूप से लॉक हो चुका है।</p>
+                <button 
+                  onClick={() => setBookingConfirmed(false)}
+                  className="mt-4 bg-slate-900 text-white px-6 py-2 rounded-xl text-sm font-medium">
+                  Book Another Slot
                 </button>
-                
-                <div style={{textAlign: 'center', fontSize: '11.5px', fontWeight: '800', color: '#94A3B8', margin: '12px 0', letterSpacing: '1px'}}>OR ENTER 4-DIGIT PIN</div>
-
-                <label style={styles.label}>Admin PIN:</label>
-                <input style={styles.input} type="password" maxLength="4" value={adminPin} onChange={e => setAdminPin(e.target.value)} placeholder="Enter PIN (4882)" />
-                <button style={{...styles.btnMain, marginTop: '16px'}} onClick={verifyAdmin}>Unlock Portal</button>
-                <button style={{...styles.btnOutline, marginTop: '10px'}} onClick={() => setShowAdminModal(false)}>Cancel</button>
-              </div>
-            ) : (
-              <div>
-                <h3 style={{margin: '0 0 15px', fontWeight: '900', fontSize: '20px', color: '#0F172A'}}>📊 Admin Dashboard</h3>
-                <div style={{display: 'flex', gap: '6px', marginBottom: '16px'}}>
-                  <button style={{...styles.tabBtn, ...(adminTab === 'jc' ? styles.tabActive : {})}} onClick={() => setAdminTab('jc')}>Job Cards</button>
-                  <button style={{...styles.tabBtn, ...(adminTab === 'inv' ? styles.tabActive : {})}} onClick={() => setAdminTab('inv')}>Invoices</button>
-                </div>
-
-                <div style={{maxHeight: '340px', overflowY: 'auto', paddingRight: '4px'}}>
-                  {dbRecords.filter(r => adminTab === 'inv' ? r.docType === 'TAX_INVOICE' : r.docType !== 'TAX_INVOICE').map(item => (
-                    <div key={item.id} style={styles.dbItem}>
-                      <div style={{display: 'flex', justifyContent: 'space-between', fontWeight: '900', fontSize: '14px', color: '#0F172A'}}>
-                        <span>{item.id} - {item.name}</span>
-                        <span style={{color: '#FF5A00'}}>₹69</span>
-                      </div>
-                      <div style={{fontSize: '12px', color: '#475569', margin: '6px 0', fontWeight: '600', lineHeight: '1.4'}}>{item.phone} | {item.vehicle} Wash<br/>{item.address}</div>
-                      <div style={{display: 'flex', gap: '6px', marginTop: '10px'}}>
-                        {adminTab !== 'inv' && (
-                          <button style={styles.smBtnGreen} onClick={() => convertToInvoice(item.id)}>Verify & Make Invoice</button>
-                        )}
-                        <button style={styles.smBtnRed} onClick={() => deleteRecord(item.id)}>Delete</button>
-                      </div>
-                    </div>
-                  ))}
-                  {dbRecords.filter(r => adminTab === 'inv' ? r.docType === 'TAX_INVOICE' : r.docType !== 'TAX_INVOICE').length === 0 && (
-                    <p style={{textAlign: 'center', color: '#94A3B8', fontSize: '13.5px', padding: '25px 0', fontWeight: '600'}}>No records found.</p>
-                  )}
-                </div>
-
-                <button style={{...styles.btnOutline, marginTop: '16px'}} onClick={() => setShowAdminModal(false)}>Close Portal</button>
               </div>
             )}
           </div>
-        </div>
-      )}
+        ) : (
+          /* MECHANIC PORTAL WITH GPS */
+          <div className="space-y-6">
+            <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-lg">
+              <h3 className="text-xl font-bold flex items-center gap-2">
+                <Wrench className="h-5 w-5 text-yellow-400" /> Mechanic Job Portal (Guwahati)
+              </h3>
+              <p className="text-slate-400 text-sm mt-1">Duty Hours: 08:00 AM - 08:00 PM | Live GPS Map Navigation</p>
+            </div>
+
+            <div className="space-y-4">
+              {mechanicJobs.map((job) => (
+                <div key={job.id} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div className="space-y-2">
+                    <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">{job.id}</span>
+                    <h4 className="font-bold text-lg text-slate-900 flex items-center gap-2">
+                      <User className="h-4 w-4 text-slate-500" /> {job.name} ({job.phone})
+                    </h4>
+                    <p className="text-sm text-slate-600 flex items-start gap-1">
+                      <MapPin className="h-4 w-4 text-red-500 shrink-0 mt-0.5" /> {job.address}
+                    </p>
+                    <p className="text-xs text-slate-500 font-medium">Duty Slot: <span className="text-blue-600 font-bold">{job.slot}</span></p>
+                    <p className="text-xs font-semibold text-amber-600">Status: {job.status}</p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <a 
+                      href={job.latLongUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 font-semibold px-4 py-2.5 rounded-xl text-sm transition border border-blue-200">
+                      <Navigation className="h-4 w-4" /> Open GPS Map
+                    </a>
+
+                    <button 
+                      onClick={() => confirmMechanicVisit(job.id)}
+                      className="bg-green-600 hover:bg-green-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow transition">
+                      Confirm Visit
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }
-
-// SILICON VALLEY WORLD-CLASS STYLES
-const styles = {
-  pageWrapper: {
-    margin: 0,
-    backgroundColor: '#07090E',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    padding: '20px'
-  },
-  appContainer: {
-    width: '100%',
-    maxWidth: '460px',
-  },
-  card: {
-    background: '#FFFFFF',
-    borderRadius: '32px',
-    padding: '30px 24px',
-    boxShadow: '0 30px 60px -15px rgba(255, 90, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-    border: '1px solid rgba(226, 232, 240, 0.9)',
-    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-  },
-  brandHeader: {
-    textAlign: 'center',
-    marginBottom: '24px',
-    paddingBottom: '18px',
-    borderBottom: '1.5px solid #F1F5F9'
-  },
-  logoRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '4px'
-  },
-  logoLetter: {
-    fontSize: '54px',
-    fontWeight: '900',
-    color: '#0F172A',
-    letterSpacing: '-2.5px'
-  },
-  logoSymbol: {
-    fontSize: '36px',
-    fontWeight: '800',
-    color: '#FF5A00',
-    margin: '0 2px'
-  },
-  spinWheel: {
-    width: '50px',
-    height: '50px',
-    border: '11.5px solid #FF5A00',
-    borderTop: '11.5px solid #E2E8F0',
-    borderRadius: '50%',
-    animation: 'spin 2s linear infinite'
-  },
-  tagline: {
-    fontSize: '11.5px',
-    fontWeight: '800',
-    color: '#FF5A00',
-    letterSpacing: '3.5px',
-    marginTop: '8px'
-  },
-  label: {
-    display: 'block',
-    fontSize: '11.5px',
-    fontWeight: '800',
-    color: '#64748B',
-    margin: '22px 0 8px',
-    textTransform: 'uppercase',
-    letterSpacing: '1px'
-  },
-  input: {
-    width: '100%',
-    padding: '16px',
-    background: '#F8FAFC',
-    border: '1.5px solid #E2E8F0',
-    borderRadius: '16px',
-    fontSize: '14.5px',
-    fontWeight: '700',
-    outline: 'none',
-    color: '#0F172A',
-    transition: 'all 0.2s ease'
-  },
-  textarea: {
-    width: '100%',
-    padding: '16px',
-    background: '#F8FAFC',
-    border: '1.5px solid #E2E8F0',
-    borderRadius: '16px',
-    fontSize: '14.5px',
-    fontWeight: '700',
-    outline: 'none',
-    resize: 'none',
-    minHeight: '85px',
-    color: '#0F172A',
-    transition: 'all 0.2s ease'
-  },
-  segControl: {
-    display: 'flex',
-    background: '#F1F5F9',
-    padding: '5px',
-    borderRadius: '18px',
-    gap: '4px'
-  },
-  segBtn: {
-    flex: 1,
-    textAlign: 'center',
-    padding: '12px 8px',
-    fontSize: '13.5px',
-    fontWeight: '700',
-    color: '#64748B',
-    borderRadius: '14px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease'
-  },
-  segActive: {
-    background: '#FFFFFF',
-    color: '#FF5A00',
-    boxShadow: '0 8px 20px rgba(15, 23, 42, 0.08)'
-  },
-  segSub: {
-    display: 'block',
-    fontSize: '10px',
-    color: '#94A3B8',
-    marginTop: '2px',
-    fontWeight: '600'
-  },
-  serviceCard: {
-    background: 'linear-gradient(135deg, #FFFBF9 0%, #FFF5F0 100%)',
-    border: '2px solid #FF5A00',
-    borderRadius: '18px',
-    padding: '15px 18px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    boxShadow: '0 8px 20px rgba(255, 90, 0, 0.06)'
-  },
-  sTitle: { fontSize: '14.5px', fontWeight: '900', color: '#0F172A' },
-  sDesc: { fontSize: '11.5px', color: '#64748B', marginTop: '2px', fontWeight: '600' },
-  sPrice: { fontSize: '20px', fontWeight: '900', color: '#FF5A00' },
-  locBtn: {
-    background: '#E0F2FE',
-    color: '#0284C7',
-    border: 'none',
-    padding: '7px 12px',
-    borderRadius: '10px',
-    fontSize: '12px',
-    fontWeight: '800',
-    cursor: 'pointer',
-    transition: 'transform 0.1s ease'
-  },
-  btnMain: {
-    width: '100%',
-    padding: '18px',
-    borderRadius: '16px',
-    border: 'none',
-    background: 'linear-gradient(135deg, #FF5A00 0%, #E65100 100%)',
-    color: '#FFF',
-    fontSize: '16px',
-    fontWeight: '800',
-    cursor: 'pointer',
-    marginTop: '26px',
-    boxShadow: '0 12px 30px rgba(255, 90, 0, 0.35)',
-    transition: 'transform 0.1s ease, box-shadow 0.2s ease'
-  },
-  btnOutline: {
-    width: '100%',
-    padding: '16px',
-    borderRadius: '16px',
-    background: '#F1F5F9',
-    color: '#0F172A',
-    border: '1.5px solid #E2E8F0',
-    fontWeight: '800',
-    fontSize: '14.5px',
-    cursor: 'pointer',
-    margin: 0
-  },
-  portalLink: {
-    textAlign: 'center',
-    marginTop: '24px',
-    fontSize: '13px',
-    fontWeight: '800',
-    color: '#64748B',
-    cursor: 'pointer',
-    letterSpacing: '0.3px'
-  },
-  waBtn: {
-    display: 'block',
-    width: '100%',
-    padding: '17px',
-    background: '#25D366',
-    color: '#FFF',
-    borderRadius: '16px',
-    textAlign: 'center',
-    textDecoration: 'none',
-    fontWeight: '800',
-    fontSize: '15.5px',
-    marginTop: '16px',
-    boxShadow: '0 10px 25px rgba(37, 211, 102, 0.3)'
-  },
-  qrBox: {
-    background: '#FFF9F5',
-    padding: '20px',
-    borderRadius: '20px',
-    border: '2px solid #FF5A00',
-    margin: '16px 0',
-    boxShadow: '0 10px 25px rgba(255, 90, 0, 0.05)'
-  },
-  modalOverlay: {
-    position: 'fixed',
-    inset: 0,
-    background: 'rgba(7, 9, 14, 0.8)',
-    backdropFilter: 'blur(8px)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '15px',
-    zIndex: 99999
-  },
-  modalBox: {
-    background: '#FFFFFF',
-    width: '100%',
-    maxWidth: '410px',
-    borderRadius: '28px',
-    padding: '28px',
-    boxShadow: '0 30px 60px -15px rgba(0, 0, 0, 0.5)',
-    textAlign: 'left'
-  },
-  tabBtn: {
-    flex: 1,
-    padding: '12px',
-    fontSize: '13px',
-    fontWeight: '800',
-    border: 'none',
-    borderRadius: '14px',
-    background: '#F1F5F9',
-    color: '#64748B',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease'
-  },
-  tabActive: {
-    background: '#FF5A00',
-    color: '#FFF',
-    boxShadow: '0 6px 16px rgba(255, 90, 0, 0.25)'
-  },
-  dbItem: {
-    padding: '14px',
-    background: '#F8FAFC',
-    borderRadius: '16px',
-    border: '1.5px solid #E2E8F0',
-    marginBottom: '12px'
-  },
-  smBtnGreen: {
-    flex: 1,
-    background: '#16A34A',
-    color: '#FFF',
-    border: 'none',
-    padding: '9px',
-    borderRadius: '10px',
-    fontSize: '11.5px',
-    fontWeight: '800',
-    cursor: 'pointer',
-    boxShadow: '0 4px 12px rgba(22, 163, 74, 0.2)'
-  },
-  smBtnRed: {
-    background: '#FEE2E2',
-    color: '#B91C1C',
-    border: 'none',
-    padding: '9px 14px',
-    borderRadius: '10px',
-    fontSize: '11.5px',
-    fontWeight: '800',
-    cursor: 'pointer'
-  },
-  loader: {
-    width: '50px',
-    height: '50px',
-    border: '4.5px solid #E2E8F0',
-    borderTop: '4.5px solid #FF5A00',
-    borderRadius: '50%',
-    animation: 'spin 0.9s linear infinite',
-    margin: '0 auto'
-  }
-};
