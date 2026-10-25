@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MoGo - Total Bike Care | Guwahati</title>
   
+  <!-- FAVICON DYNAMIC GENERATOR -->
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%23FF5A00' stroke-width='16'/><circle cx='50' cy='50' r='8.5' fill='%23FF5A00'/></svg>">
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   
@@ -41,6 +44,7 @@
     .logo-letter { font-size: 52px; font-weight: 900; color: var(--text-main); letter-spacing: -2px; }
     .logo-symbol { font-size: 34px; font-weight: 800; color: var(--primary); margin: 0 2px; }
     
+    /* SPINNING WHEEL ANIMATION */
     .spin-wheel-clockwise { width: 52px; height: 52px; animation: rotateClockwise 3s linear infinite; filter: drop-shadow(0 4px 8px rgba(255, 90, 0, 0.25)); }
     @keyframes rotateClockwise { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -57,6 +61,7 @@
 
     .services-list { display: flex; flex-direction: column; gap: 10px; }
     .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .service-info { flex: 1; min-width: 0; }
     .service-card.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 6px 16px rgba(255,90,0,0.06); }
     .service-card.disabled { background: #F8FAFC; border: 1px solid #E2E8F0; opacity: 0.85; }
     .s-title { font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.3; }
@@ -123,6 +128,7 @@
   
   <!-- CUSTOMER BOOKING FORM -->
   <div class="card" id="bookingForm">
+    <!-- SPINNING WHEELS BRAND HEADER -->
     <div class="brand-header">
       <div class="logo-container">
         <span class="logo-letter">M</span><span class="logo-symbol">+</span>
@@ -148,7 +154,7 @@
       <label>Doorstep Address</label>
       <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate GPS</button>
     </div>
-    <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate GPS' or type address manually..." oninput="clearError('cAddr')"></textarea>
+    <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate GPS' or type manually..." oninput="clearError('cAddr')"></textarea>
 
     <label>Our Services</label>
     <div class="services-list">
@@ -216,7 +222,7 @@
   <div class="card" id="loadingScreen">
     <div class="loader"></div>
     <h3 style="margin:0 0 8px; font-size:20px;">Booking Your Slot...</h3>
-    <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing to Sheets & generating Job Card.</p>
+    <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & job card generation.</p>
   </div>
 
   <!-- SUCCESS SCREEN -->
@@ -351,11 +357,6 @@
     }
     saveDB(db);
   }
-  function deleteRecord(id) {
-    let db = getDB().filter(item => item.id !== id);
-    saveDB(db);
-    renderAdminDB();
-  }
 
   function clearError(id) { document.getElementById(id)?.classList.remove('input-error'); }
 
@@ -390,7 +391,6 @@
     }
   }
 
-  // FIXED LOCATION & GPS HANDLER
   function getLocation() {
     const addrInput = document.getElementById('cAddr');
     const locBtn = document.getElementById('locBtn');
@@ -415,7 +415,7 @@
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`)
           .then(res => res.json())
           .then(data => {
-            addrInput.value = data?.display_name ? data.display_name.replace(/, India$/, '') : `Guwahati, Assam (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+            addrInput.value = data?.display_name ? data.display_name.replace(/, India$/, '') : `Guwahati (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
           })
           .catch(() => {
             addrInput.value = `Guwahati, Assam (${lat.toFixed(5)}, ${lon.toFixed(5)})`;
@@ -474,7 +474,6 @@
 
     insertRecord(globalBookingData);
 
-    // Google Sheets Sync
     try {
       fetch(SCRIPT_URL, {
         method: "POST",
@@ -497,7 +496,7 @@
     }, 300);
   }
 
-  // --- ADMIN PORTAL (PIN: 4882) ---
+  // Admin Portal (PIN: 4882)
   function openAdminPortal() {
     document.getElementById('adminPinInput').value = "";
     document.getElementById('adminPinSection').style.display = "block";
@@ -517,7 +516,7 @@
     }
   }
 
-  // --- MECHANIC PORTAL (PIN: 7788) ---
+  // Mechanic Portal (PIN: 7788)
   function openMechanicPortal() {
     document.getElementById('mechPinInput').value = "";
     document.getElementById('mechPinSection').style.display = "block";
@@ -688,210 +687,66 @@
     }
   }
 
-  // ==========================================================
-  // 100% EXACT FULL LOGO GENERATOR (WITH BOTH ORANGE WHEELS)
-  // ==========================================================
+  // --- LOGO & STAMP GENERATORS ---
   function createExactLogoImage() {
     const canvas = document.createElement('canvas');
-    canvas.width = 900;
-    canvas.height = 290;
+    canvas.width = 900; canvas.height = 290;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
     ctx.textBaseline = 'middle';
     const cy = 105;
 
-    ctx.font = 'bold 130px Arial, Helvetica, sans-serif';
-    ctx.fillStyle = '#0B0F19';
-    ctx.fillText('M', 75, cy + 5);
-
-    ctx.font = 'bold 85px Arial, Helvetica, sans-serif';
-    ctx.fillStyle = '#FF5A00';
-    ctx.fillText('+', 215, cy);
+    ctx.font = 'bold 130px Arial, sans-serif'; ctx.fillStyle = '#0B0F19'; ctx.fillText('M', 75, cy + 5);
+    ctx.font = 'bold 85px Arial, sans-serif'; ctx.fillStyle = '#FF5A00'; ctx.fillText('+', 215, cy);
 
     function drawWheel(wx, wy, radius) {
-      ctx.save();
-      ctx.shadowColor = 'rgba(255, 90, 0, 0.25)';
-      ctx.shadowBlur = 18;
-      ctx.beginPath();
-      ctx.arc(wx, wy, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = '#FF5A00';
-      ctx.lineWidth = 22;
-      ctx.stroke();
-      ctx.restore();
-
-      ctx.beginPath();
-      ctx.arc(wx, wy, radius - 13, 0, Math.PI * 2);
-      ctx.strokeStyle = '#E2E8F0';
-      ctx.lineWidth = 2.5;
-      ctx.setLineDash([6, 6]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      ctx.strokeStyle = '#0B0F19';
-      ctx.lineWidth = 6.5;
+      ctx.beginPath(); ctx.arc(wx, wy, radius, 0, Math.PI * 2); ctx.strokeStyle = '#FF5A00'; ctx.lineWidth = 22; ctx.stroke();
+      ctx.beginPath(); ctx.arc(wx, wy, radius - 13, 0, Math.PI * 2); ctx.strokeStyle = '#E2E8F0'; ctx.lineWidth = 2.5; ctx.setLineDash([6, 6]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle = '#0B0F19'; ctx.lineWidth = 6.5;
       for (let i = 0; i < 4; i++) {
         let angle = (i * Math.PI) / 4;
-        ctx.beginPath();
-        ctx.moveTo(wx - Math.cos(angle) * (radius - 8), wy - Math.sin(angle) * (radius - 8));
-        ctx.lineTo(wx + Math.cos(angle) * (radius - 8), wy + Math.sin(angle) * (radius - 8));
-        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(wx - Math.cos(angle) * (radius - 8), wy - Math.sin(angle) * (radius - 8)); ctx.lineTo(wx + Math.cos(angle) * (radius - 8), wy + Math.sin(angle) * (radius - 8)); ctx.stroke();
       }
-      ctx.beginPath();
-      ctx.arc(wx, wy, 15, 0, Math.PI * 2);
-      ctx.fillStyle = '#FF5A00';
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(wx, wy, 6, 0, Math.PI * 2);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(wx, wy, 15, 0, Math.PI * 2); ctx.fillStyle = '#FF5A00'; ctx.fill();
     }
 
     drawWheel(350, cy, 56);
-
-    ctx.font = 'bold 85px Arial, Helvetica, sans-serif';
-    ctx.fillStyle = '#FF5A00';
-    ctx.fillText('+', 435, cy);
-
-    ctx.font = 'bold 130px Arial, Helvetica, sans-serif';
-    ctx.fillStyle = '#0B0F19';
-    ctx.fillText('G', 510, cy + 5);
-
-    ctx.font = 'bold 85px Arial, Helvetica, sans-serif';
-    ctx.fillStyle = '#FF5A00';
-    ctx.fillText('+', 635, cy);
-
+    ctx.font = 'bold 85px Arial, sans-serif'; ctx.fillStyle = '#FF5A00'; ctx.fillText('+', 435, cy);
+    ctx.font = 'bold 130px Arial, sans-serif'; ctx.fillStyle = '#0B0F19'; ctx.fillText('G', 510, cy + 5);
+    ctx.font = 'bold 85px Arial, sans-serif'; ctx.fillStyle = '#FF5A00'; ctx.fillText('+', 635, cy);
     drawWheel(770, cy, 56);
-
-    ctx.font = 'bold 85px Arial, Helvetica, sans-serif';
-    ctx.fillStyle = '#FF5A00';
-    ctx.fillText('=', 850, cy);
-
-    ctx.font = 'bold 32px Arial, Helvetica, sans-serif';
-    ctx.fillStyle = '#FF5A00';
-    ctx.textAlign = 'center';
-    ctx.fillText('T O T A L   B I K E   C A R E', canvas.width / 2 + 15, 235);
-
+    ctx.font = 'bold 85px Arial, sans-serif'; ctx.fillStyle = '#FF5A00'; ctx.fillText('=', 850, cy);
+    ctx.font = 'bold 32px Arial, sans-serif'; ctx.fillStyle = '#FF5A00'; ctx.textAlign = 'center'; ctx.fillText('T O T A L   B I K E   C A R E', canvas.width / 2 + 15, 235);
     return canvas.toDataURL('image/png');
   }
 
-  // ==========================================================
-  // 100% APPROVED CURVED RUBBER STAMP (RED UNPAID / GREEN PAID)
-  // ==========================================================
   function createRubberStampImage(isGreen) {
     const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 600;
+    canvas.width = 600; canvas.height = 600;
     const ctx = canvas.getContext('2d');
-    const cx = 300, cy = 300;
-    const col = isGreen ? '#16A34A' : '#DC2626';
-    const bgFill = isGreen ? '#FFFFFF' : '#FEFCE8';
-
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(-15 * Math.PI / 180);
-    ctx.strokeStyle = col;
-    ctx.fillStyle = col;
-
+    const cx = 300, cy = 300, col = isGreen ? '#16A34A' : '#DC2626';
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(-15 * Math.PI / 180);
+    ctx.strokeStyle = col; ctx.fillStyle = col;
     ctx.lineWidth = 16; ctx.beginPath(); ctx.arc(0, 0, 230, 0, Math.PI * 2); ctx.stroke();
-    ctx.lineWidth = 4;  ctx.beginPath(); ctx.arc(0, 0, 208, 0, Math.PI * 2); ctx.stroke();
-    ctx.lineWidth = 6;  ctx.beginPath(); ctx.arc(0, 0, 136, 0, Math.PI * 2); ctx.stroke();
-    ctx.lineWidth = 2.5;ctx.beginPath(); ctx.arc(0, 0, 124, 0, Math.PI * 2); ctx.stroke();
-
-    ctx.fillStyle = col;
-    ctx.font = 'bold 48px Arial, Helvetica, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    let topText = "MTPL", topAngle = 0.9, startT = -Math.PI / 2 - topAngle / 2;
-    for (let i = 0; i < topText.length; i++) {
-      let theta = startT + (i / (topText.length - 1)) * topAngle;
-      ctx.save();
-      ctx.translate(172 * Math.cos(theta), 172 * Math.sin(theta));
-      ctx.rotate(theta + Math.PI / 2);
-      ctx.fillText(topText[i], 0, 0);
-      ctx.restore();
-    }
-
-    ctx.fillStyle = col;
-    ctx.font = 'bold 26px Arial, Helvetica, sans-serif';
-    let botText = "MOGO BIKES CARE", botAngle = 1.95, startB = Math.PI / 2 + botAngle / 2;
-    for (let i = 0; i < botText.length; i++) {
-      let theta = startB - (i / (botText.length - 1)) * botAngle;
-      ctx.save();
-      ctx.translate(172 * Math.cos(theta), 172 * Math.sin(theta));
-      ctx.rotate(theta - Math.PI / 2);
-      ctx.fillText(botText[i], 0, 0);
-      ctx.restore();
-    }
-
-    ctx.fillStyle = col;
-    ctx.font = 'bold 24px Arial, sans-serif';
-    ctx.fillText('★', -54, -80); ctx.fillText('★', 54, -80);
-    ctx.font = 'bold 36px Arial, sans-serif';
-    ctx.fillText('★', 0, -84);
-    ctx.font = 'bold 24px Arial, sans-serif';
-    ctx.fillText('★', -54, 80);  ctx.fillText('★', 54, 80);
-    ctx.font = 'bold 36px Arial, sans-serif';
-    ctx.fillText('★', 0, 84);
-
     const bw = 540, bh = 106;
-    ctx.fillStyle = bgFill;
-    ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 12; ctx.strokeRect(-bw / 2, -bh / 2, bw, bh);
-    ctx.lineWidth = 3;  ctx.strokeRect(-bw / 2 + 10, -bh / 2 + 10, bw - 20, bh - 20);
-
-    ctx.fillStyle = col;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.font = isGreen ? 'bold 78px Arial, Helvetica, sans-serif' : 'bold 70px Arial, Helvetica, sans-serif';
-    ctx.fillText(isGreen ? "PAID" : "UNPAID", 0, 4);
+    ctx.fillStyle = isGreen ? '#FFF' : '#FEFCE8'; ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
+    ctx.strokeStyle = col; ctx.lineWidth = 12; ctx.strokeRect(-bw / 2, -bh / 2, bw, bh);
+    ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = 'bold 78px Arial, sans-serif'; ctx.fillText(isGreen ? "PAID" : "UNPAID", 0, 4);
     ctx.restore();
-
-    ctx.save();
-    ctx.globalCompositeOperation = 'destination-out';
-    let seed = isGreen ? 101 : 202;
-    function pseudoRand() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
-    for (let i = 0; i < 340; i++) {
-      ctx.beginPath();
-      ctx.arc(pseudoRand() * 600, pseudoRand() * 600, pseudoRand() * 2.8 + 0.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.lineWidth = 1.5;
-    for (let i = 0; i < 25; i++) {
-      let rx = pseudoRand() * 600, ry = pseudoRand() * 600, a = pseudoRand() * Math.PI * 2, l = pseudoRand() * 20 + 6;
-      ctx.beginPath();
-      ctx.moveTo(rx, ry);
-      ctx.lineTo(rx + Math.cos(a) * l, ry + Math.sin(a) * l);
-      ctx.stroke();
-    }
-    ctx.restore();
-
     return canvas.toDataURL('image/png');
   }
 
-  // ==========================================================
-  // PDF GENERATOR (INVOICE WITH CGST/SGST vs JOB CARD WITH ESTIMATE)
-  // ==========================================================
+  // --- PDF DOWNLOAD ENGINE ---
   function downloadInvoice(forcePaid = false) {
     try {
-      if (!window.jspdf) {
-        alert("PDF Library loading... Please tap again in 1 second.");
-        return;
-      }
+      if (!window.jspdf) { alert("PDF library loading, please wait."); return; }
       const doc = new window.jspdf.jsPDF();
-
       let userUtr = document.getElementById('customerUtr')?.value.trim() || globalBookingData.utr || "";
       let isPaidVerified = forcePaid || (globalBookingData.forceType === 'TAX_INVOICE') || (globalBookingData.paymentType === 'Pay Now' && userUtr.length >= 4);
 
-      if (isPaidVerified) {
-        doc.setFillColor(255, 255, 255);
-        doc.rect(0, 0, 210, 297, "F");
-      } else {
-        doc.setFillColor(254, 252, 232);
-        doc.rect(0, 0, 210, 297, "F");
-      }
+      doc.setFillColor(isPaidVerified ? 255 : 254, isPaidVerified ? 255 : 252, isPaidVerified ? 255 : 232);
+      doc.rect(0, 0, 210, 297, "F");
 
       doc.addImage(createExactLogoImage(), 'PNG', 45, 10, 120, 38);
       doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.setTextColor(100, 100, 100);
@@ -905,78 +760,45 @@
       doc.setFontSize(10.5); doc.setFont("helvetica", "normal"); doc.setTextColor(50, 50, 50);
       doc.text("Booking ID: " + (globalBookingData.id || "MOGO1001"), 20, 80);
       doc.text("Date: " + (globalBookingData.date || new Date().toLocaleDateString('en-IN')), 145, 80);
-      doc.text("Customer Name: " + (globalBookingData.name || "Valued Customer"), 20, 88);
-      doc.text("Contact Number: " + (globalBookingData.phone || ""), 20, 96);
-      doc.text("Vehicle Type: " + (globalBookingData.vehicle || "Bike") + " | Slot: " + (globalBookingData.slot || selectedSlot), 20, 104);
-      doc.text("Service Address: " + (globalBookingData.address || "Guwahati, Assam"), 20, 112, { maxWidth: 170 });
+      doc.text("Customer Name: " + (globalBookingData.name || "Customer"), 20, 88);
+      doc.text("Contact: " + (globalBookingData.phone || ""), 20, 96);
+      doc.text("Vehicle: " + (globalBookingData.vehicle || "Bike") + " | Slot: " + (globalBookingData.slot || selectedSlot), 20, 104);
+      doc.text("Address: " + (globalBookingData.address || "Guwahati"), 20, 112, { maxWidth: 170 });
 
       doc.line(20, 128, 190, 128);
       doc.setFont("helvetica", "bold"); doc.text("Service Description", 20, 138); doc.text("Amount (INR)", 155, 138);
       
-      let subtotal = globalBookingData.total || (TOTAL_PRICE / 1.18);
-      let cgst = globalBookingData.cgst || ((TOTAL_PRICE - subtotal) / 2);
-      let sgst = globalBookingData.sgst || ((TOTAL_PRICE - subtotal) / 2);
       let grandTotal = globalBookingData.grandTotal || TOTAL_PRICE;
+      let subtotal = globalBookingData.total || (grandTotal / 1.18);
+      let cgst = globalBookingData.cgst || ((grandTotal - subtotal) / 2);
+      let sgst = globalBookingData.sgst || ((grandTotal - subtotal) / 2);
 
       doc.setFont("helvetica", "normal"); 
       doc.text("1. " + (globalBookingData.serviceName || "Premium Foam Wash"), 20, 149); 
+      doc.text("Rs. " + grandTotal.toFixed(2), 155, 149);
 
       if (isPaidVerified) {
-        doc.text("Rs. " + grandTotal.toFixed(2), 155, 149);
-        
         doc.line(20, 160, 190, 160);
         doc.setFontSize(10);
-        doc.text(`Taxable Amount (Subtotal):`, 110, 170); doc.text("Rs. " + subtotal.toFixed(2), 155, 170);
-        doc.text(`CGST (9%):`, 110, 177); doc.text("Rs. " + cgst.toFixed(2), 155, 177);
-        doc.text(`SGST (9%):`, 110, 184); doc.text("Rs. " + sgst.toFixed(2), 155, 184);
-        
+        doc.text("Taxable Amount:", 110, 170); doc.text("Rs. " + subtotal.toFixed(2), 155, 170);
+        doc.text("CGST (9%):", 110, 177); doc.text("Rs. " + cgst.toFixed(2), 155, 177);
+        doc.text("SGST (9%):", 110, 184); doc.text("Rs. " + sgst.toFixed(2), 155, 184);
         doc.line(20, 189, 190, 189);
         doc.setFontSize(13); doc.setFont("helvetica", "bold");
         doc.text("Grand Total (Incl. GST):", 45, 199);
         doc.setTextColor(255, 90, 0); doc.text("Rs. " + grandTotal.toFixed(2), 155, 199);
-
         doc.addImage(createRubberStampImage(true), 'PNG', 124, 208, 56, 56);
-
-        doc.setFontSize(10.5); doc.setTextColor(15, 23, 42);
-        let refText = userUtr ? userUtr : (globalBookingData.gpsImage ? "Screenshot Attached" : "Verified");
-        doc.text("Payment Status: Paid & Verified [Ref: " + refText + "]", 20, 220);
-
       } else {
-        doc.text("Rs. " + grandTotal.toFixed(2), 155, 149);
-
         doc.line(20, 160, 190, 160);
         doc.setFontSize(13); doc.setFont("helvetica", "bold");
         doc.text("Estimated Amount:", 65, 176);
         doc.setTextColor(255, 90, 0); doc.text("Rs. " + grandTotal.toFixed(2), 155, 176);
-
         doc.addImage(createRubberStampImage(false), 'PNG', 124, 194, 56, 56);
-
-        doc.setFontSize(10.5); doc.setTextColor(15, 23, 42);
-        doc.text("Payment Status: Payment Due (Pay Cash / QR After Service)", 20, 206);
       }
 
-      doc.setFont("helvetica", "italic"); doc.setFontSize(9.5); doc.setTextColor(148, 163, 184);
-      doc.text(isPaidVerified ? "This is a system generated valid tax invoice." : "This is a service estimate / job card. Not a tax invoice.", 105, 275, null, null, "center");
-      doc.text("Thank you for choosing MoGo Total Bike Care!", 105, 282, null, null, "center");
-
-      if (globalBookingData.gpsImage) {
-        doc.addPage();
-        doc.setFillColor(255, 255, 255); doc.rect(0, 0, 210, 297, "F");
-        doc.setFont("helvetica", "bold"); doc.setFontSize(15); doc.setTextColor(15, 23, 42);
-        doc.text("ATTACHED PAYMENT PROOF / SCREENSHOT", 105, 25, null, null, "center");
-        doc.setLineWidth(0.4); doc.setDrawColor(226, 232, 240); doc.line(20, 32, 190, 32);
-        doc.setFontSize(10); doc.setFont("helvetica", "normal");
-        doc.text("Verified Date & Time: " + new Date().toLocaleString('en-IN'), 20, 42);
-        doc.text("Booking ID: " + globalBookingData.id + " | Customer: " + globalBookingData.name, 20, 49);
-
-        let maxW = 165, maxH = 200, imgW = globalBookingData.imgW || maxW, imgH = globalBookingData.imgH || maxH;
-        let ratio = Math.min(maxW / imgW, maxH / imgH);
-        doc.addImage(globalBookingData.gpsImage, "JPEG", (210 - imgW * ratio) / 2, 58, imgW * ratio, imgH * ratio);
-      }
-
-      doc.save(isPaidVerified ? `MoGo_Tax_Invoice_${globalBookingData.id}.pdf` : `MoGo_Job_Card_${globalBookingData.id}.pdf`);
+      doc.save(isPaidVerified ? `MoGo_Invoice_${globalBookingData.id}.pdf` : `MoGo_Job_Card_${globalBookingData.id}.pdf`);
     } catch (e) {
-      alert("Could not generate PDF. Please try again.");
+      alert("Error generating PDF.");
     }
   }
 </script>
