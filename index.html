@@ -215,36 +215,35 @@
         </div>
       </div>
 
-      <!-- SERVICE 3: BIKE INSURANCE (INQUIRY ONLY) -->
+      <!-- SERVICE 3: BIKE INSURANCE (COMING SOON / FROZEN) -->
       <div class="service-accordion-item" id="item-insurance">
-        <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal Enquiry', 0)">
+        <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 0)">
           <div class="service-info">
             <div class="s-title">Bike Insurance Renewal</div>
             <div class="s-desc">Instant quotes & doorstep policy delivery</div>
           </div>
-          <div class="s-badge" style="background:#E0F2FE; color:#0284C7;">Enquiry</div>
+          <div class="s-badge">Coming Soon</div>
         </div>
         <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Enter Insurance Enquiry Details:</label>
-          <input type="text" id="insBikeNo" placeholder="Bike Number (e.g. AS01AB1234)" style="margin-bottom:8px; padding:12px; font-size:13px;">
-          <input type="text" id="insOwnerName" placeholder="Registered Owner Name" style="margin-bottom:8px; padding:12px; font-size:13px;">
-          <input type="tel" id="insPhone" placeholder="Contact Mobile Number" maxlength="10" style="padding:12px; font-size:13px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <label style="font-size:10px; margin:4px 0 6px; color:#94A3B8;">Feature Coming Soon (Locked)</label>
+          <input type="text" placeholder="Bike Number (Locked)" disabled style="margin-bottom:8px; padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed;">
+          <input type="text" placeholder="Registered Owner Name (Locked)" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed;">
         </div>
       </div>
 
-      <!-- SERVICE 4: POLLUTION CHECK (PUC) (INQUIRY ONLY) -->
+      <!-- SERVICE 4: POLLUTION CHECK (PUC) (COMING SOON / FROZEN) -->
       <div class="service-accordion-item" id="item-puc">
-        <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC) Enquiry', 0)">
+        <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 0)">
           <div class="service-info">
             <div class="s-title">Pollution Check (PUC)</div>
             <div class="s-desc">Doorstep emission testing & certification</div>
           </div>
-          <div class="s-badge" style="background:#E0F2FE; color:#0284C7;">Enquiry</div>
+          <div class="s-badge">Coming Soon</div>
         </div>
         <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Enter PUC Enquiry Details:</label>
-          <input type="text" id="pucBikeNo" placeholder="Bike Number (e.g. AS01AB1234)" style="margin-bottom:8px; padding:12px; font-size:13px;">
-          <input type="text" id="pucOwnerName" placeholder="Registered Owner Name" style="padding:12px; font-size:13px;">
+          <label style="font-size:10px; margin:4px 0 6px; color:#94A3B8;">Feature Coming Soon (Locked)</label>
+          <input type="text" placeholder="Bike Number (Locked)" disabled style="margin-bottom:8px; padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed;">
+          <input type="text" placeholder="Registered Owner Name (Locked)" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed;">
         </div>
       </div>
 
@@ -390,7 +389,7 @@
   let selectedServiceKey = "";
   let selectedServiceName = "";
   let currentServicePrice = 0;
-  let selectedSlot = "Standard Inquiry";
+  let selectedSlot = "Standard Booking";
   let globalBookingData = {};
   let customerCoords = null;
 
@@ -480,7 +479,7 @@
           selectedSlot = firstSlot.querySelector('.slot-time').innerText;
         }
       } else {
-        selectedSlot = "Document Processing / Inquiry";
+        selectedSlot = "Coming Soon / Locked";
       }
     } else {
       selectedServiceKey = "";
@@ -587,19 +586,9 @@
     if (!name) { document.getElementById('cName').classList.add('input-error'); return alert("Please enter your full name."); }
     if (!/^[0-9]{10}$/.test(phone)) { document.getElementById('cPhone').classList.add('input-error'); return alert("Please enter a valid 10-digit mobile number."); }
     if (!addr) { document.getElementById('cAddr').classList.add('input-error'); return alert("Please provide your doorstep address."); }
-    if (!selectedServiceKey) { return alert("Please select a service package and time slot/inquiry."); }
-
-    let extraInfo = "";
-    if (selectedServiceKey === 'insurance') {
-      let bNo = document.getElementById('insBikeNo').value.trim();
-      let oName = document.getElementById('insOwnerName').value.trim();
-      if (!bNo || !oName) { return alert("Please enter Bike Number and Owner Name for Insurance."); }
-      extraInfo = ` | Bike No: ${bNo}, Owner: ${oName}`;
-    } else if (selectedServiceKey === 'puc') {
-      let bNo = document.getElementById('pucBikeNo').value.trim();
-      let oName = document.getElementById('pucOwnerName').value.trim();
-      if (!bNo || !oName) { return alert("Please enter Bike Number and Owner Name for PUC."); }
-      extraInfo = ` | Bike No: ${bNo}, Owner: ${oName}`;
+    if (!selectedServiceKey) { return alert("Please select an active service package."); }
+    if (selectedServiceKey === 'insurance' || selectedServiceKey === 'puc') {
+      return alert("Insurance and Pollution check features are Coming Soon!");
     }
 
     document.getElementById('bookingForm').style.display = "none";
@@ -620,7 +609,7 @@
       name: name,
       phone: phone,
       vehicle: vehicleType,
-      serviceName: selectedServiceName + extraInfo,
+      serviceName: selectedServiceName,
       slot: selectedSlot,
       total: subtotal,
       cgst: cgst,
@@ -649,16 +638,16 @@
     setTimeout(() => {
       document.getElementById('loadingScreen').style.display = "none";
       document.getElementById('successScreen').style.display = "block";
-      document.getElementById('successSubtitle').innerText = grandTotal > 0 ? `Slot Locked: ${selectedSlot}` : `Inquiry Registered Successfully`;
+      document.getElementById('successSubtitle').innerText = `Slot Locked: ${selectedSlot}`;
       
-      if (grandTotal > 0 && paymentType === "Pay Now") {
+      if (paymentType === "Pay Now") {
         document.getElementById('qrSection').style.display = "block";
         document.getElementById('qrPriceTitle').innerText = `Scan & Pay ₹${grandTotal} Securely`;
       } else {
         document.getElementById('qrSection').style.display = "none";
       }
 
-      let msg = `*New MoGo Booking/Inquiry!*\n\n*ID:* ${id}\n*Customer:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Service:* ${selectedServiceName}${extraInfo}\n*Slot:* ${selectedSlot}\n*Address:* ${addr}`;
+      let msg = `*New MoGo Booking!*\n\n*ID:* ${id}\n*Customer:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Service:* ${selectedServiceName} (₹${grandTotal})\n*Slot:* ${selectedSlot}\n*Address:* ${addr}`;
       if (maps) msg += `\n*Maps:* ${maps}`;
       document.getElementById('waBtn').href = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(msg)}`;
     }, 300);
@@ -790,8 +779,8 @@
     let fileInput = document.getElementById('admGpsImg');
 
     let recId = "MOGO" + Math.floor(1000 + Math.random() * 9000);
-    let grandTotal = currentServicePrice;
-    let subtotal = grandTotal > 0 ? grandTotal / 1.18 : 0;
+    let grandTotal = currentServicePrice || 69;
+    let subtotal = grandTotal / 1.18;
     let totalTax = grandTotal - subtotal;
     let cgst = totalTax / 2;
     let sgst = totalTax / 2;
@@ -803,7 +792,7 @@
       phone: phone,
       vehicle: vehicle,
       serviceName: selectedServiceName || "Premium Foam Wash",
-      slot: selectedSlot || "Standard Inquiry",
+      slot: selectedSlot || "Standard Booking",
       total: subtotal,
       cgst: cgst,
       sgst: sgst,
