@@ -128,24 +128,49 @@
     .portal-links { display: flex; justify-content: space-around; margin-top: 25px; font-size: 12px; font-weight: 800; padding: 0 10px; }
     .portal-link { cursor: pointer; }
 
-    /* Modal Styles */
-    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.2s; }
+    /* =======================================================
+       WORLD-CLASS SILICON VALLEY UI/UX FOR PORTALS & MODALS
+       ======================================================= */
+    .ui-modal-overlay { 
+      position: fixed; inset: 0; background: rgba(11, 15, 25, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.25s ease; 
+    }
     .ui-modal-overlay.show { opacity: 1; visibility: visible; }
-    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 24px; text-align: left; box-shadow: 0 25px 50px rgba(11, 15, 25, 0.28); }
-
-    .db-tab-bar { display: flex; gap: 8px; margin-bottom: 18px; }
-    .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 800; background: #F1F5F9; color: #64748B; padding: 11px 8px; border-radius: 12px; cursor: pointer; }
-    .db-tab.active { background: #FF5A00; color: #FFF; }
     
-    .db-list { display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; }
-    .db-item { padding: 14px; border: 1.5px solid #E2E8F0; border-radius: 16px; background: #F8FAFC; }
-    .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .db-id { font-weight: 900; font-size: 14px; color: var(--text-main); }
-    .badge { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+    .ui-modal-box { 
+      background: #FFFFFF; width: 100%; max-width: 440px; max-height: 88vh; overflow-y: auto; 
+      border-radius: 28px; padding: 28px; text-align: left; 
+      box-shadow: 0 25px 60px -15px rgba(11, 15, 25, 0.3); border: 1px solid rgba(226, 232, 240, 0.8);
+      animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalPop { from { transform: scale(0.95) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+    .portal-header-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin-bottom: 6px; letter-spacing: -0.5px; }
+    .portal-header-subtitle { font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 20px; }
+
+    .db-tab-bar { display: flex; background: var(--input-bg); padding: 4px; border-radius: 14px; margin-bottom: 18px; border: 1px solid var(--border); gap: 4px; }
+    .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 800; background: transparent; color: var(--text-muted); padding: 10px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+    .db-tab.active { background: #FFFFFF; color: var(--primary); box-shadow: 0 4px 12px rgba(11, 15, 25, 0.06); }
+    
+    .db-list { display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
+    
+    .db-item { padding: 16px; border: 1.5px solid var(--border); border-radius: 18px; background: #FAFAFA; transition: 0.2s; }
+    .db-item:hover { border-color: rgba(255, 90, 0, 0.3); background: #FFFBF9; }
+    
+    .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .db-id { font-weight: 900; font-size: 14px; color: var(--text-main); letter-spacing: -0.3px; }
+    
+    .badge { font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
     .b-booked { background: #FEF3C7; color: #B45309; }
     .b-ready { background: #DCFCE7; color: #15803D; }
-    .btn-sm { flex: 1; padding: 8px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: none; background: #E2E8F0; text-align: center; }
-    .btn-del { flex: 0 0 34px; background: #FEE2E2; color: #B91C1C; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; }
+
+    .db-info { font-size: 12.5px; color: #475569; font-weight: 600; line-height: 1.5; margin-bottom: 12px; }
+    .db-action { display: flex; gap: 8px; flex-wrap: wrap; }
+    
+    .btn-sm { flex: 1; padding: 9px 12px; font-size: 12px; font-weight: 800; border-radius: 10px; cursor: pointer; border: none; background: #E2E8F0; color: #0B0F19; transition: 0.2s; text-align: center; }
+    .btn-sm:hover { opacity: 0.9; transform: translateY(-1px); }
+    
+    .btn-del { flex: 0 0 38px; background: #FEE2E2; color: #B91C1C; border-radius: 10px; border: none; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   </style>
 </head>
 <body>
@@ -310,15 +335,17 @@
 <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
   <div class="ui-modal-box">
     <div id="adminPinSection">
-      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center;">Admin Portal</h3>
-      <label style="margin-top:0;">Enter Admin PIN (4882):</label>
-      <input type="password" id="adminPinInput" placeholder="Enter 4-Digit PIN" maxlength="4" style="margin-bottom: 15px;">
-      <button class="ui-modal-btn" onclick="verifyAdminPin()">Unlock Portal</button>
+      <div class="portal-header-title">Admin Console</div>
+      <div class="portal-header-subtitle">Enter 4-digit security PIN (4882)</div>
+      <label style="margin-top:0;">Admin PIN</label>
+      <input type="password" id="adminPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 4px; text-align: center; font-size: 18px;">
+      <button class="btn-main" onclick="verifyAdminPin()" style="margin-top:0;">Authenticate Console</button>
       <button class="btn-outline" onclick="closeAdminPortal()">Cancel</button>
     </div>
 
     <div id="adminDashboard" style="display: none;">
-      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900;">Admin Portal</h3>
+      <div class="portal-header-title">Operations Console</div>
+      <div class="portal-header-subtitle">Manage service requests & records</div>
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards</div>
         <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Invoices</div>
@@ -330,10 +357,10 @@
 
       <div id="view-gen" style="display: none;">
         <label style="margin-top:0;">Customer Name</label>
-        <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
-        <label style="margin-top:8px;">Mobile Number</label>
-        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        <div style="display:flex; gap:8px; margin-bottom:8px;">
+        <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:10px; padding:12px;">
+        <label style="margin-top:4px;">Mobile Number</label>
+        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:10px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
           <div style="flex:1;">
             <label style="margin-top:4px;">Vehicle</label>
             <select id="admVehicle" style="padding:12px;"><option value="Bike">Bike</option><option value="Scooty">Scooty</option></select>
@@ -344,17 +371,17 @@
           </div>
         </div>
         <label style="margin-top:4px;">Address</label>
-        <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:10px; padding:12px;">
+        <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:12px; padding:12px;">
         
-        <div style="background:#F8FAFC; padding:10px; border-radius:12px; border:1px dashed #16A34A; margin-bottom:12px;">
-          <label style="color:#16A34A; margin-top:0;">Payment Proof / UTR:</label>
-          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px;">
-          <input type="text" id="admUtr" placeholder="UTR / Ref Number" style="padding:10px; font-size:13px;">
+        <div style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
+          <label style="color:var(--text-main); margin-top:0; font-size:11px;">Payment Proof / UTR:</label>
+          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;">
+          <input type="text" id="admUtr" placeholder="UTR / Ref Number" style="padding:10px; font-size:13px; background:#FFF;">
         </div>
-        <button class="ui-modal-btn-green" onclick="processAdminForm()">Generate & Download PDF</button>
+        <button class="btn-main" onclick="processAdminForm()" style="margin-top:0; background:#16A34A; box-shadow:0 8px 20px rgba(22,163,74,0.25);">Generate & Download PDF</button>
       </div>
 
-      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 15px;">Close Portal</button>
+      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Console</button>
     </div>
   </div>
 </div>
@@ -365,17 +392,19 @@
 <div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
   <div class="ui-modal-box">
     <div id="mechPinSection">
-      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center; color:#0284C7;">Mechanic Portal</h3>
-      <label style="margin-top:0;">Enter Mechanic PIN (7788):</label>
-      <input type="password" id="mechPinInput" placeholder="4-Digit PIN" maxlength="4" style="margin-bottom: 15px;">
-      <button class="ui-modal-btn" onclick="verifyMechPin()" style="background:#0284C7;">Unlock Mechanic Portal</button>
+      <div class="portal-header-title" style="color:#0284C7;">Mechanic Terminal</div>
+      <div class="portal-header-subtitle">Enter Mechanic PIN (7788)</div>
+      <label style="margin-top:0;">Mechanic PIN</label>
+      <input type="password" id="mechPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 4px; text-align: center; font-size: 18px;">
+      <button class="btn-main" onclick="verifyMechPin()" style="margin-top:0; background:#0284C7; box-shadow:0 8px 20px rgba(2,132,199,0.25);">Unlock Terminal</button>
       <button class="btn-outline" onclick="closeMechanicPortal()">Cancel</button>
     </div>
 
     <div id="mechDashboard" style="display: none;">
-      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900; color:#0284C7;">Assigned Doorstep Jobs</h3>
+      <div class="portal-header-title" style="color:#0284C7;">Assigned Jobs</div>
+      <div class="portal-header-subtitle">Active doorstep service requests</div>
       <div id="mechJobList" class="db-list"></div>
-      <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 15px;">Close Portal</button>
+      <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Terminal</button>
     </div>
   </div>
 </div>
@@ -698,14 +727,14 @@
     db.forEach(item => {
       html += `
         <div class="db-item">
-          <strong>${item.id} - ${item.name}</strong> (${item.phone})<br>
-          Vehicle: ${item.vehicle} | Service: ${item.serviceName}<br>
-          Slot: ${item.slot || 'Standard'}<br>
-          ${item.address}<br>
-          <a href="tel:${item.phone}" style="display:inline-block; margin-top:8px; background:#16A34A; color:#fff; padding:6px 12px; border-radius:8px; text-decoration:none; font-weight:800; font-size:11px;">Call Customer</a>
+          <div class="db-header"><span class="db-id">${item.id}</span></div>
+          <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName}<br>Slot: ${item.slot || 'Standard'}<br>📍 ${item.address}</div>
+          <div class="db-action">
+            <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:block;">Call Customer</a>
+          </div>
         </div>`;
     });
-    document.getElementById('mechJobList').innerHTML = html || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No assigned jobs yet.</p>';
+    document.getElementById('mechJobList').innerHTML = html || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No assigned jobs yet.</p>';
   }
 
   function switchAdminTab(tab) {
@@ -745,8 +774,8 @@
       if (isInv) invHTML += card; else jcHTML += card;
     });
 
-    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No Job Cards yet.</p>';
-    document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No Invoices yet.</p>';
+    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Job Cards yet.</p>';
+    document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Invoices yet.</p>';
   }
 
   function promptConvertToInvoice(id) {
