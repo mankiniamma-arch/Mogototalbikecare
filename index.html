@@ -3,532 +3,1056 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MoGo - Total Bike Care</title>
+  <title>MoGo — Total Bike Care | Doorstep Mobility Care</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
     :root { 
       --primary: #FF5A00; 
-      --primary-dark: #E65100;
+      --primary-hover: #E04F00;
+      --primary-subtle: #FFF7F2;
       --bg: #F8FAFC; 
-      --card: #FFFFFF; 
-      --text-main: #0B0F19; 
+      --surface: #FFFFFF; 
+      --text-main: #090D16; 
+      --text-secondary: #475569;
       --text-muted: #64748B; 
       --border: #E2E8F0;
-      --input-bg: #F1F5F9;
-      --error: #EF4444;
+      --border-focus: #090D16;
+      --input-bg: #F8FAFC;
+      --error: #DC2626;
       --success: #16A34A;
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
     }
     
-    * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
+    
     body { 
       margin: 0; 
-      background: radial-gradient(circle at top right, #FFF7ED, #F8FAFC 45%); 
+      background-color: var(--bg); 
       color: var(--text-main); 
-      padding: 15px; 
-      display: flex; 
-      justify-content: center; 
-      min-height: 100vh; 
-      align-items: flex-start; 
-    }
-    
-    /* MOBILE FIRST DEFAULT (Up to 767px) */
-    .app-container { 
-      width: 100%; 
-      max-width: 440px; 
-      margin-top: 10px; 
-      padding-bottom: 40px; 
-      transition: max-width 0.3s ease;
-    }
-    
-    .card { 
-      background: var(--card); 
-      border-radius: 28px; 
-      padding: 28px 22px; 
-      margin-bottom: 20px; 
-      box-shadow: 0 20px 40px -15px rgba(11, 15, 25, 0.08), 0 4px 12px rgba(11, 15, 25, 0.03); 
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      animation: fadeIn 0.25s ease-out;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
     }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* EXACT ORIGINAL BRAND HEADER & SPINNING WHEELS */
-    .brand-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid #F1F5F9; }
-    .logo-container { display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 6px; }
-    .logo-letter { font-size: 52px; font-weight: 900; color: var(--text-main); letter-spacing: -2px; }
-    .logo-symbol { font-size: 34px; font-weight: 800; color: var(--primary); margin: 0 2px; }
-    
-    .spin-wheel-clockwise { width: 52px; height: 52px; animation: rotateClockwise 3s linear infinite; filter: drop-shadow(0 4px 8px rgba(255, 90, 0, 0.25)); }
-    @keyframes rotateClockwise { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    .logo-tagline { font-size: 12.5px; font-weight: 800; color: var(--primary); letter-spacing: 4px; text-transform: uppercase; margin-top: 6px; }
-
-    /* SILICON VALLEY LIVE GEO-FENCING RADAR BAR */
-    .geo-radar-bar {
-      background: #0F172A;
-      color: #FFFFFF;
-      border-radius: 16px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
+    /* =========================================================
+       TOP ENTERPRISE NAVIGATION BAR
+       ========================================================= */
+    .top-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      width: 100%;
+    }
+    .nav-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 14px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      border: 1px solid #1E293B;
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
-    }
-    .radar-left { display: flex; align-items: center; gap: 10px; }
-    .radar-dot {
-      width: 10px; height: 10px; background: #22C55E; border-radius: 50%;
-      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-      animation: pulseGreen 1.8s infinite;
-      flex-shrink: 0;
-    }
-    .radar-dot.outside { background: #EF4444; animation: none; }
-    @keyframes pulseGreen {
-      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-      70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    }
-    .radar-title { font-size: 12.5px; font-weight: 800; color: #F8FAFC; line-height: 1.2; }
-    .radar-sub { font-size: 11px; font-weight: 600; color: #94A3B8; margin-top: 2px; }
-    .radar-badge { background: rgba(255, 90, 0, 0.18); color: #FF7A33; border: 1px solid rgba(255, 90, 0, 0.4); font-size: 10.5px; font-weight: 800; padding: 5px 10px; border-radius: 8px; white-space: nowrap; }
-
-    /* RESPONSIVE GRID WRAPPER FOR FORM */
-    .booking-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0px;
+      gap: 16px;
     }
 
-    .customer-inputs-grid {
+    /* ORIGINAL BRAND LOGO WITH SPINNING WHEELS */
+    .brand-block {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-container { display: flex; align-items: center; gap: 3px; }
+    .logo-letter { font-size: 34px; font-weight: 900; color: var(--text-main); letter-spacing: -1.5px; line-height: 1; }
+    .logo-symbol { font-size: 22px; font-weight: 800; color: var(--primary); margin: 0 1px; line-height: 1; }
+    .spin-wheel-clockwise { width: 34px; height: 34px; animation: rotateClockwise 3.5s linear infinite; filter: drop-shadow(0 2px 6px rgba(255, 90, 0, 0.22)); }
+    @keyframes rotateClockwise { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .brand-divider { width: 1px; height: 24px; background: var(--border); display: none; }
+    .logo-tagline { font-size: 11px; font-weight: 800; color: var(--primary); letter-spacing: 3.5px; text-transform: uppercase; }
+
+    /* NAV RIGHT: GEO TELEMETRY & ADMIN TRIGGER */
+    .nav-right {
+      display: flex;
+      align-items: center;
       gap: 12px;
     }
-
-    label { display: block; font-size: 11.5px; font-weight: 800; color: var(--text-muted); margin: 22px 0 10px; text-transform: uppercase; letter-spacing: 1px; }
-    
-    input, select, textarea { width: 100%; padding: 16px; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 16px; color: var(--text-main); font-size: 14.5px; font-weight: 700; outline: none; transition: all 0.2s ease; }
-    textarea { min-height: 86px; resize: none; line-height: 1.45; display: block; }
-    input:focus, select:focus, textarea:focus { border-color: var(--primary); background: #FFFFFF; box-shadow: 0 0 0 4px rgba(255,90,0,0.12); }
-    input::placeholder, textarea::placeholder { color: #94A3B8; font-weight: 500; }
-
-    .input-error { border-color: var(--error) !important; background: #FEF2F2 !important; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12) !important; }
-
-    .services-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
-    .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: 0.2s; }
-    .service-info { flex: 1; min-width: 0; }
-    .service-card.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 6px 16px rgba(255,90,0,0.06); }
-    .service-card.disabled { background: #F8FAFC; border: 1px solid #E2E8F0; opacity: 0.85; }
-    .s-title { font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.3; }
-    .s-desc { font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
-    .s-price { font-size: 18px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
-    .s-badge { font-size: 9.5px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 6px 9px; border-radius: 8px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
-
-    .segmented-control { display: flex; background: var(--input-bg); padding: 5px; border-radius: 18px; border: 1px solid var(--border); gap: 4px; }
-    .seg-btn { flex: 1; text-align: center; padding: 13px 8px; font-size: 14px; font-weight: 700; color: var(--text-muted); border-radius: 14px; cursor: pointer; transition: 0.2s; }
-    .seg-btn.active { background: #FFFFFF; color: var(--primary); box-shadow: 0 4px 12px rgba(11, 15, 25, 0.06); }
-    .seg-btn span { display: block; font-size: 10.5px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
-
-    /* SILICON VALLEY SLOT BOOKING CARDS */
-    .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .slot-card {
-      background: var(--input-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 13px 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: left;
-    }
-    .slot-card:hover { border-color: #CBD5E1; }
-    .slot-card.active {
-      background: #FFFBF9;
-      border-color: var(--primary);
-      box-shadow: 0 6px 16px rgba(255, 90, 0, 0.12);
-    }
-    .slot-card.booked {
-      opacity: 0.5;
+    .telemetry-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       background: #F1F5F9;
-      cursor: not-allowed;
+      border: 1px solid var(--border);
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-main);
     }
-    .slot-time { font-size: 12.5px; font-weight: 800; color: var(--text-main); }
-    .slot-status { font-size: 10px; font-weight: 800; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; }
-    .st-avail { color: #16A34A; }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+    }
+    .status-dot.outside {
+      background: var(--error);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18);
+    }
+    .admin-nav-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .admin-nav-btn:hover {
+      border-color: var(--text-main);
+      color: var(--text-main);
+      background: #F8FAFC;
+    }
+
+    /* =========================================================
+       MAIN WORKSPACE CONTAINER & RESPONSIVE ARCHITECTURE
+       ========================================================= */
+    .workspace {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+      flex: 1;
+    }
+
+    .page-intro {
+      margin-bottom: 24px;
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin: 0 0 4px;
+      color: var(--text-main);
+    }
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* SECTION PANELS */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .step-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .step-num {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--primary-subtle);
+      border: 1px solid rgba(255, 90, 0, 0.2);
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+    .step-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0;
+      letter-spacing: -0.2px;
+    }
+    .step-meta {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .field-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* VEHICLE TYPE SELECTOR */
+    .segmented-control {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      background: var(--input-bg);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      gap: 4px;
+      margin-bottom: 22px;
+    }
+    .seg-btn {
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+    .seg-btn-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-secondary);
+    }
+    .seg-btn-sub {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .seg-btn.active {
+      background: var(--surface);
+      border-color: var(--border);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+    }
+    .seg-btn.active .seg-btn-title {
+      color: var(--primary);
+    }
+
+    /* SERVICES CATALOG GRID */
+    .services-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .service-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.15s ease;
+    }
+    .service-card.active {
+      border-color: var(--text-main);
+      background: #FAFAFA;
+    }
+    .service-card.disabled {
+      background: #F8FAFC;
+      border-color: #E2E8F0;
+      opacity: 0.65;
+    }
+    .s-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .s-active-indicator {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: inline-block;
+    }
+    .s-desc {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .s-price {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+    .s-badge {
+      font-size: 10px;
+      font-weight: 700;
+      background: #E2E8F0;
+      color: #475569;
+      padding: 4px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    /* TIME SLOTS GRID */
+    .slots-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .slot-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .slot-card:hover {
+      border-color: #94A3B8;
+    }
+    .slot-card.active {
+      border-color: var(--primary);
+      background: var(--primary-subtle);
+    }
+    .slot-time {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .slot-status {
+      font-size: 10.5px;
+      font-weight: 700;
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .st-avail { color: var(--success); }
     .st-fast { color: #D97706; }
 
-    .loc-header { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; margin-bottom: 10px; gap: 10px; }
-    .loc-header label { margin: 0; }
-    .loc-btn { background: #E0F2FE; color: #0284C7; border: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; white-space: nowrap; flex-shrink: 0; }
-    .loc-btn:active { transform: scale(0.96); }
+    /* INPUTS & ADDRESS */
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 13px 14px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+    textarea { min-height: 84px; resize: vertical; line-height: 1.5; }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--border-focus);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.06);
+    }
+    input::placeholder, textarea::placeholder { color: #94A3B8; font-weight: 500; }
+    .input-error { border-color: var(--error) !important; background: #FEF2F2 !important; }
+
+    .loc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .loc-btn {
+      background: #F1F5F9;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .loc-btn:hover { background: #E2E8F0; }
 
     .geo-fence-pill {
-      margin-top: 8px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-size: 11.5px;
-      font-weight: 800;
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
       display: none;
       align-items: center;
       justify-content: space-between;
     }
-    .geo-fence-pill.inside { display: flex; background: #DCFCE7; color: #15803D; border: 1px solid #BBF7D0; }
-    .geo-fence-pill.outside { display: flex; background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
-
-    .btn-main { width: 100%; padding: 18px; border-radius: 16px; border: none; background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 25px; box-shadow: 0 10px 25px rgba(255, 90, 0, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
-    .btn-main:hover { filter: brightness(1.04); transform: translateY(-1px); }
-    .btn-main:active { transform: scale(0.98); }
-    .btn-outline { width: 100%; padding: 16px; border-radius: 16px; background: #F1F5F9; color: var(--text-main); border: 1px solid var(--border); margin-top: 12px; font-weight: 800; font-size: 15px; cursor: pointer; }
-
-    #loadingScreen, #successScreen { display: none; text-align: center; padding: 40px 20px; max-width: 540px; margin: 20px auto; }
-    .loader { width: 50px; height: 50px; border: 4px solid #E2E8F0; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    
-    /* PAYMENT GATEWAY & QR BOX */
-    .official-qr-box { background: #FFF9F5; padding: 22px; border-radius: 20px; margin: 20px 0; border: 2px solid #FF5A00; text-align: center; box-shadow: 0 10px 25px rgba(255,90,0,0.08); }
-    .official-qr-box img { width: 220px; height: 220px; border-radius: 14px; border: 3px solid #FFFFFF; box-shadow: 0 6px 16px rgba(0,0,0,0.1); margin-bottom: 12px; object-fit: contain; }
-    .upi-app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
-    .upi-app-btn {
-      background: #FFFFFF; border: 1.5px solid #FED7AA; border-radius: 12px; padding: 10px 6px;
-      font-size: 11.5px; font-weight: 800; color: #0B0F19; text-decoration: none;
-      display: flex; align-items: center; justify-content: center; gap: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    }
-    .utr-box { margin-top: 15px; text-align: left; }
-    .utr-box label { font-size: 11px; margin: 0 0 6px; }
-
-    .portal-links { display: flex; justify-content: center; margin-top: 25px; font-size: 12px; color: var(--text-muted); font-weight: 700; padding: 0 10px; }
-    .portal-link { cursor: pointer; transition: 0.2s; }
-    .portal-link:hover { color: var(--primary); }
-
-    /* Modal Styles */
-    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 9999; opacity: 0; visibility: visible; pointer-events: none; transition: all 0.2s; }
-    .ui-modal-overlay.show { opacity: 1; pointer-events: auto; }
-    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 26px; text-align: left; box-shadow: 0 25px 50px -12px rgba(11, 15, 25, 0.28); border: 1px solid rgba(255, 90, 0, 0.18); transform: scale(0.95); transition: all 0.2s; }
-    .ui-modal-overlay.show .ui-modal-box { transform: scale(1); }
-    .ui-modal-icon { width: 60px; height: 60px; border-radius: 18px; background: #FFF5F0; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px; border: 1.5px solid #FFE0D1; }
-    .ui-modal-title { font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 8px; }
-    .ui-modal-msg { font-size: 13.5px; font-weight: 600; color: var(--text-muted); line-height: 1.5; margin: 0 0 20px; }
-
-    .ui-modal-btn { width: 100%; padding: 15px; border-radius: 14px; border: none; background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%); color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 90, 0, 0.25); }
-    .ui-modal-btn-green { background: #16A34A; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25); border: none; width: 100%; padding: 15px; border-radius: 14px; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer; }
-
-    input[type="file"]::file-selector-button { border: none; background: #E2E8F0; padding: 8px 12px; border-radius: 8px; color: #0B0F19; font-weight: 700; cursor: pointer; margin-right: 10px; }
-
-    /* Admin DB Styles */
-    .db-tab-bar { display: flex; gap: 8px; margin-bottom: 18px; }
-    .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 800; background: #F1F5F9; color: #64748B; padding: 11px 8px; border-radius: 12px; cursor: pointer; white-space: nowrap; }
-    .db-tab.active { background: #FF5A00; color: #FFF; }
-    
-    .db-list { display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
-    .db-item { padding: 14px; border: 1.5px solid #E2E8F0; border-radius: 16px; background: #F8FAFC; }
-    .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .db-id { font-weight: 900; font-size: 14px; color: var(--text-main); }
-    
-    .badge { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
-    .b-booked { background: #FEF3C7; color: #B45309; }
-    .b-ready { background: #DCFCE7; color: #15803D; }
-
-    .db-info { font-size: 12px; color: #475569; font-weight: 600; line-height: 1.5; margin-bottom: 10px; }
-    .db-action { display: flex; gap: 6px; flex-wrap: wrap;}
-    .btn-sm { flex: 1; padding: 8px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: none; text-align: center; color: var(--text-main); background: #E2E8F0; }
-    .btn-del { flex: 0 0 34px; padding: 0; background: #FEE2E2; color: #B91C1C; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: 8px; cursor: pointer; border: none; }
+    .geo-fence-pill.inside { display: flex; background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+    .geo-fence-pill.outside { display: flex; background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
 
     /* =========================================================
-       📱 TABLET VIEW (iPad / Android Tabs: 768px to 1023px)
+       RIGHT COLUMN: STICKY ORDER SUMMARY & CHECKOUT
        ========================================================= */
-    @media (min-width: 768px) {
-      body { padding: 30px 24px; }
-      .app-container { max-width: 760px; }
-      .card { padding: 36px 34px; border-radius: 32px; }
-      .customer-inputs-grid { flex-direction: row; gap: 14px; }
-      .services-list { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      .service-card.active { grid-column: span 2; } /* Featured wash spans full width on tablet */
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 22px;
+      box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.06);
+    }
+    .summary-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #F1F5F9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .summary-badge {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--success);
+      background: #F0FDF4;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid #BBF7D0;
+    }
+
+    .summary-meta-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px dashed var(--border);
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+    }
+    .meta-label { color: var(--text-muted); font-weight: 600; }
+    .meta-val { color: var(--text-main); font-weight: 700; text-align: right; }
+
+    .bill-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .bill-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .bill-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 8px;
+    }
+    .bill-total-label { font-size: 14px; font-weight: 800; color: var(--text-main); }
+    .bill-total-val { font-size: 22px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
+
+    .btn-main {
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: var(--primary);
+      color: #FFFFFF;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(255, 90, 0, 0.25);
+    }
+    .btn-main:hover { background: var(--primary-hover); }
+    .btn-main:active { transform: translateY(1px); }
+
+    .btn-outline {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      background: #F8FAFC;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      margin-top: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-outline:hover { background: #F1F5F9; }
+
+    .trust-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 12px;
+      font-weight: 600;
+    }
+
+    /* =========================================================
+       LOADING & CONFIRMATION SCREENS
+       ========================================================= */
+    .state-screen {
+      display: none;
+      max-width: 520px;
+      margin: 40px auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.08);
+    }
+    .loader {
+      width: 42px;
+      height: 42px;
+      border: 3px solid #E2E8F0;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    .check-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #F0FDF4;
+      color: var(--success);
+      border: 1px solid #BBF7D0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .official-qr-box {
+      background: #F8FAFC;
+      padding: 20px;
+      border-radius: var(--radius-md);
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .official-qr-box img {
+      width: 200px;
+      height: 200px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #FFF;
+      padding: 6px;
+      margin-bottom: 10px;
+      object-fit: contain;
+    }
+    .upi-app-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .upi-app-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .upi-app-btn:hover { border-color: var(--text-main); }
+    .utr-box { margin-top: 14px; text-align: left; }
+
+    /* =========================================================
+       MODALS & ADMIN PORTAL
+       ========================================================= */
+    .ui-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 13, 22, 0.55);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+    .ui-modal-overlay.show { opacity: 1; pointer-events: auto; }
+    .ui-modal-box {
+      background: var(--surface);
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      text-align: left;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+    }
+    .ui-modal-title { font-size: 17px; font-weight: 800; color: var(--text-main); margin: 0 0 6px; }
+    .ui-modal-msg { font-size: 13.5px; font-weight: 500; color: var(--text-secondary); line-height: 1.5; margin: 0 0 20px; }
+    .ui-modal-btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: var(--text-main);
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .ui-modal-btn-green {
+      background: var(--success);
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Admin DB Styles */
+    .db-tab-bar { display: flex; gap: 6px; margin-bottom: 16px; background: #F1F5F9; padding: 4px; border-radius: 10px; }
+    .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 700; color: var(--text-secondary); padding: 9px 6px; border-radius: 7px; cursor: pointer; }
+    .db-tab.active { background: var(--surface); color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .db-list { display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; }
+    .db-item { padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-md); background: #F8FAFC; }
+    .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .db-id { font-weight: 800; font-size: 13.5px; color: var(--text-main); }
+    .badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 5px; text-transform: uppercase; }
+    .b-booked { background: #FEF3C7; color: #92400E; }
+    .b-ready { background: #DCFCE7; color: #166534; }
+    .db-info { font-size: 12px; color: var(--text-secondary); font-weight: 500; line-height: 1.5; margin-bottom: 10px; }
+    .db-action { display: flex; gap: 6px; flex-wrap: wrap; }
+    .btn-sm { flex: 1; padding: 8px 10px; font-size: 11.5px; font-weight: 700; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text-main); }
+    .btn-del { flex: 0 0 32px; background: #FEE2E2; color: #991B1B; border: none; border-radius: 6px; font-weight: 800; cursor: pointer; }
+
+    /* =========================================================
+       RESPONSIVE BREAKPOINTS (TABLET & DESKTOP/LAPTOP)
+       ========================================================= */
+    @media (min-width: 640px) {
+      .brand-divider { display: block; }
+      .form-row-2 { grid-template-columns: repeat(2, 1fr); }
+      .services-list { grid-template-columns: repeat(2, 1fr); }
+      .service-card.active { grid-column: span 2; }
       .slots-grid { grid-template-columns: repeat(4, 1fr); }
     }
 
-    /* =========================================================
-       💻 LAPTOP & DESKTOP VIEW (1024px and above)
-       ========================================================= */
     @media (min-width: 1024px) {
-      body { padding: 40px; align-items: center; }
-      .app-container { max-width: 1120px; margin-top: 0; }
-      .card { padding: 42px 48px; border-radius: 36px; }
+      .nav-inner { padding: 16px 32px; }
+      .workspace { padding: 36px 32px 80px; }
+      .page-title { font-size: 28px; }
       
-      .brand-header {
-        flex-direction: row;
-        justify-content: space-between;
-        padding-bottom: 24px;
-        margin-bottom: 24px;
+      .checkout-layout {
+        grid-template-columns: 1fr 390px;
+        gap: 32px;
       }
-      .logo-tagline { margin-top: 0; font-size: 14px; letter-spacing: 5px; }
-
-      /* 2-Column Silicon Valley Dashboard Split on Laptop */
-      .booking-grid {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 44px;
-        align-items: start;
+      .panel { padding: 28px; margin-bottom: 24px; }
+      .summary-card {
+        position: sticky;
+        top: 92px;
+        padding: 28px 26px;
       }
-
-      .col-left label:first-child,
-      .col-right label:first-child {
-        margin-top: 4px;
-      }
-
-      .col-right {
-        background: #F8FAFC;
-        padding: 28px;
-        border-radius: 26px;
-        border: 1.5px solid #E2E8F0;
-      }
-
-      .col-right input,
-      .col-right textarea,
-      .col-right .segmented-control {
-        background: #FFFFFF;
-      }
-
-      .services-list { grid-template-columns: repeat(2, 1fr); }
-      .service-card.active { grid-column: span 2; padding: 18px 20px; }
-      .slots-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     }
   </style>
 </head>
 <body>
 
-<div class="app-container">
-  
-  <!-- CUSTOMER BOOKING FORM -->
-  <div class="card" id="bookingForm">
+  <!-- TOP NAVIGATION BAR -->
+  <header class="top-navbar">
+    <div class="nav-inner">
+      <div class="brand-block">
+        <div class="logo-container">
+          <span class="logo-letter">M</span><span class="logo-symbol">+</span>
+          <svg class="spin-wheel-clockwise" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FF5A00" stroke-width="13"/><circle cx="50" cy="50" r="37" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19" stroke="#0B0F19" stroke-width="3.5"/><circle cx="50" cy="50" r="8.5" fill="#FF5A00"/><circle cx="50" cy="50" r="3.5" fill="#FFFFFF"/></svg>
+          <span class="logo-symbol">+</span><span class="logo-letter">G</span><span class="logo-symbol">+</span>
+          <svg class="spin-wheel-clockwise" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FF5A00" stroke-width="13"/><circle cx="50" cy="50" r="37" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19" stroke="#0B0F19" stroke-width="3.5"/><circle cx="50" cy="50" r="8.5" fill="#FF5A00"/><circle cx="50" cy="50" r="3.5" fill="#FFFFFF"/></svg>
+          <span class="logo-symbol">=</span>
+        </div>
+        <div class="brand-divider"></div>
+        <div class="logo-tagline">TOTAL BIKE CARE</div>
+      </div>
+
+      <div class="nav-right">
+        <div class="telemetry-pill">
+          <span class="status-dot" id="radarDot"></span>
+          <span id="radarTitle">Guwahati Service Zone (22 km)</span>
+        </div>
+        <button class="admin-nav-btn" onclick="openAdminPortal()">Admin Console</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="workspace">
     
-    <!-- EXACT SPINNING WHEEL LOGO -->
-    <div class="brand-header">
-      <div class="logo-container">
-        <span class="logo-letter">M</span><span class="logo-symbol">+</span>
-        <svg class="spin-wheel-clockwise" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FF5A00" stroke-width="13"/><circle cx="50" cy="50" r="37" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19" stroke="#0B0F19" stroke-width="3.5"/><circle cx="50" cy="50" r="8.5" fill="#FF5A00"/><circle cx="50" cy="50" r="3.5" fill="#FFFFFF"/></svg>
-        <span class="logo-symbol">+</span><span class="logo-letter">G</span><span class="logo-symbol">+</span>
-        <svg class="spin-wheel-clockwise" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FF5A00" stroke-width="13"/><circle cx="50" cy="50" r="37" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19" stroke="#0B0F19" stroke-width="3.5"/><circle cx="50" cy="50" r="8.5" fill="#FF5A00"/><circle cx="50" cy="50" r="3.5" fill="#FFFFFF"/></svg>
-        <span class="logo-symbol">=</span>
-      </div>
-      <div class="logo-tagline">TOTAL BIKE CARE</div>
-    </div>
-
-    <!-- LIVE MECHANIC GPS & GEO-FENCING RADAR -->
-    <div class="geo-radar-bar">
-      <div class="radar-left">
-        <div class="radar-dot" id="radarDot"></div>
-        <div>
-          <div class="radar-title" id="radarTitle">Guwahati Geo-Fence Active</div>
-          <div class="radar-sub" id="radarSub">3 Mobile Van Units Ready Near You</div>
-        </div>
-      </div>
-      <div class="radar-badge" id="radarBadge">22 KM ZONE</div>
-    </div>
-
-    <!-- MULTI-DEVICE RESPONSIVE 2-COLUMN GRID -->
-    <div class="booking-grid">
-      
-      <!-- LEFT COLUMN (Vehicle, Services & Time Slots) -->
-      <div class="col-left">
-        <label>Select Vehicle Type</label>
-        <div class="segmented-control">
-          <div class="seg-btn active" id="v-bike" onclick="selectVehicle('Bike')">🏍️ Bike <span>Standard/Sports</span></div>
-          <div class="seg-btn" id="v-scooty" onclick="selectVehicle('Scooty')">🛵 Scooty <span>Gearless</span></div>
-        </div>
-
-        <label>Our Services</label>
-        <div class="services-list">
-          <div class="service-card active">
-            <div class="service-info"><div class="s-title">🫧 Premium Foam Wash</div><div class="s-desc">Complete exterior deep cleaning at doorstep</div></div>
-            <div class="s-price">₹69</div>
-          </div>
-          <div class="service-card disabled">
-            <div class="service-info"><div class="s-title">🛠️ General Servicing</div><div class="s-desc">Complete mechanical checkup</div></div>
-            <div class="s-badge">Coming Soon</div>
-          </div>
-          <div class="service-card disabled">
-            <div class="service-info"><div class="s-title">🛡️ Bike Insurance</div><div class="s-desc">Instant renewal & claim support</div></div>
-            <div class="s-badge">Coming Soon</div>
-          </div>
-          <div class="service-card disabled">
-            <div class="service-info"><div class="s-title">💨 Pollution Check (PUC)</div><div class="s-desc">Doorstep emission testing</div></div>
-            <div class="s-badge">Coming Soon</div>
-          </div>
-          <div class="service-card disabled">
-            <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance</div></div>
-            <div class="s-badge">Coming Soon</div>
-          </div>
-        </div>
-
-        <!-- TIME SLOT BOOKING ENGINE -->
-        <label>Select Doorstep Time Slot</label>
-        <div class="slots-grid" id="slotsGrid">
-          <div class="slot-card active" onclick="selectTimeSlot(this, '08:00 AM - 09:30 AM')">
-            <div class="slot-time">08:00 AM - 09:30 AM</div>
-            <div class="slot-status st-avail">● AVAILABLE (2 Vans)</div>
-          </div>
-          <div class="slot-card" onclick="selectTimeSlot(this, '10:00 AM - 11:30 AM')">
-            <div class="slot-time">10:00 AM - 11:30 AM</div>
-            <div class="slot-status st-fast">⚡ FAST FILLING (1 Left)</div>
-          </div>
-          <div class="slot-card" onclick="selectTimeSlot(this, '12:00 PM - 01:30 PM')">
-            <div class="slot-time">12:00 PM - 01:30 PM</div>
-            <div class="slot-status st-avail">● AVAILABLE (3 Vans)</div>
-          </div>
-          <div class="slot-card" onclick="selectTimeSlot(this, '02:30 PM - 04:00 PM')">
-            <div class="slot-time">02:30 PM - 04:00 PM</div>
-            <div class="slot-status st-avail">● AVAILABLE (2 Vans)</div>
-          </div>
-        </div>
+    <!-- BOOKING VIEW -->
+    <div id="bookingForm">
+      <div class="page-intro">
+        <h1 class="page-title">Schedule Doorstep Service</h1>
+        <p class="page-subtitle" id="radarSub">On-demand mobile wash & maintenance units operating across Greater Guwahati.</p>
       </div>
 
-      <!-- RIGHT COLUMN (Customer Details, Geo-Fenced Address & Payment) -->
-      <div class="col-right">
-        <label>Customer Details</label>
-        <div class="customer-inputs-grid">
-          <input type="text" id="cName" placeholder="Full Name" oninput="clearError('cName')">
-          <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
-        </div>
-
-        <div class="loc-header">
-          <label>Doorstep Address (Geo-Fenced)</label>
-          <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate</button>
-        </div>
-        <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate' for GPS Geo-Fence check or type Guwahati address..." oninput="clearError('cAddr'); checkManualAddressGeo(this.value)"></textarea>
-        <div id="geoFenceBanner" class="geo-fence-pill"></div>
-
-        <label>Payment Method</label>
-        <div class="segmented-control">
-          <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">💳 Pay Now <span>Instant UPI / QR</span></div>
-          <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
-        </div>
-
-        <button class="btn-main" onclick="submitBooking()">Confirm Booking & Slot 🚀</button>
+      <div class="checkout-layout">
         
-        <div class="portal-links">
-          <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
+        <!-- LEFT COLUMN: CONFIGURATION STEPS -->
+        <div class="steps-column">
+          
+          <!-- STEP 01: VEHICLE & SERVICE -->
+          <section class="panel">
+            <div class="step-header">
+              <div class="step-title-group">
+                <span class="step-num">STEP 01</span>
+                <h2 class="step-title">Vehicle & Service Selection</h2>
+              </div>
+              <span class="step-meta">Doorstep Unit</span>
+            </div>
+
+            <label class="field-label">Vehicle Category</label>
+            <div class="segmented-control">
+              <div class="seg-btn active" id="v-bike" onclick="selectVehicle('Bike')">
+                <div class="seg-btn-title">Motorcycle</div>
+                <div class="seg-btn-sub">Standard, Commuter & Sports</div>
+              </div>
+              <div class="seg-btn" id="v-scooty" onclick="selectVehicle('Scooty')">
+                <div class="seg-btn-title">Scooter</div>
+                <div class="seg-btn-sub">Gearless & Automatic</div>
+              </div>
+            </div>
+
+            <label class="field-label">Service Package</label>
+            <div class="services-list">
+              <div class="service-card active">
+                <div class="service-info">
+                  <div class="s-title"><span class="s-active-indicator"></span> Premium High-Pressure Foam Wash</div>
+                  <div class="s-desc">Deep exterior snow-foam wash, chain degreasing & tyre dressing at your location</div>
+                </div>
+                <div class="s-price">₹69</div>
+              </div>
+              <div class="service-card disabled">
+                <div class="service-info">
+                  <div class="s-title">Periodic Mechanical Servicing</div>
+                  <div class="s-desc">Full multi-point inspection, oil change & brake tuning</div>
+                </div>
+                <div class="s-badge">Planned</div>
+              </div>
+              <div class="service-card disabled">
+                <div class="service-info">
+                  <div class="s-title">Comprehensive Bike Insurance</div>
+                  <div class="s-desc">Zero-depreciation policy renewal & cashless claims</div>
+                </div>
+                <div class="s-badge">Planned</div>
+              </div>
+              <div class="service-card disabled">
+                <div class="service-info">
+                  <div class="s-title">Doorstep Emission Testing (PUC)</div>
+                  <div class="s-desc">Government-authorized pollution certification</div>
+                </div>
+                <div class="s-badge">Planned</div>
+              </div>
+              <div class="service-card disabled">
+                <div class="service-info">
+                  <div class="s-title">Monthly Maintenance Contract (MMC)</div>
+                  <div class="s-desc">Scheduled monthly washes & preventive care</div>
+                </div>
+                <div class="s-badge">Planned</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 02: DISPATCH TIME SLOT -->
+          <section class="panel">
+            <div class="step-header">
+              <div class="step-title-group">
+                <span class="step-num">STEP 02</span>
+                <h2 class="step-title">Select Dispatch Window</h2>
+              </div>
+              <span class="step-meta" id="radarBadge">Live Availability</span>
+            </div>
+
+            <div class="slots-grid" id="slotsGrid">
+              <div class="slot-card active" onclick="selectTimeSlot(this, '08:00 AM - 09:30 AM')">
+                <div class="slot-time">08:00 AM – 09:30 AM</div>
+                <div class="slot-status st-avail">Available · 2 Units</div>
+              </div>
+              <div class="slot-card" onclick="selectTimeSlot(this, '10:00 AM - 11:30 AM')">
+                <div class="slot-time">10:00 AM – 11:30 AM</div>
+                <div class="slot-status st-fast">High Demand · 1 Left</div>
+              </div>
+              <div class="slot-card" onclick="selectTimeSlot(this, '12:00 PM - 01:30 PM')">
+                <div class="slot-time">12:00 PM – 01:30 PM</div>
+                <div class="slot-status st-avail">Available · 3 Units</div>
+              </div>
+              <div class="slot-card" onclick="selectTimeSlot(this, '02:30 PM - 04:00 PM')">
+                <div class="slot-time">02:30 PM – 04:00 PM</div>
+                <div class="slot-status st-avail">Available · 2 Units</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 03: CUSTOMER & GEO-FENCED LOCATION -->
+          <section class="panel" style="margin-bottom: 0;">
+            <div class="step-header">
+              <div class="step-title-group">
+                <span class="step-num">STEP 03</span>
+                <h2 class="step-title">Customer & Location Coordinates</h2>
+              </div>
+              <span class="step-meta">Guwahati Hub</span>
+            </div>
+
+            <div class="form-row-2">
+              <div>
+                <label class="field-label">Customer Full Name</label>
+                <input type="text" id="cName" placeholder="Enter full name" oninput="clearError('cName')">
+              </div>
+              <div>
+                <label class="field-label">10-Digit Mobile Number</label>
+                <input type="tel" id="cPhone" placeholder="e.g. 9876543210" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
+              </div>
+            </div>
+
+            <div class="loc-header">
+              <label class="field-label" style="margin:0;">Doorstep Service Address</label>
+              <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
+                Detect GPS Location
+              </button>
+            </div>
+            <textarea id="cAddr" rows="3" placeholder="House/Flat No, Street, Landmark in Guwahati..." oninput="clearError('cAddr'); checkManualAddressGeo(this.value)"></textarea>
+            <div id="geoFenceBanner" class="geo-fence-pill"></div>
+          </section>
+
         </div>
-      </div>
 
-    </div>
-  </div>
-
-  <!-- LOADING SCREEN -->
-  <div class="card" id="loadingScreen">
-    <div class="loader"></div>
-    <h3 style="margin:0 0 8px; font-size:20px;">Locking Your Slot & Van...</h3>
-    <p style="color:var(--text-muted); font-size:14px; margin:0;">Generating your official service job card.</p>
-  </div>
-
-  <!-- SUCCESS SCREEN -->
-  <div class="card" id="successScreen">
-    <div style="font-size:56px; margin-bottom:12px;">✅</div>
-    <h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;">Booking Confirmed!</h2>
-    <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will arrive in your selected slot.</p>
-    
-    <div id="qrSection" class="official-qr-box" style="display:none;">
-      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;">Scan & Pay ₹69 Securely</p>
-      <p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Pvt Ltd</p>
-      <img id="dynamicQrImg" src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=69.00%26cu=INR&margin=10';">
-      
-      <div style="font-size:11px; font-weight:800; color:#64748B; margin:6px 0;">OR TAP TO PAY DIRECTLY VIA UPI APP</div>
-      <div class="upi-app-grid">
-        <a id="gpayLink" href="upi://pay?pa=mankiniamma@okhdfcbank&pn=Mankiniamma%20Technologies%20Pvt%20Ltd&am=69.00&cu=INR" class="upi-app-btn">⚡ GPay</a>
-        <a id="phonepeLink" href="upi://pay?pa=mankiniamma@okhdfcbank&pn=Mankiniamma%20Technologies%20Pvt%20Ltd&am=69.00&cu=INR" class="upi-app-btn">🟣 PhonePe</a>
-        <a id="paytmLink" href="upi://pay?pa=mankiniamma@okhdfcbank&pn=Mankiniamma%20Technologies%20Pvt%20Ltd&am=69.00&cu=INR" class="upi-app-btn">🔵 Paytm</a>
-      </div>
-
-      <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
-      <div class="utr-box">
-        <label>Enter UPI UTR / Transaction ID (For Instant Paid Tax Invoice):</label>
-        <input type="text" id="customerUtr" placeholder="e.g. 429381928312" style="padding: 12px; font-size: 14px;" oninput="updatePdfButtonText()">
-      </div>
-    </div>
-
-    <button class="btn-main" id="pdfDownloadBtn" style="background:#0F172A;" onclick="downloadInvoice(false)">📄 Download Service Job Card (PDF)</button>
-    <a id="waBtn" href="#" target="_blank" class="btn-main" style="background:#25D366; text-decoration:none;">💬 Send Booking Details on WhatsApp</a>
-    <button class="btn-outline" onclick="location.reload()">Book Another Service</button>
-  </div>
-</div>
-
-<!-- UNIVERSAL ALERT / CONFIRM MODAL -->
-<div class="ui-modal-overlay" id="uiAlertModal" onclick="if(event.target === this) closeUiAlert()">
-  <div class="ui-modal-box" style="text-align: center; max-width: 340px;">
-    <div class="ui-modal-icon" id="uiAlertIcon">⚠️</div>
-    <h3 class="ui-modal-title" id="uiAlertTitle">Alert</h3>
-    <p class="ui-modal-msg" id="uiAlertMsg">Message</p>
-    
-    <div id="alertActionButtons" style="display: none; gap: 10px; margin-bottom: 10px;">
-      <button class="btn-sm" style="flex:1; padding:12px; background:#E2E8F0; color:#0B0F19;" onclick="closeUiAlert()">Cancel</button>
-      <button class="btn-sm" style="flex:1; padding:12px; background:#EF4444; color:#fff;" id="alertConfirmBtn">Delete</button>
-    </div>
-    
-    <button class="ui-modal-btn" id="alertOkBtn" onclick="closeUiAlert()">Got It</button>
-  </div>
-</div>
-
-<!-- ========================================== -->
-<!-- 🔐 ADMIN PORTAL (PIN: 4882)                -->
-<!-- ========================================== -->
-<div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
-  <div class="ui-modal-box">
-    
-    <div id="adminPinSection">
-      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center;">🔐 Admin Portal</h3>
-      <label style="margin-top:0;">Enter Admin PIN:</label>
-      <input type="password" id="adminPinInput" placeholder="Enter 4-Digit PIN" maxlength="4" style="margin-bottom: 15px;">
-      <button class="ui-modal-btn" onclick="verifyAdminPin()">Unlock Portal</button>
-      <button class="btn-outline" onclick="closeAdminPortal()">Cancel</button>
-    </div>
-
-    <div id="adminDashboard" style="display: none;">
-      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900;">📊 Admin Portal</h3>
-      
-      <div class="db-tab-bar">
-        <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards</div>
-        <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Invoices</div>
-        <div class="db-tab" id="tab-gen" onclick="switchAdminTab('gen')">+ Generate</div>
-      </div>
-
-      <div id="view-jc" class="db-list"></div>
-      <div id="view-inv" class="db-list" style="display: none;"></div>
-
-      <div id="view-gen" style="display: none;">
-        <label style="margin-top:0;">Customer Name</label>
-        <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
-        <label style="margin-top:8px;">Mobile Number</label>
-        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <div style="flex:1;">
-            <label style="margin-top:4px;">Vehicle</label>
-            <select id="admVehicle" style="padding:12px;"><option value="Bike">Bike</option><option value="Scooty">Scooty</option></select>
+        <!-- RIGHT COLUMN: STICKY LIVE ORDER SUMMARY & CHECKOUT -->
+        <aside class="summary-card">
+          <div class="summary-title">
+            <span>Booking Summary</span>
+            <span class="summary-badge">GST Inclusive</span>
           </div>
-          <div style="flex:1;">
-            <label style="margin-top:4px;">Document</label>
-            <select id="admDocType" style="padding:12px;"><option value="TAX_INVOICE" selected>Paid Invoice</option><option value="JOB_CARD">Job Card</option></select>
+
+          <div class="summary-meta-list">
+            <div class="meta-row">
+              <span class="meta-label">Service Package</span>
+              <span class="meta-val">Premium Foam Wash</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Vehicle Category</span>
+              <span class="meta-val" id="sumVehicle">Motorcycle (Bike)</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Dispatch Slot</span>
+              <span class="meta-val" id="sumSlot">08:00 AM - 09:30 AM</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Service Zone</span>
+              <span class="meta-val" id="sumZone">Guwahati Metro</span>
+            </div>
           </div>
-        </div>
-        <label style="margin-top:4px;">Address</label>
-        <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:10px; padding:12px;">
+
+          <label class="field-label">Settlement Method</label>
+          <div class="segmented-control" style="margin-bottom: 20px;">
+            <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">
+              <div class="seg-btn-title">Pay Online</div>
+              <div class="seg-btn-sub">Instant UPI / QR</div>
+            </div>
+            <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">
+              <div class="seg-btn-title">Pay Post-Service</div>
+              <div class="seg-btn-sub">Cash or UPI at Doorstep</div>
+            </div>
+          </div>
+
+          <div class="bill-breakdown">
+            <div class="bill-row">
+              <span>Taxable Service Value</span>
+              <span>₹58.47</span>
+            </div>
+            <div class="bill-row">
+              <span>CGST (9%) + SGST (9%)</span>
+              <span>₹10.53</span>
+            </div>
+            <div class="bill-total-row">
+              <span class="bill-total-label">Total Payable</span>
+              <span class="bill-total-val">₹69.00</span>
+            </div>
+          </div>
+
+          <button class="btn-main" onclick="submitBooking()">
+            Confirm & Dispatch Unit
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <div class="trust-note">Mankiniamma Technologies Pvt Ltd · Official Job Card Generated Instantly</div>
+        </aside>
+
+      </div>
+    </div>
+
+    <!-- LOADING SCREEN -->
+    <div class="state-screen" id="loadingScreen">
+      <div class="loader"></div>
+      <h3 style="margin:0 0 8px; font-size:19px; font-weight:800;">Allocating Mobile Service Unit</h3>
+      <p style="color:var(--text-muted); font-size:13.5px; margin:0;">Registering slot & generating official PDF job card...</p>
+    </div>
+
+    <!-- SUCCESS SCREEN -->
+    <div class="state-screen" id="successScreen">
+      <div class="check-badge">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 style="color:var(--text-main); font-size:22px; font-weight:800; margin:0 0 6px;">Dispatch Confirmed</h2>
+      <p style="color:var(--text-muted); font-size:13.5px; margin:0 0 16px;" id="successSubtitle">Your doorstep service slot has been locked.</p>
+      
+      <div id="qrSection" class="official-qr-box" style="display:none;">
+        <p style="font-size:14px; font-weight:800; color:var(--text-main); margin:0 0 2px;">Scan QR to Complete Payment (₹69.00)</p>
+        <p style="font-size:11.5px; font-weight:700; color:var(--primary); margin:0 0 12px;">Mankiniamma Technologies Pvt Ltd</p>
+        <img id="dynamicQrImg" src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=69.00%26cu=INR&margin=10';">
         
-        <div style="background:#F8FAFC; padding:10px; border-radius:12px; border:1px dashed #16A34A; margin-bottom:12px;">
-          <label style="color:#16A34A; margin-top:0;">Payment Screenshot / UTR:</label>
-          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px;">
-          <input type="text" id="admUtr" placeholder="UTR / Ref Number (Optional if photo added)" style="padding:10px; font-size:13px;">
+        <div style="font-size:10.5px; font-weight:800; color:var(--text-muted); margin:6px 0; text-transform:uppercase; letter-spacing:0.5px;">Or Launch Installed UPI App</div>
+        <div class="upi-app-grid">
+          <a id="gpayLink" href="upi://pay?pa=mankiniamma@okhdfcbank&pn=Mankiniamma%20Technologies%20Pvt%20Ltd&am=69.00&cu=INR" class="upi-app-btn">Google Pay</a>
+          <a id="phonepeLink" href="upi://pay?pa=mankiniamma@okhdfcbank&pn=Mankiniamma%20Technologies%20Pvt%20Ltd&am=69.00&cu=INR" class="upi-app-btn">PhonePe</a>
+          <a id="paytmLink" href="upi://pay?pa=mankiniamma@okhdfcbank&pn=Mankiniamma%20Technologies%20Pvt%20Ltd&am=69.00&cu=INR" class="upi-app-btn">Paytm UPI</a>
         </div>
-        <button class="ui-modal-btn-green" onclick="processAdminForm()">📄 Generate & Download PDF</button>
+
+        <p style="font-size:12px; color:var(--text-secondary); margin-top:8px; font-weight:600;">Merchant UPI ID: <strong style="color:var(--text-main);">mankiniamma@okhdfcbank</strong></p>
+        <div class="utr-box">
+          <label class="field-label">UPI Reference / UTR Number (For Paid Tax Invoice)</label>
+          <input type="text" id="customerUtr" placeholder="Enter 12-digit UPI Ref ID" style="padding: 11px 13px; font-size: 13.5px; background:#FFF;" oninput="updatePdfButtonText()">
+        </div>
       </div>
 
-      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 15px;">Close Portal</button>
+      <button class="btn-main" id="pdfDownloadBtn" style="background:#090D16; box-shadow:none;" onclick="downloadInvoice(false)">Download Service Job Card (PDF)</button>
+      <a id="waBtn" href="#" target="_blank" class="btn-main" style="background:#16A34A; text-decoration:none; margin-top:10px; box-shadow:none;">Send Dispatch Details via WhatsApp</a>
+      <button class="btn-outline" onclick="location.reload()">Schedule Another Booking</button>
     </div>
 
+  </main>
+
+  <!-- UNIVERSAL ALERT / CONFIRM MODAL -->
+  <div class="ui-modal-overlay" id="uiAlertModal" onclick="if(event.target === this) closeUiAlert()">
+    <div class="ui-modal-box" style="max-width: 360px;">
+      <div id="uiAlertIcon" style="display:none;"></div>
+      <h3 class="ui-modal-title" id="uiAlertTitle">Notice</h3>
+      <p class="ui-modal-msg" id="uiAlertMsg">Message</p>
+      
+      <div id="alertActionButtons" style="display: none; gap: 10px; margin-bottom: 10px;">
+        <button class="btn-sm" style="flex:1; padding:11px;" onclick="closeUiAlert()">Cancel</button>
+        <button class="btn-sm" style="flex:1; padding:11px; background:#DC2626; color:#fff; border:none;" id="alertConfirmBtn">Confirm Delete</button>
+      </div>
+      
+      <button class="ui-modal-btn" id="alertOkBtn" onclick="closeUiAlert()">Acknowledge</button>
+    </div>
   </div>
-</div>
+
+  <!-- ADMIN PORTAL (PIN: 4882) -->
+  <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
+    <div class="ui-modal-box">
+      
+      <div id="adminPinSection">
+        <h3 style="margin: 0 0 6px; font-size: 18px; font-weight: 800;">Admin Console Authentication</h3>
+        <p style="margin: 0 0 16px; font-size: 12.5px; color: var(--text-muted);">Enter authorized 4-digit security PIN to access records.</p>
+        <input type="password" id="adminPinInput" placeholder="Security PIN" maxlength="4" style="margin-bottom: 14px;">
+        <button class="ui-modal-btn" onclick="verifyAdminPin()">Authenticate</button>
+        <button class="btn-outline" onclick="closeAdminPortal()">Cancel</button>
+      </div>
+
+      <div id="adminDashboard" style="display: none;">
+        <h3 style="margin: 0 0 14px; font-size: 18px; font-weight: 800;">Operations & Billing Console</h3>
+        
+        <div class="db-tab-bar">
+          <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards</div>
+          <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Tax Invoices</div>
+          <div class="db-tab" id="tab-gen" onclick="switchAdminTab('gen')">+ Create Manual</div>
+        </div>
+
+        <div id="view-jc" class="db-list"></div>
+        <div id="view-inv" class="db-list" style="display: none;"></div>
+
+        <div id="view-gen" style="display: none;">
+          <label class="field-label">Customer Name</label>
+          <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:10px; padding:11px;">
+          <label class="field-label">Mobile Number</label>
+          <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:10px; padding:11px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <div style="flex:1;">
+              <label class="field-label">Vehicle</label>
+              <select id="admVehicle" style="padding:11px;"><option value="Bike">Bike</option><option value="Scooty">Scooty</option></select>
+            </div>
+            <div style="flex:1;">
+              <label class="field-label">Document Type</label>
+              <select id="admDocType" style="padding:11px;"><option value="TAX_INVOICE" selected>Paid Tax Invoice</option><option value="JOB_CARD">Service Job Card</option></select>
+            </div>
+          </div>
+          <label class="field-label">Doorstep Address</label>
+          <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:12px; padding:11px;">
+          
+          <div style="background:#F8FAFC; padding:12px; border-radius:10px; border:1px dashed var(--border); margin-bottom:14px;">
+            <label class="field-label" style="color:var(--success);">Payment Proof / UTR Reference</label>
+            <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;">
+            <input type="text" id="admUtr" placeholder="UTR / Transaction ID" style="padding:10px; font-size:13px; background:#FFF;">
+          </div>
+          <button class="ui-modal-btn-green" onclick="processAdminForm()">Generate & Download PDF</button>
+        </div>
+
+        <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 14px;">Exit Console</button>
+      </div>
+
+    </div>
+  </div>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyp9jl7Uu5thiilCriCwi8yE7Sc0Z2cY4OUkCdx3WDp1MmvWgNgMyszl77eWxrPIH4u-Q/exec";
@@ -565,25 +1089,22 @@
     const banner = document.getElementById('geoFenceBanner');
     const radarDot = document.getElementById('radarDot');
     const radarTitle = document.getElementById('radarTitle');
-    const radarSub = document.getElementById('radarSub');
-    const radarBadge = document.getElementById('radarBadge');
+    const sumZone = document.getElementById('sumZone');
 
     if (dist <= MAX_SERVICE_RADIUS_KM) {
       isInsideGeoFence = true;
       banner.className = "geo-fence-pill inside";
-      banner.innerHTML = `<span>✅ Inside Guwahati Service Zone</span><span>${customerDistanceKm} km from Hub</span>`;
-      radarDot.className = "radar-dot";
-      radarTitle.innerText = "Guwahati Geo-Fence Verified";
-      radarSub.innerText = `Nearest Mobile Wash Van is ${(Math.max(1.2, dist * 0.35)).toFixed(1)} km away`;
-      radarBadge.innerText = "ZONE OK";
+      banner.innerHTML = `<span>Verified Guwahati Service Zone</span><span>${customerDistanceKm} km from Central Hub</span>`;
+      radarDot.className = "status-dot";
+      radarTitle.innerText = `Guwahati Zone Verified (${customerDistanceKm} km)`;
+      if (sumZone) sumZone.innerText = `Verified (${customerDistanceKm} km)`;
     } else {
       isInsideGeoFence = false;
       banner.className = "geo-fence-pill outside";
-      banner.innerHTML = `<span>⚠️ Outside Guwahati Service Zone (${customerDistanceKm} km)</span><span>Max 22 km</span>`;
-      radarDot.className = "radar-dot outside";
-      radarTitle.innerText = "Outside Guwahati Geo-Fence";
-      radarSub.innerText = "Service currently restricted to Greater Guwahati";
-      radarBadge.innerText = "OUT OF ZONE";
+      banner.innerHTML = `<span>Outside Guwahati Service Boundary (${customerDistanceKm} km)</span><span>Max Radius: 22 km</span>`;
+      radarDot.className = "status-dot outside";
+      radarTitle.innerText = `Out of Zone (${customerDistanceKm} km)`;
+      if (sumZone) sumZone.innerText = `Out of Zone`;
     }
   }
 
@@ -592,7 +1113,7 @@
     if (!customerCoords && val.trim().length > 4) {
       isInsideGeoFence = true;
       banner.className = "geo-fence-pill inside";
-      banner.innerHTML = `<span>📍 Guwahati Doorstep Zone</span><span>Manual Address</span>`;
+      banner.innerHTML = `<span>Guwahati Doorstep Location</span><span>Manual Entry</span>`;
     }
   }
 
@@ -615,6 +1136,8 @@
     document.querySelectorAll('.slot-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
     selectedSlot = slotText;
+    const sumSlot = document.getElementById('sumSlot');
+    if (sumSlot) sumSlot.innerText = slotText;
   }
 
   // --- LOCAL STORAGE DB ---
@@ -653,7 +1176,6 @@
   function clearError(id) { document.getElementById(id)?.classList.remove('input-error'); }
 
   function showUiAlert(icon, title, message, inputId = null) {
-    document.getElementById('uiAlertIcon').innerHTML = icon;
     document.getElementById('uiAlertTitle').innerText = title;
     document.getElementById('uiAlertMsg').innerText = message;
     fieldToFocus = inputId;
@@ -667,7 +1189,6 @@
   }
 
   function showConfirmAlert(icon, title, message, confirmCallback) {
-    document.getElementById('uiAlertIcon').innerHTML = icon;
     document.getElementById('uiAlertTitle').innerText = title;
     document.getElementById('uiAlertMsg').innerText = message;
     document.getElementById('alertOkBtn').style.display = 'none';
@@ -689,6 +1210,8 @@
     vehicleType = t;
     document.getElementById('v-bike').classList.toggle('active', t === 'Bike');
     document.getElementById('v-scooty').classList.toggle('active', t === 'Scooty');
+    const sumVehicle = document.getElementById('sumVehicle');
+    if (sumVehicle) sumVehicle.innerText = t === 'Bike' ? 'Motorcycle (Bike)' : 'Scooter (Gearless)';
   }
 
   function selectPayType(t) {
@@ -702,15 +1225,15 @@
     let utr = document.getElementById('customerUtr')?.value.trim() || "";
     let btn = document.getElementById('pdfDownloadBtn');
     if (paymentType === 'Pay Now' && utr.length >= 4) {
-      btn.innerHTML = "📄 Download Paid Tax Invoice (PDF)";
+      btn.innerHTML = "Download Paid Tax Invoice (PDF)";
       btn.style.background = "#16A34A";
     } else {
-      btn.innerHTML = "📄 Download Service Job Card (PDF)";
-      btn.style.background = "#0F172A";
+      btn.innerHTML = "Download Service Job Card (PDF)";
+      btn.style.background = "#090D16";
     }
   }
 
-  // --- FAST CLEAN AUTO-LOCATE WITH GEO-FENCE CHECK ---
+  // --- AUTO-LOCATE WITH GEO-FENCE CHECK ---
   function fillAddressFromCoords(lat, lon) {
     const addrInput = document.getElementById('cAddr');
     const locBtn = document.getElementById('locBtn');
@@ -718,12 +1241,13 @@
     updateGeoFenceUI(lat, lon);
 
     locBtn.disabled = false;
-    locBtn.innerHTML = "✅ GPS Locked";
-    locBtn.style.background = "#DCFCE7";
-    locBtn.style.color = "#15803D";
+    locBtn.innerHTML = "GPS Coordinates Locked";
+    locBtn.style.background = "#F0FDF4";
+    locBtn.style.color = "#166534";
+    locBtn.style.borderColor = "#BBF7D0";
 
     if (!addrInput.value) {
-      addrInput.value = "Fetching street address in Guwahati...";
+      addrInput.value = "Resolving street address in Guwahati...";
     }
 
     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`)
@@ -750,15 +1274,15 @@
     }
 
     btn.disabled = true;
-    btn.innerHTML = "⏳ Locating...";
+    btn.innerHTML = "Acquiring GPS Signal...";
     let done = false;
 
     let safetyTimer = setTimeout(() => {
       if (done) return;
       done = true;
       btn.disabled = false;
-      btn.innerHTML = "📍 Auto Locate";
-      showUiAlert("📍", "Enter Address", "GPS signal is taking time indoors. Please type your doorstep address below.", "cAddr");
+      btn.innerHTML = "Detect GPS Location";
+      showUiAlert("", "Manual Address Entry", "Indoor GPS acquisition timed out. Please type your doorstep address directly.", "cAddr");
     }, 3500);
 
     if (navigator.geolocation) {
@@ -774,27 +1298,27 @@
           done = true;
           clearTimeout(safetyTimer);
           btn.disabled = false;
-          btn.innerHTML = "📍 Auto Locate";
-          showUiAlert("📍", "Location Permission", "Please allow GPS permission or type your address manually.", "cAddr");
+          btn.innerHTML = "Detect GPS Location";
+          showUiAlert("", "Location Access Required", "Please enable browser location permission or enter your address manually.", "cAddr");
         },
         { enableHighAccuracy: true, timeout: 3000, maximumAge: 10000 }
       );
     }
   }
 
-  // --- INSTANT BOOKING WITH SLOT & GEO-FENCE VALIDATION ---
+  // --- SUBMIT BOOKING ---
   function submitBooking() {
     let name = document.getElementById('cName').value.trim();
     let phone = document.getElementById('cPhone').value.trim();
     let addr = document.getElementById('cAddr').value.trim();
 
-    if (!name) return showUiAlert("👤", "Full Name Required", "Please enter your full name.", "cName");
-    if (!/^[0-9]{10}$/.test(phone)) return showUiAlert("📱", "Invalid Mobile Number", "Please enter a valid 10-digit mobile number.", "cPhone");
-    if (!addr) return showUiAlert("📍", "Address Missing", "Please tap 'Auto Locate' or type your doorstep address.", "cAddr");
-    if (!selectedSlot) return showUiAlert("⏰", "Select Time Slot", "Please select your preferred doorstep service slot.");
+    if (!name) return showUiAlert("", "Customer Name Required", "Please provide your full name to generate the job card.", "cName");
+    if (!/^[0-9]{10}$/.test(phone)) return showUiAlert("", "Invalid Mobile Number", "Please enter a valid 10-digit mobile number.", "cPhone");
+    if (!addr) return showUiAlert("", "Service Address Missing", "Please detect GPS coordinates or enter your doorstep address.", "cAddr");
+    if (!selectedSlot) return showUiAlert("", "Dispatch Slot Required", "Please select an available time window.");
 
     if (customerCoords && !isInsideGeoFence) {
-      return showUiAlert("🚧", "Outside Service Area", `Your GPS location is ${customerDistanceKm} km from Guwahati Hub. Currently we serve within 22 km of Guwahati.`);
+      return showUiAlert("", "Outside Service Boundary", `Your location is ${customerDistanceKm} km from our Guwahati Hub. Doorstep service is currently limited to a 22 km radius.`);
     }
 
     document.getElementById('bookingForm').style.display = "none";
@@ -844,7 +1368,7 @@
     setTimeout(() => {
       document.getElementById('loadingScreen').style.display = "none";
       document.getElementById('successScreen').style.display = "block";
-      document.getElementById('successSubtitle').innerText = `Slot Locked: ${selectedSlot}`;
+      document.getElementById('successSubtitle').innerText = `Booking ID: ${id} · Dispatch Window: ${selectedSlot}`;
 
       if (paymentType === "Pay Now") {
         document.getElementById('qrSection').style.display = "block";
@@ -856,8 +1380,8 @@
         document.getElementById('qrSection').style.display = "none";
       }
 
-      let msg = `*New MoGo Service Booking!* 🚀\n\n*Booking ID:* ${id}\n*Customer Name:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Service:* Premium Foam Wash (₹69)\n*Time Slot:* ${selectedSlot}\n*Address:* ${addr}\n`;
-      if (maps) msg += `🗺️ *Google Maps Pin:* ${maps}\n`;
+      let msg = `*New MoGo Service Booking*\n\n*Booking ID:* ${id}\n*Customer Name:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Service:* Premium Foam Wash (Rs. 69)\n*Time Slot:* ${selectedSlot}\n*Address:* ${addr}\n`;
+      if (maps) msg += `*Google Maps Pin:* ${maps}\n`;
       msg += `*Payment Mode:* ${paymentType}`;
       document.getElementById('waBtn').href = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(msg)}`;
     }, 300);
@@ -879,7 +1403,7 @@
       renderAdminDB();
       switchAdminTab('jc');
     } else {
-      showUiAlert("🔐", "Incorrect PIN", "Please enter the valid 4-digit Admin PIN.");
+      showUiAlert("", "Access Denied", "Incorrect 4-digit security PIN.");
     }
   }
 
@@ -898,34 +1422,34 @@
 
     db.forEach(item => {
       let isInv = item.forceType === 'TAX_INVOICE';
-      let badge = isInv ? `<span class="badge b-ready">🟢 Paid Invoice</span>` : `<span class="badge b-booked">⏳ Job Card</span>`;
+      let badge = isInv ? `<span class="badge b-ready">Paid Invoice</span>` : `<span class="badge b-booked">Job Card</span>`;
       
       let actions = !isInv
-        ? `<button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">📄 Job Card</button>
-           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">💬 WhatsApp</button>
-           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">✅ Make Invoice</button>`
-        : `<button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true)">📄 Invoice PDF</button>
-           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">💬 WhatsApp</button>`;
+        ? `<button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">Job Card PDF</button>
+           <button class="btn-sm" onclick="shareDirectWA('${item.id}', false)">WhatsApp</button>
+           <button class="btn-sm" style="background:#16A34A; color:#fff; border:none;" onclick="promptConvertToInvoice('${item.id}')">Mark Paid</button>`
+        : `<button class="btn-sm" style="background:#16A34A; color:#fff; border:none;" onclick="generatePDFFromDB('${item.id}', true)">Tax Invoice PDF</button>
+           <button class="btn-sm" onclick="shareDirectWA('${item.id}', true)">WhatsApp</button>`;
 
       let card = `
         <div class="db-item">
           <div class="db-header"><span class="db-id">${item.id}</span> ${badge}</div>
-          <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹69) | Slot: ${item.slot || 'Standard'}<br>${item.date} | ${item.address}</div>
+          <div class="db-info"><strong>${item.name}</strong> · ${item.phone}<br>${item.vehicle} Wash (₹69) · Slot: ${item.slot || 'Standard'}<br>${item.date} · ${item.address}</div>
           <div class="db-action">
             ${actions}
-            <button class="btn-del" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Delete ${item.id} permanently?', function(){deleteRecord('${item.id}')})">✖</button>
+            <button class="btn-del" onclick="showConfirmAlert('', 'Delete Record', 'Permanently remove booking ${item.id}?', function(){deleteRecord('${item.id}')})">×</button>
           </div>
         </div>`;
 
       if (isInv) invHTML += card; else jcHTML += card;
     });
 
-    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No Job Cards yet.</p>';
-    document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No Invoices yet.</p>';
+    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px 0;">No active job cards recorded.</p>';
+    document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px 0;">No tax invoices generated yet.</p>';
   }
 
   function promptConvertToInvoice(id) {
-    let utr = prompt("Payment received. Enter UTR/Transaction ID (Optional):", "");
+    let utr = prompt("Enter UPI UTR / Reference Number (Optional):", "");
     if (utr !== null) { 
       convertToInvoice(id, utr);
     }
@@ -942,7 +1466,7 @@
     if (!rec) return;
     let msg = isInvoice
       ? `Hello ${rec.name},\n\nYour MoGo Total Bike Care *Paid Tax Invoice* (Booking ID: ${rec.id}) has been generated.\n\nThank you for choosing MoGo!`
-      : `Hello ${rec.name},\n\nYour MoGo Total Bike Care *Service Job Card* (Booking ID: ${rec.id}, Slot: ${rec.slot || 'Confirmed'}) has been created.\n\nOur expert will arrive shortly!`;
+      : `Hello ${rec.name},\n\nYour MoGo Total Bike Care *Service Job Card* (Booking ID: ${rec.id}, Slot: ${rec.slot || 'Confirmed'}) has been scheduled.\n\nOur mobile unit will arrive during your selected window.`;
     window.open(`https://wa.me/91${rec.phone}?text=${encodeURIComponent(msg)}`, '_blank');
   }
 
@@ -956,7 +1480,7 @@
     let fileInput = document.getElementById('admGpsImg');
 
     if (docType === 'TAX_INVOICE' && !utr && (!fileInput.files || fileInput.files.length === 0)) {
-      return showUiAlert("🧾", "Payment Proof Needed", "Please upload a payment screenshot or enter UTR / CASH.");
+      return showUiAlert("", "Verification Required", "Please attach a payment screenshot or enter a UTR reference to issue a Tax Invoice.");
     }
 
     let recId = "MOGO" + Math.floor(1000 + Math.random() * 9000);
@@ -1216,7 +1740,7 @@
   // ==========================================================
   function downloadInvoice(forcePaid = false) {
     try {
-      if (!window.jspdf) return showUiAlert("⏳", "Loading PDF", "Please wait a second and tap again.");
+      if (!window.jspdf) return showUiAlert("", "PDF Engine Loading", "Please wait a moment and try again.");
       const doc = new window.jspdf.jsPDF();
 
       let userUtr = document.getElementById('customerUtr')?.value.trim() || globalBookingData.utr || "";
@@ -1313,7 +1837,7 @@
 
       doc.save(isPaidVerified ? `MoGo_Tax_Invoice_${globalBookingData.id}.pdf` : `MoGo_Job_Card_${globalBookingData.id}.pdf`);
     } catch (e) {
-      showUiAlert("⚠️", "PDF Error", "Could not generate PDF. Please try again.");
+      showUiAlert("", "PDF Generation Error", "Could not generate PDF. Please try again.");
     }
   }
 </script>
