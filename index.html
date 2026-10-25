@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MoGo - Total Bike Care | Guwahati</title>
+  <title>MoGo - Total Bike Care</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -23,92 +23,118 @@
     }
     
     * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; background: var(--bg); color: var(--text-main); padding: 10px; display: flex; justify-content: center; min-height: 100vh; align-items: flex-start; }
+    body { margin: 0; background: var(--bg); color: var(--text-main); padding: 12px; display: flex; justify-content: center; min-height: 100vh; align-items: flex-start; }
     
-    .app-container { width: 100%; max-width: 420px; margin: 0 auto; padding-bottom: 50px; }
+    .app-container { width: 100%; max-width: 420px; margin: 0 auto; padding-bottom: 40px; }
     
     .card { 
       background: var(--card); 
-      border-radius: 26px; 
-      padding: 24px 18px; 
-      margin-bottom: 16px; 
-      box-shadow: 0 16px 36px -12px rgba(11, 15, 25, 0.08), 0 4px 12px rgba(11, 15, 25, 0.03); 
+      border-radius: 28px; 
+      padding: 30px 22px; 
+      margin-bottom: 20px; 
+      box-shadow: 0 20px 40px -15px rgba(11, 15, 25, 0.08), 0 4px 12px rgba(11, 15, 25, 0.03); 
       border: 1px solid rgba(226, 232, 240, 0.8);
+      animation: fadeIn 0.25s ease-out;
     }
 
-    /* ORIGINAL LARGE BRAND HEADER & SPINNING WHEELS */
-    .brand-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid #F1F5F9; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .brand-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid #F1F5F9; }
     .logo-container { display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 6px; }
-    .logo-letter { font-size: 50px; font-weight: 900; color: var(--text-main); letter-spacing: -2px; }
-    .logo-symbol { font-size: 32px; font-weight: 800; color: var(--primary); margin: 0 2px; }
+    .logo-letter { font-size: 52px; font-weight: 900; color: var(--text-main); letter-spacing: -2px; }
+    .logo-symbol { font-size: 34px; font-weight: 800; color: var(--primary); margin: 0 2px; }
     
-    .spin-wheel-clockwise { width: 50px; height: 50px; animation: rotateClockwise 3s linear infinite; filter: drop-shadow(0 4px 8px rgba(255, 90, 0, 0.25)); }
+    .spin-wheel-clockwise { width: 52px; height: 52px; animation: rotateClockwise 3s linear infinite; filter: drop-shadow(0 4px 8px rgba(255, 90, 0, 0.25)); }
     @keyframes rotateClockwise { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    .logo-tagline { font-size: 12px; font-weight: 800; color: var(--primary); letter-spacing: 4px; text-transform: uppercase; margin-top: 4px; }
+    .logo-tagline { font-size: 12.5px; font-weight: 800; color: var(--primary); letter-spacing: 4px; text-transform: uppercase; margin-top: 6px; }
 
-    label { display: block; font-size: 11px; font-weight: 800; color: var(--text-muted); margin: 18px 0 8px; text-transform: uppercase; letter-spacing: 0.8px; }
+    label { display: block; font-size: 11.5px; font-weight: 800; color: var(--text-muted); margin: 22px 0 10px; text-transform: uppercase; letter-spacing: 1px; }
     
-    input, select, textarea { width: 100%; padding: 14px; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 14px; color: var(--text-main); font-size: 14px; font-weight: 700; outline: none; transition: all 0.2s ease; }
-    textarea { min-height: 76px; resize: none; line-height: 1.4; display: block; }
+    input, select, textarea { width: 100%; padding: 16px; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 16px; color: var(--text-main); font-size: 14.5px; font-weight: 700; outline: none; transition: all 0.2s ease; }
+    textarea { min-height: 86px; resize: none; line-height: 1.45; display: block; }
     input:focus, select:focus, textarea:focus { border-color: var(--primary); background: #FFFFFF; box-shadow: 0 0 0 4px rgba(255,90,0,0.12); }
     input::placeholder, textarea::placeholder { color: #94A3B8; font-weight: 500; }
 
-    .input-error { border-color: var(--error) !important; background: #FEF2F2 !important; }
+    .input-error { border-color: var(--error) !important; background: #FEF2F2 !important; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12) !important; }
 
-    /* SERVICES LIST */
-    .services-list { display: flex; flex-direction: column; gap: 8px; }
-    .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .service-card.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 4px 14px rgba(255,90,0,0.06); }
+    .services-list { display: flex; flex-direction: column; gap: 10px; }
+    .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .service-info { flex: 1; min-width: 0; }
+    .service-card.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 6px 16px rgba(255,90,0,0.06); }
     .service-card.disabled { background: #F8FAFC; border: 1px solid #E2E8F0; opacity: 0.85; }
-    .s-title { font-size: 13.5px; font-weight: 800; color: var(--text-main); line-height: 1.25; }
-    .s-desc { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
-    .s-price { font-size: 17px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
-    .s-badge { font-size: 9px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 5px 8px; border-radius: 6px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+    .s-title { font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.3; }
+    .s-desc { font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
+    .s-price { font-size: 18px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
+    .s-badge { font-size: 9.5px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 6px 9px; border-radius: 8px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 
-    /* SEGMENTED CONTROL */
-    .segmented-control { display: flex; background: var(--input-bg); padding: 4px; border-radius: 16px; border: 1px solid var(--border); gap: 4px; }
-    .seg-btn { flex: 1; text-align: center; padding: 11px 6px; font-size: 13px; font-weight: 700; color: var(--text-muted); border-radius: 12px; cursor: pointer; transition: 0.2s; }
+    .segmented-control { display: flex; background: var(--input-bg); padding: 5px; border-radius: 18px; border: 1px solid var(--border); gap: 4px; }
+    .seg-btn { flex: 1; text-align: center; padding: 13px 8px; font-size: 14px; font-weight: 700; color: var(--text-muted); border-radius: 14px; cursor: pointer; transition: 0.2s; }
     .seg-btn.active { background: #FFFFFF; color: var(--primary); box-shadow: 0 4px 12px rgba(11, 15, 25, 0.06); }
-    .seg-btn span { display: block; font-size: 10px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
+    .seg-btn span { display: block; font-size: 10.5px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
 
-    /* TIME SLOTS GRID */
-    .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .slot-card {
-      background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 12px;
-      padding: 10px 8px; cursor: pointer; transition: all 0.2s; text-align: left;
+      background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 14px;
+      padding: 12px 10px; cursor: pointer; transition: all 0.2s; text-align: left;
     }
     .slot-card.active { background: #FFFBF9; border-color: var(--primary); box-shadow: 0 4px 12px rgba(255,90,0,0.1); }
-    .slot-time { font-size: 11.5px; font-weight: 800; color: var(--text-main); }
-    .slot-tag { font-size: 9px; font-weight: 800; color: var(--success); margin-top: 2px; display: block; }
+    .slot-time { font-size: 12px; font-weight: 800; color: var(--text-main); }
+    .slot-tag { font-size: 9.5px; font-weight: 800; color: var(--success); margin-top: 3px; display: block; }
 
-    .loc-header { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; margin-bottom: 6px; gap: 8px; }
+    .loc-header { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; margin-bottom: 10px; gap: 10px; }
     .loc-header label { margin: 0; }
-    .loc-btn { background: #E0F2FE; color: #0284C7; border: none; padding: 7px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap; flex-shrink: 0; }
+    .loc-btn { background: #E0F2FE; color: #0284C7; border: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; white-space: nowrap; flex-shrink: 0; }
+    .loc-btn:active { transform: scale(0.96); }
 
-    .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%); color: #fff; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 20px; box-shadow: 0 8px 20px rgba(255, 90, 0, 0.28); display: flex; justify-content: center; align-items: center; gap: 6px; }
-    .btn-outline { width: 100%; padding: 14px; border-radius: 14px; background: #F1F5F9; color: var(--text-main); border: 1px solid var(--border); margin-top: 10px; font-weight: 800; font-size: 14px; cursor: pointer; }
+    .btn-main { width: 100%; padding: 18px; border-radius: 16px; border: none; background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 25px; box-shadow: 0 10px 25px rgba(255, 90, 0, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
+    .btn-main:active { transform: scale(0.98); }
+    .btn-outline { width: 100%; padding: 16px; border-radius: 16px; background: #F1F5F9; color: var(--text-main); border: 1px solid var(--border); margin-top: 12px; font-weight: 800; font-size: 15px; cursor: pointer; }
 
-    #loadingScreen, #successScreen { display: none; text-align: center; padding: 30px 10px; }
-    .loader { width: 44px; height: 44px; border: 4px solid #E2E8F0; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+    #loadingScreen, #successScreen { display: none; text-align: center; padding: 40px 10px; }
+    .loader { width: 50px; height: 50px; border: 4px solid #E2E8F0; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     
-    .official-qr-box { background: #FFF9F5; padding: 18px; border-radius: 18px; margin: 18px 0; border: 2px solid #FF5A00; text-align: center; }
-    .official-qr-box img { width: 180px; height: 180px; border-radius: 10px; border: 3px solid #FFFFFF; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 10px; object-fit: contain; }
+    .official-qr-box { background: #FFF9F5; padding: 22px; border-radius: 20px; margin: 20px 0; border: 2px solid #FF5A00; text-align: center; box-shadow: 0 10px 25px rgba(255,90,0,0.08); }
+    .official-qr-box img { width: 220px; height: 220px; border-radius: 14px; border: 3px solid #FFFFFF; box-shadow: 0 6px 16px rgba(0,0,0,0.1); margin-bottom: 12px; object-fit: contain; }
+    .utr-box { margin-top: 15px; text-align: left; }
+    .utr-box label { font-size: 11px; margin: 0 0 6px; }
 
-    .portal-links { display: flex; justify-content: space-around; margin-top: 20px; font-size: 12px; font-weight: 800; }
-    .portal-link { cursor: pointer; color: var(--primary); }
+    .portal-links { display: flex; justify-content: space-around; margin-top: 25px; font-size: 12px; font-weight: 800; padding: 0 10px; }
+    .portal-link { cursor: pointer; transition: 0.2s; }
+    .portal-link:hover { color: var(--primary); }
 
-    /* Modals & Portals */
-    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.55); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 12px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.2s; }
+    /* Modal Styles */
+    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.2s; }
     .ui-modal-overlay.show { opacity: 1; visibility: visible; }
-    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 400px; border-radius: 22px; padding: 22px; text-align: left; box-shadow: 0 20px 40px rgba(11, 15, 25, 0.28); }
+    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 24px; text-align: left; box-shadow: 0 25px 50px -12px rgba(11, 15, 25, 0.28); border: 1px solid rgba(255, 90, 0, 0.18); }
+    .ui-modal-icon { width: 60px; height: 60px; border-radius: 18px; background: #FFF5F0; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px; border: 1.5px solid #FFE0D1; }
+    .ui-modal-title { font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 8px; }
+    .ui-modal-msg { font-size: 13.5px; font-weight: 600; color: var(--text-muted); line-height: 1.5; margin: 0 0 20px; }
 
-    .db-tab-bar { display: flex; gap: 6px; margin-bottom: 14px; }
-    .db-tab { flex: 1; text-align: center; font-size: 11.5px; font-weight: 800; background: #F1F5F9; color: #64748B; padding: 9px; border-radius: 10px; cursor: pointer; }
+    .ui-modal-btn { width: 100%; padding: 15px; border-radius: 14px; border: none; background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%); color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 90, 0, 0.25); }
+    .ui-modal-btn-green { background: #16A34A; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25); border: none; width: 100%; padding: 15px; border-radius: 14px; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer; }
+
+    input[type="file"]::file-selector-button { border: none; background: #E2E8F0; padding: 8px 12px; border-radius: 8px; color: #0B0F19; font-weight: 700; cursor: pointer; margin-right: 10px; }
+
+    /* Admin & Mechanic DB Styles */
+    .db-tab-bar { display: flex; gap: 8px; margin-bottom: 18px; }
+    .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 800; background: #F1F5F9; color: #64748B; padding: 11px 8px; border-radius: 12px; cursor: pointer; white-space: nowrap; }
     .db-tab.active { background: #FF5A00; color: #FFF; }
-    .db-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
-    .db-item { padding: 12px; border: 1.5px solid #E2E8F0; border-radius: 14px; background: #F8FAFC; font-size: 12px; color: #475569; }
+    
+    .db-list { display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
+    .db-item { padding: 14px; border: 1.5px solid #E2E8F0; border-radius: 16px; background: #F8FAFC; }
+    .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .db-id { font-weight: 900; font-size: 14px; color: var(--text-main); }
+    
+    .badge { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+    .b-booked { background: #FEF3C7; color: #B45309; }
+    .b-ready { background: #DCFCE7; color: #15803D; }
+
+    .db-info { font-size: 12px; color: #475569; font-weight: 600; line-height: 1.5; margin-bottom: 10px; }
+    .db-action { display: flex; gap: 6px; flex-wrap: wrap;}
+    .btn-sm { flex: 1; padding: 8px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: none; text-align: center; color: var(--text-main); background: #E2E8F0; }
+    .btn-del { flex: 0 0 34px; padding: 0; background: #FEE2E2; color: #B91C1C; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: 8px; cursor: pointer; border: none; }
   </style>
 </head>
 <body>
@@ -117,7 +143,6 @@
   
   <!-- CUSTOMER BOOKING FORM -->
   <div class="card" id="bookingForm">
-    
     <div class="brand-header">
       <div class="logo-container">
         <span class="logo-letter">M</span><span class="logo-symbol">+</span>
@@ -135,17 +160,15 @@
       <div class="seg-btn" id="v-scooty" onclick="selectVehicle('Scooty')">🛵 Scooty <span>Gearless</span></div>
     </div>
 
-    <label>Customer Full Name</label>
-    <input type="text" id="cName" placeholder="Enter your full name" oninput="clearError('cName')">
-
-    <label>Mobile Number</label>
+    <label>Customer Details</label>
+    <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
     <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
 
     <div class="loc-header">
-      <label style="margin:0;">Doorstep Address</label>
-      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate GPS</button>
+      <label>Doorstep Address</label>
+      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate</button>
     </div>
-    <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate GPS' or type your address..." oninput="clearError('cAddr')"></textarea>
+    <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate' or type manually..." oninput="clearError('cAddr')"></textarea>
 
     <label>Our Services</label>
     <div class="services-list">
@@ -166,7 +189,7 @@
         <div class="s-badge">Coming Soon</div>
       </div>
       <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance contract</div></div>
+        <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance</div></div>
         <div class="s-badge">Coming Soon</div>
       </div>
     </div>
@@ -212,24 +235,24 @@
   <!-- LOADING SCREEN -->
   <div class="card" id="loadingScreen">
     <div class="loader"></div>
-    <h3 style="margin:0 0 6px; font-size:18px;">Booking Your Slot...</h3>
-    <p style="color:var(--text-muted); font-size:13px; margin:0;">Syncing with Google Sheets & generating Job Card.</p>
+    <h3 style="margin:0 0 8px; font-size:20px;">Booking Your Slot...</h3>
+    <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating job card.</p>
   </div>
 
   <!-- SUCCESS SCREEN -->
   <div class="card" id="successScreen">
-    <div style="font-size:48px; margin-bottom:10px;">✅</div>
-    <h2 style="color:#10B981; font-size:22px; font-weight:800; margin:0 0 6px;">Booking Confirmed!</h2>
-    <p style="color:var(--text-muted); font-size:13px; margin:0;" id="successSubtitle">Our expert will arrive shortly.</p>
+    <div style="font-size:56px; margin-bottom:12px;">✅</div>
+    <h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;">Booking Confirmed!</h2>
+    <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will arrive shortly.</p>
     
     <div id="qrSection" class="official-qr-box" style="display:none;">
-      <p style="font-size:15px; font-weight:900; color:#0B0F19; margin:0 0 4px;">Scan & Pay ₹69 Securely</p>
-      <p style="font-size:12px; font-weight:800; color:#FF5A00; margin:0 0 10px;">Mankiniamma Technologies Pvt Ltd</p>
+      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;">Scan & Pay ₹69 Securely</p>
+      <p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Pvt Ltd</p>
       <img src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=69.00%26cu=INR&margin=10';">
-      <p style="font-size:11.5px; color:#475569; margin-top:6px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
-      <div style="margin-top:10px; text-align:left;">
-        <label style="font-size:10.5px; margin:0 0 4px;">Enter UPI UTR / Transaction ID (For Paid Tax Invoice):</label>
-        <input type="text" id="customerUtr" placeholder="e.g. 429381928312" style="padding: 10px; font-size: 13px;" oninput="updatePdfButtonText()">
+      <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
+      <div class="utr-box">
+        <label>Enter UPI UTR / Transaction ID (For Paid Tax Invoice):</label>
+        <input type="text" id="customerUtr" placeholder="e.g. 429381928312" style="padding: 12px; font-size: 14px;" oninput="updatePdfButtonText()">
       </div>
     </div>
 
@@ -239,41 +262,94 @@
   </div>
 </div>
 
-<!-- ADMIN PORTAL (PIN: 4882) -->
+<!-- UNIVERSAL ALERT MODAL -->
+<div class="ui-modal-overlay" id="uiAlertModal" onclick="if(event.target === this) closeUiAlert()">
+  <div class="ui-modal-box" style="text-align: center; max-width: 340px;">
+    <div class="ui-modal-icon" id="uiAlertIcon">⚠️</div>
+    <h3 class="ui-modal-title" id="uiAlertTitle">Alert</h3>
+    <p class="ui-modal-msg" id="uiAlertMsg">Message</p>
+    
+    <div id="alertActionButtons" style="display: none; gap: 10px; margin-bottom: 10px;">
+      <button class="btn-sm" style="flex:1; padding:12px; background:#E2E8F0; color:#0B0F19;" onclick="closeUiAlert()">Cancel</button>
+      <button class="btn-sm" style="flex:1; padding:12px; background:#EF4444; color:#fff;" id="alertConfirmBtn">Delete</button>
+    </div>
+    
+    <button class="ui-modal-btn" id="alertOkBtn" onclick="closeUiAlert()">Got It</button>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 🔐 ADMIN PORTAL (PIN: 4882)                -->
+<!-- ========================================== -->
 <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
   <div class="ui-modal-box">
     <div id="adminPinSection">
-      <h3 style="margin: 0 0 12px; font-size: 18px; font-weight: 900; text-align: center;">🔐 Admin Portal</h3>
+      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center;">🔐 Admin Portal</h3>
       <label style="margin-top:0;">Enter Admin PIN (4882):</label>
-      <input type="password" id="adminPinInput" placeholder="4-Digit PIN" maxlength="4" style="margin-bottom: 12px;">
-      <button onclick="verifyAdminPin()" style="width:100%; padding:13px; background:#FF5A00; color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer;">Unlock Admin</button>
+      <input type="password" id="adminPinInput" placeholder="Enter 4-Digit PIN" maxlength="4" style="margin-bottom: 15px;">
+      <button class="ui-modal-btn" onclick="verifyAdminPin()">Unlock Portal</button>
+      <button class="btn-outline" onclick="closeAdminPortal()">Cancel</button>
     </div>
+
     <div id="adminDashboard" style="display: none;">
-      <h3 style="margin: 0 0 12px; font-size: 17px; font-weight: 900;">📊 Admin Dashboard</h3>
+      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900;">📊 Admin Portal</h3>
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards</div>
         <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Invoices</div>
+        <div class="db-tab" id="tab-gen" onclick="switchAdminTab('gen')">+ Generate</div>
       </div>
+
       <div id="view-jc" class="db-list"></div>
       <div id="view-inv" class="db-list" style="display: none;"></div>
-      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 12px;">Close Portal</button>
+
+      <div id="view-gen" style="display: none;">
+        <label style="margin-top:0;">Customer Name</label>
+        <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
+        <label style="margin-top:8px;">Mobile Number</label>
+        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <div style="flex:1;">
+            <label style="margin-top:4px;">Vehicle</label>
+            <select id="admVehicle" style="padding:12px;"><option value="Bike">Bike</option><option value="Scooty">Scooty</option></select>
+          </div>
+          <div style="flex:1;">
+            <label style="margin-top:4px;">Document</label>
+            <select id="admDocType" style="padding:12px;"><option value="TAX_INVOICE" selected>Paid Invoice</option><option value="JOB_CARD">Job Card</option></select>
+          </div>
+        </div>
+        <label style="margin-top:4px;">Address</label>
+        <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:10px; padding:12px;">
+        
+        <div style="background:#F8FAFC; padding:10px; border-radius:12px; border:1px dashed #16A34A; margin-bottom:12px;">
+          <label style="color:#16A34A; margin-top:0;">Payment Proof / UTR:</label>
+          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px;">
+          <input type="text" id="admUtr" placeholder="UTR / Ref Number" style="padding:10px; font-size:13px;">
+        </div>
+        <button class="ui-modal-btn-green" onclick="processAdminForm()">📄 Generate & Download PDF</button>
+      </div>
+
+      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 15px;">Close Portal</button>
     </div>
   </div>
 </div>
 
-<!-- MECHANIC PORTAL (PIN: 7788) -->
+<!-- ========================================== -->
+<!-- 🔧 MECHANIC PORTAL (PIN: 7788)           -->
+<!-- ========================================== -->
 <div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
   <div class="ui-modal-box">
     <div id="mechPinSection">
-      <h3 style="margin: 0 0 12px; font-size: 18px; font-weight: 900; text-align: center; color:#0284C7;">🔧 Mechanic Portal</h3>
+      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center; color:#0284C7;">🔧 Mechanic Portal</h3>
       <label style="margin-top:0;">Enter Mechanic PIN (7788):</label>
-      <input type="password" id="mechPinInput" placeholder="4-Digit PIN" maxlength="4" style="margin-bottom: 12px;">
-      <button onclick="verifyMechPin()" style="width:100%; padding:13px; background:#0284C7; color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer;">Mechanic Login</button>
+      <input type="password" id="mechPinInput" placeholder="4-Digit PIN" maxlength="4" style="margin-bottom: 15px;">
+      <button class="ui-modal-btn" onclick="verifyMechPin()" style="background:#0284C7;">Unlock Mechanic Portal</button>
+      <button class="btn-outline" onclick="closeMechanicPortal()">Cancel</button>
     </div>
+
     <div id="mechDashboard" style="display: none;">
-      <h3 style="margin: 0 0 12px; font-size: 17px; font-weight: 900; color:#0284C7;">🛵 Assigned Doorstep Jobs</h3>
+      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900; color:#0284C7;">🛵 Assigned Doorstep Jobs</h3>
       <div id="mechJobList" class="db-list"></div>
-      <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 12px;">Close Portal</button>
+      <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 15px;">Close Portal</button>
     </div>
   </div>
 </div>
@@ -288,8 +364,75 @@
   let selectedSlot = "08:00 AM - 09:30 AM";
   let globalBookingData = {};
   let customerCoords = null;
+  let fieldToFocus = null;
 
+  // --- LOCAL STORAGE DB ---
+  function getDB() {
+    try {
+      let db = localStorage.getItem('mogo_local_db');
+      return db ? JSON.parse(db) : [];
+    } catch(e) { return []; }
+  }
+  function saveDB(db) {
+    try { localStorage.setItem('mogo_local_db', JSON.stringify(db)); } catch(e) {}
+  }
+  function insertRecord(data) {
+    let db = getDB();
+    db.unshift(data);
+    saveDB(db);
+  }
+  function getRecord(id) { return getDB().find(x => x.id === id); }
+  function updateRecord(id, updates) {
+    let db = getDB();
+    for(let i = 0; i < db.length; i++) {
+      if(db[i].id === id) { db[i] = { ...db[i], ...updates }; break; }
+    }
+    saveDB(db);
+  }
+  function deleteRecord(id) {
+    document.getElementById('alertActionButtons').style.display = 'none';
+    document.getElementById('alertOkBtn').style.display = 'block';
+    let db = getDB().filter(item => item.id !== id);
+    saveDB(db);
+    renderAdminDB();
+    closeUiAlert();
+  }
+
+  // --- UI ALERTS ---
   function clearError(id) { document.getElementById(id)?.classList.remove('input-error'); }
+
+  function showUiAlert(icon, title, message, inputId = null) {
+    document.getElementById('uiAlertIcon').innerHTML = icon;
+    document.getElementById('uiAlertTitle').innerText = title;
+    document.getElementById('uiAlertMsg').innerText = message;
+    fieldToFocus = inputId;
+    if (inputId) {
+      let el = document.getElementById(inputId);
+      if (el) el.classList.add('input-error');
+    }
+    document.getElementById('alertActionButtons').style.display = 'none';
+    document.getElementById('alertOkBtn').style.display = 'block';
+    document.getElementById('uiAlertModal').classList.add('show');
+  }
+
+  function showConfirmAlert(icon, title, message, confirmCallback) {
+    document.getElementById('uiAlertIcon').innerHTML = icon;
+    document.getElementById('uiAlertTitle').innerText = title;
+    document.getElementById('uiAlertMsg').innerText = message;
+    document.getElementById('alertOkBtn').style.display = 'none';
+    document.getElementById('alertActionButtons').style.display = 'flex';
+    document.getElementById('alertConfirmBtn').onclick = confirmCallback;
+    document.getElementById('uiAlertModal').classList.add('show');
+  }
+
+  function closeUiAlert() { 
+    document.getElementById('uiAlertModal').classList.remove('show'); 
+    if (fieldToFocus) {
+      let el = document.getElementById(fieldToFocus);
+      if (el) setTimeout(() => el.focus(), 150);
+      fieldToFocus = null;
+    }
+  }
 
   function selectVehicle(t) {
     vehicleType = t;
@@ -323,10 +466,10 @@
   }
 
   function getLocation() {
-    const addrInput = document.getElementById('cAddr');
-    const locBtn = document.getElementById('locBtn');
-    locBtn.disabled = true;
-    locBtn.innerHTML = "⏳ Locating...";
+    let btn = document.getElementById('locBtn');
+    clearError('cAddr');
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Locating...";
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -334,23 +477,23 @@
           let lat = pos.coords.latitude;
           let lon = pos.coords.longitude;
           customerCoords = { lat, lon };
-          locBtn.disabled = false;
-          locBtn.innerHTML = "✅ GPS Locked";
+          btn.disabled = false;
+          btn.innerHTML = "✅ GPS Locked";
           fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`)
             .then(res => res.json())
             .then(data => {
-              addrInput.value = data?.display_name ? data.display_name.replace(/, India$/, '') : `Guwahati (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+              document.getElementById('cAddr').value = data?.display_name ? data.display_name.replace(/, India$/, '') : `Guwahati (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
             })
             .catch(() => {
-              addrInput.value = `Guwahati, Assam (${lat.toFixed(5)}, ${lon.toFixed(5)})`;
+              document.getElementById('cAddr').value = `Guwahati, Assam (${lat.toFixed(5)}, ${lon.toFixed(5)})`;
             });
         },
         () => {
-          locBtn.disabled = false;
-          locBtn.innerHTML = "📍 Auto Locate GPS";
-          alert("Please enable location permissions.");
+          btn.disabled = false;
+          btn.innerHTML = "📍 Auto Locate";
+          showUiAlert("📍", "Location Permission", "Please allow GPS permission or type your address manually.", "cAddr");
         },
-        { enableHighAccuracy: true, timeout: 5000 }
+        { enableHighAccuracy: true, timeout: 4000 }
       );
     }
   }
@@ -360,9 +503,9 @@
     let phone = document.getElementById('cPhone').value.trim();
     let addr = document.getElementById('cAddr').value.trim();
 
-    if (!name) { document.getElementById('cName').classList.add('input-error'); return alert("Please enter your full name."); }
-    if (!/^[0-9]{10}$/.test(phone)) { document.getElementById('cPhone').classList.add('input-error'); return alert("Please enter a valid 10-digit mobile number."); }
-    if (!addr) { document.getElementById('cAddr').classList.add('input-error'); return alert("Please provide your doorstep address."); }
+    if (!name) return showUiAlert("👤", "Full Name Required", "Please enter your full name.", "cName");
+    if (!/^[0-9]{10}$/.test(phone)) return showUiAlert("📱", "Invalid Mobile Number", "Please enter a valid 10-digit mobile number.", "cPhone");
+    if (!addr) return showUiAlert("📍", "Address Missing", "Please tap 'Auto Locate' or type your doorstep address.", "cAddr");
 
     document.getElementById('bookingForm').style.display = "none";
     document.getElementById('loadingScreen').style.display = "block";
@@ -373,6 +516,8 @@
     let grandTotal = TOTAL_PRICE;
     let subtotal = grandTotal / 1.18;
     let totalTax = grandTotal - subtotal;
+    let cgst = totalTax / 2;
+    let sgst = totalTax / 2;
 
     globalBookingData = {
       id: id,
@@ -383,22 +528,21 @@
       serviceName: "Premium Foam Wash",
       slot: selectedSlot,
       total: subtotal,
-      cgst: totalTax / 2,
-      sgst: totalTax / 2,
+      cgst: cgst,
+      sgst: sgst,
       grandTotal: grandTotal,
       address: addr,
       paymentType: paymentType,
       mapsLink: maps,
       status: "BOOKED",
       utr: "",
-      forceType: "JOB_CARD"
+      forceType: "JOB_CARD",
+      gpsImage: null
     };
 
-    let db = JSON.parse(localStorage.getItem('mogo_local_db') || '[]');
-    db.unshift(globalBookingData);
-    localStorage.setItem('mogo_local_db', JSON.stringify(db));
+    insertRecord(globalBookingData);
 
-    // Connect & send to Google Sheets
+    // Sync to Google Sheets
     try {
       fetch(SCRIPT_URL, {
         method: "POST",
@@ -406,7 +550,7 @@
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(globalBookingData)
       }).catch(() => {});
-    } catch(e) {}
+    } catch (e) {}
 
     setTimeout(() => {
       document.getElementById('loadingScreen').style.display = "none";
@@ -421,7 +565,7 @@
     }, 300);
   }
 
-  // Admin Portal (PIN: 4882)
+  // --- ADMIN PORTAL (PIN: 4882) ---
   function openAdminPortal() {
     document.getElementById('adminPinInput').value = "";
     document.getElementById('adminPinSection').style.display = "block";
@@ -429,17 +573,19 @@
     document.getElementById('adminModal').classList.add('show');
   }
   function closeAdminPortal() { document.getElementById('adminModal').classList.remove('show'); }
+
   function verifyAdminPin() {
     if (document.getElementById('adminPinInput').value.trim() === "4882") {
       document.getElementById('adminPinSection').style.display = "none";
       document.getElementById('adminDashboard').style.display = "block";
       renderAdminDB();
+      switchAdminTab('jc');
     } else {
-      alert("Incorrect Admin PIN");
+      showUiAlert("🔐", "Incorrect PIN", "Please enter the valid 4-digit Admin PIN.");
     }
   }
 
-  // Mechanic Portal (PIN: 7788)
+  // --- MECHANIC PORTAL (PIN: 7788) ---
   function openMechanicPortal() {
     document.getElementById('mechPinInput').value = "";
     document.getElementById('mechPinSection').style.display = "block";
@@ -447,45 +593,457 @@
     document.getElementById('mechanicModal').classList.add('show');
   }
   function closeMechanicPortal() { document.getElementById('mechanicModal').classList.remove('show'); }
+
   function verifyMechPin() {
     if (document.getElementById('mechPinInput').value.trim() === "7788") {
       document.getElementById('mechPinSection').style.display = "none";
       document.getElementById('mechDashboard').style.display = "block";
       renderMechanicJobs();
     } else {
-      alert("Incorrect Mechanic PIN");
+      showUiAlert("🔐", "Incorrect PIN", "Please enter the valid Mechanic PIN (7788).");
     }
   }
 
   function renderMechanicJobs() {
-    let db = JSON.parse(localStorage.getItem('mogo_local_db') || '[]');
+    let db = getDB();
     let html = "";
     db.forEach(item => {
-      html += `<div class="db-item"><strong>ID: ${item.id}</strong> | ${item.name} (${item.phone})<br>Vehicle: ${item.vehicle} | Slot: ${item.slot || 'Standard'}<br>📍 ${item.address}<br>
-               <a href="tel:${item.phone}" style="display:inline-block; margin-top:6px; background:#16A34A; color:#fff; padding:6px 10px; border-radius:6px; text-decoration:none; font-weight:800; font-size:11px;">📞 Call Customer</a></div>`;
+      html += `
+        <div class="db-item">
+          <strong>${item.id} - ${item.name}</strong> (${item.phone})<br>
+          Vehicle: ${item.vehicle} | Slot: ${item.slot || 'Standard'}<br>
+          📍 ${item.address}<br>
+          <a href="tel:${item.phone}" style="display:inline-block; margin-top:8px; background:#16A34A; color:#fff; padding:6px 12px; border-radius:8px; text-decoration:none; font-weight:800; font-size:11px;">📞 Call Customer</a>
+        </div>`;
     });
-    document.getElementById('mechJobList').innerHTML = html || '<p style="font-size:12px; text-align:center; color:#94A3B8;">No assigned jobs yet.</p>';
+    document.getElementById('mechJobList').innerHTML = html || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No assigned jobs yet.</p>';
   }
 
-  function switchAdminTab(t) {
-    document.getElementById('tab-jc').classList.toggle('active', t === 'jc');
-    document.getElementById('tab-inv').classList.toggle('active', t === 'inv');
-    document.getElementById('view-jc').style.display = t === 'jc' ? 'flex' : 'none';
-    document.getElementById('view-inv').style.display = t === 'inv' ? 'flex' : 'none';
+  function switchAdminTab(tab) {
+    ['jc', 'inv', 'gen'].forEach(t => {
+      document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    });
+    document.getElementById('view-jc').style.display = tab === 'jc' ? 'flex' : 'none';
+    document.getElementById('view-inv').style.display = tab === 'inv' ? 'flex' : 'none';
+    document.getElementById('view-gen').style.display = tab === 'gen' ? 'block' : 'none';
   }
 
   function renderAdminDB() {
-    let db = JSON.parse(localStorage.getItem('mogo_local_db') || '[]');
+    let db = getDB();
     let jcHTML = "", invHTML = "";
+
     db.forEach(item => {
-      let card = `<div class="db-item"><strong>${item.id} - ${item.name}</strong> (${item.phone})<br>Slot: ${item.slot || 'N/A'}<br>${item.address}</div>`;
-      if (item.forceType === 'TAX_INVOICE') invHTML += card; else jcHTML += card;
+      let isInv = item.forceType === 'TAX_INVOICE';
+      let badge = isInv ? `<span class="badge b-ready">🟢 Paid Invoice</span>` : `<span class="badge b-booked">⏳ Job Card</span>`;
+      
+      let actions = !isInv
+        ? `<button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">📄 Job Card</button>
+           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">💬 WhatsApp</button>
+           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">✅ Make Invoice</button>`
+        : `<button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true)">📄 Invoice PDF</button>
+           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">💬 WhatsApp</button>`;
+
+      let card = `
+        <div class="db-item">
+          <div class="db-header"><span class="db-id">${item.id}</span> ${badge}</div>
+          <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹69) | Slot: ${item.slot || 'Standard'}<br>${item.date} | ${item.address}</div>
+          <div class="db-action">
+            ${actions}
+            <button class="btn-del" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Delete ${item.id} permanently?', function(){deleteRecord('${item.id}')})">✖</button>
+          </div>
+        </div>`;
+
+      if (isInv) invHTML += card; else jcHTML += card;
     });
-    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="font-size:12px; text-align:center; color:#94A3B8;">No Job Cards.</p>';
-    document.getElementById('view-inv').innerHTML = invHTML || '<p style="font-size:12px; text-align:center; color:#94A3B8;">No Invoices.</p>';
+
+    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No Job Cards yet.</p>';
+    document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No Invoices yet.</p>';
   }
 
-  function downloadInvoice() {}
+  function promptConvertToInvoice(id) {
+    let utr = prompt("Payment received. Enter UTR/Transaction ID (Optional):", "");
+    if (utr !== null) { convertToInvoice(id, utr); }
+  }
+
+  function convertToInvoice(id, utr) {
+    updateRecord(id, { forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED', utr: utr || 'VERIFIED' });
+    renderAdminDB();
+    generatePDFFromDB(id, true);
+  }
+
+  function shareDirectWA(id, isInvoice) {
+    let rec = getRecord(id);
+    if (!rec) return;
+    let msg = isInvoice
+      ? `Hello ${rec.name},\n\nYour MoGo Total Bike Care *Paid Tax Invoice* (Booking ID: ${rec.id}) has been generated.\n\nThank you for choosing MoGo!`
+      : `Hello ${rec.name},\n\nYour MoGo Total Bike Care *Service Job Card* (Booking ID: ${rec.id}, Slot: ${rec.slot || 'Confirmed'}) has been created.\n\nOur expert will arrive shortly!`;
+    window.open(`https://wa.me/91${rec.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  function processAdminForm() {
+    let name = document.getElementById('admName').value.trim() || "Valued Customer";
+    let phone = document.getElementById('admPhone').value.trim() || "9999999999";
+    let vehicle = document.getElementById('admVehicle').value || "Bike";
+    let addr = document.getElementById('admAddr').value.trim() || "Guwahati, Assam";
+    let docType = document.getElementById('admDocType').value;
+    let utr = document.getElementById('admUtr').value.trim();
+    let fileInput = document.getElementById('admGpsImg');
+
+    let recId = "MOGO" + Math.floor(1000 + Math.random() * 9000);
+    let grandTotal = TOTAL_PRICE;
+    let subtotal = grandTotal / 1.18;
+    let totalTax = grandTotal - subtotal;
+    let cgst = totalTax / 2;
+    let sgst = totalTax / 2;
+
+    let newRec = {
+      id: recId,
+      date: new Date().toLocaleDateString('en-IN'),
+      name: name,
+      phone: phone,
+      vehicle: vehicle,
+      serviceName: "Premium Foam Wash",
+      slot: "08:00 AM - 09:30 AM",
+      total: subtotal,
+      cgst: cgst,
+      sgst: sgst,
+      grandTotal: grandTotal,
+      address: addr,
+      paymentType: docType === 'TAX_INVOICE' ? 'Pay Now' : 'Pay After Service',
+      utr: utr || "VERIFIED",
+      forceType: docType,
+      gpsImage: null,
+      status: docType === 'TAX_INVOICE' ? 'INVOICE_GENERATED' : 'BOOKED'
+    };
+
+    if (fileInput.files && fileInput.files[0]) {
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        let imgObj = new Image();
+        imgObj.onload = function() {
+          let cvs = document.createElement('canvas');
+          let scale = Math.min(800 / imgObj.width, 800 / imgObj.height, 1);
+          cvs.width = imgObj.width * scale;
+          cvs.height = imgObj.height * scale;
+          let cCtx = cvs.getContext('2d');
+          cCtx.fillStyle = '#FFFFFF';
+          cCtx.fillRect(0, 0, cvs.width, cvs.height);
+          cCtx.drawImage(imgObj, 0, 0, cvs.width, cvs.height);
+          newRec.gpsImage = cvs.toDataURL('image/jpeg', 0.82);
+          newRec.imgW = cvs.width;
+          newRec.imgH = cvs.height;
+          globalBookingData = newRec;
+          insertRecord(newRec);
+          renderAdminDB();
+          downloadInvoice(docType === 'TAX_INVOICE');
+        };
+        imgObj.src = e.target.result;
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      globalBookingData = newRec;
+      insertRecord(newRec);
+      renderAdminDB();
+      downloadInvoice(docType === 'TAX_INVOICE');
+    }
+  }
+
+  function generatePDFFromDB(id, isPaidOverride) {
+    let record = getRecord(id);
+    if (record) {
+      globalBookingData = record;
+      downloadInvoice(isPaidOverride);
+    }
+  }
+
+  // ==========================================================
+  // 100% EXACT FULL LOGO GENERATOR (WITH BOTH ORANGE WHEELS)
+  // ==========================================================
+  function createExactLogoImage() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 900;
+    canvas.height = 290;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.textBaseline = 'middle';
+    const cy = 105;
+
+    ctx.font = 'bold 130px Arial, Helvetica, sans-serif';
+    ctx.fillStyle = '#0B0F19';
+    ctx.fillText('M', 75, cy + 5);
+
+    ctx.font = 'bold 85px Arial, Helvetica, sans-serif';
+    ctx.fillStyle = '#FF5A00';
+    ctx.fillText('+', 215, cy);
+
+    function drawWheel(wx, wy, radius) {
+      ctx.save();
+      ctx.shadowColor = 'rgba(255, 90, 0, 0.25)';
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.arc(wx, wy, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = '#FF5A00';
+      ctx.lineWidth = 22;
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.beginPath();
+      ctx.arc(wx, wy, radius - 13, 0, Math.PI * 2);
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([6, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.strokeStyle = '#0B0F19';
+      ctx.lineWidth = 6.5;
+      for (let i = 0; i < 4; i++) {
+        let angle = (i * Math.PI) / 4;
+        ctx.beginPath();
+        ctx.moveTo(wx - Math.cos(angle) * (radius - 8), wy - Math.sin(angle) * (radius - 8));
+        ctx.lineTo(wx + Math.cos(angle) * (radius - 8), wy + Math.sin(angle) * (radius - 8));
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.arc(wx, wy, 15, 0, Math.PI * 2);
+      ctx.fillStyle = '#FF5A00';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(wx, wy, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
+    }
+
+    drawWheel(350, cy, 56);
+
+    ctx.font = 'bold 85px Arial, Helvetica, sans-serif';
+    ctx.fillStyle = '#FF5A00';
+    ctx.fillText('+', 435, cy);
+
+    ctx.font = 'bold 130px Arial, Helvetica, sans-serif';
+    ctx.fillStyle = '#0B0F19';
+    ctx.fillText('G', 510, cy + 5);
+
+    ctx.font = 'bold 85px Arial, Helvetica, sans-serif';
+    ctx.fillStyle = '#FF5A00';
+    ctx.fillText('+', 635, cy);
+
+    drawWheel(770, cy, 56);
+
+    ctx.font = 'bold 85px Arial, Helvetica, sans-serif';
+    ctx.fillStyle = '#FF5A00';
+    ctx.fillText('=', 850, cy);
+
+    ctx.font = 'bold 32px Arial, Helvetica, sans-serif';
+    ctx.fillStyle = '#FF5A00';
+    ctx.textAlign = 'center';
+    ctx.fillText('T O T A L   B I K E   C A R E', canvas.width / 2 + 15, 235);
+
+    return canvas.toDataURL('image/png');
+  }
+
+  // ==========================================================
+  // 100% APPROVED CURVED RUBBER STAMP (RED UNPAID / GREEN PAID)
+  // ==========================================================
+  function createRubberStampImage(isGreen) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 600;
+    canvas.height = 600;
+    const ctx = canvas.getContext('2d');
+    const cx = 300, cy = 300;
+    const col = isGreen ? '#16A34A' : '#DC2626';
+    const bgFill = isGreen ? '#FFFFFF' : '#FEFCE8';
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(-15 * Math.PI / 180);
+    ctx.strokeStyle = col;
+    ctx.fillStyle = col;
+
+    ctx.lineWidth = 16; ctx.beginPath(); ctx.arc(0, 0, 230, 0, Math.PI * 2); ctx.stroke();
+    ctx.lineWidth = 4;  ctx.beginPath(); ctx.arc(0, 0, 208, 0, Math.PI * 2); ctx.stroke();
+    ctx.lineWidth = 6;  ctx.beginPath(); ctx.arc(0, 0, 136, 0, Math.PI * 2); ctx.stroke();
+    ctx.lineWidth = 2.5;ctx.beginPath(); ctx.arc(0, 0, 124, 0, Math.PI * 2); ctx.stroke();
+
+    ctx.fillStyle = col;
+    ctx.font = 'bold 48px Arial, Helvetica, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    let topText = "MTPL", topAngle = 0.9, startT = -Math.PI / 2 - topAngle / 2;
+    for (let i = 0; i < topText.length; i++) {
+      let theta = startT + (i / (topText.length - 1)) * topAngle;
+      ctx.save();
+      ctx.translate(172 * Math.cos(theta), 172 * Math.sin(theta));
+      ctx.rotate(theta + Math.PI / 2);
+      ctx.fillText(topText[i], 0, 0);
+      ctx.restore();
+    }
+
+    ctx.fillStyle = col;
+    ctx.font = 'bold 26px Arial, Helvetica, sans-serif';
+    let botText = "MOGO BIKES CARE", botAngle = 1.95, startB = Math.PI / 2 + botAngle / 2;
+    for (let i = 0; i < botText.length; i++) {
+      let theta = startB - (i / (botText.length - 1)) * botAngle;
+      ctx.save();
+      ctx.translate(172 * Math.cos(theta), 172 * Math.sin(theta));
+      ctx.rotate(theta - Math.PI / 2);
+      ctx.fillText(botText[i], 0, 0);
+      ctx.restore();
+    }
+
+    ctx.fillStyle = col;
+    ctx.font = 'bold 24px Arial, sans-serif';
+    ctx.fillText('★', -54, -80); ctx.fillText('★', 54, -80);
+    ctx.font = 'bold 36px Arial, sans-serif';
+    ctx.fillText('★', 0, -84);
+    ctx.font = 'bold 24px Arial, sans-serif';
+    ctx.fillText('★', -54, 80);  ctx.fillText('★', 54, 80);
+    ctx.font = 'bold 36px Arial, sans-serif';
+    ctx.fillText('★', 0, 84);
+
+    const bw = 540, bh = 106;
+    ctx.fillStyle = bgFill;
+    ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 12; ctx.strokeRect(-bw / 2, -bh / 2, bw, bh);
+    ctx.lineWidth = 3;  ctx.strokeRect(-bw / 2 + 10, -bh / 2 + 10, bw - 20, bh - 20);
+
+    ctx.fillStyle = col;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = isGreen ? 'bold 78px Arial, Helvetica, sans-serif' : 'bold 70px Arial, Helvetica, sans-serif';
+    ctx.fillText(isGreen ? "PAID" : "UNPAID", 0, 4);
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    let seed = isGreen ? 101 : 202;
+    function pseudoRand() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+    for (let i = 0; i < 340; i++) {
+      ctx.beginPath();
+      ctx.arc(pseudoRand() * 600, pseudoRand() * 600, pseudoRand() * 2.8 + 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.lineWidth = 1.5;
+    for (let i = 0; i < 25; i++) {
+      let rx = pseudoRand() * 600, ry = pseudoRand() * 600, a = pseudoRand() * Math.PI * 2, l = pseudoRand() * 20 + 6;
+      ctx.beginPath();
+      ctx.moveTo(rx, ry);
+      ctx.lineTo(rx + Math.cos(a) * l, ry + Math.sin(a) * l);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    return canvas.toDataURL('image/png');
+  }
+
+  // ==========================================================
+  // PDF GENERATOR (INVOICE WITH CGST/SGST vs JOB CARD WITH ESTIMATE)
+  // ==========================================================
+  function downloadInvoice(forcePaid = false) {
+    try {
+      if (!window.jspdf) return showUiAlert("⏳", "Loading PDF", "Please wait a second and tap again.");
+      const doc = new window.jspdf.jsPDF();
+
+      let userUtr = document.getElementById('customerUtr')?.value.trim() || globalBookingData.utr || "";
+      let isPaidVerified = forcePaid || (globalBookingData.forceType === 'TAX_INVOICE') || (globalBookingData.paymentType === 'Pay Now' && userUtr.length >= 4);
+
+      if (isPaidVerified) {
+        doc.setFillColor(255, 255, 255);
+        doc.rect(0, 0, 210, 297, "F");
+      } else {
+        doc.setFillColor(254, 252, 232);
+        doc.rect(0, 0, 210, 297, "F");
+      }
+
+      doc.addImage(createExactLogoImage(), 'PNG', 45, 10, 120, 38);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.setTextColor(100, 100, 100);
+      doc.text("Mankiniamma Technologies Pvt Ltd | Guwahati, Assam", 105, 53, null, null, "center");
+
+      let docTitle = isPaidVerified ? "TAX INVOICE" : "SERVICE JOB CARD / ESTIMATE";
+      doc.setFont("helvetica", "bold"); doc.setFontSize(15); doc.setTextColor(15, 23, 42);
+      doc.text(docTitle, 105, 65, null, null, "center");
+      doc.setLineWidth(0.4); doc.setDrawColor(226, 232, 240); doc.line(20, 70, 190, 70);
+
+      doc.setFontSize(10.5); doc.setFont("helvetica", "normal"); doc.setTextColor(50, 50, 50);
+      doc.text("Booking ID: " + (globalBookingData.id || "MOGO1001"), 20, 80);
+      doc.text("Date: " + (globalBookingData.date || new Date().toLocaleDateString('en-IN')), 145, 80);
+      doc.text("Customer Name: " + (globalBookingData.name || "Valued Customer"), 20, 88);
+      doc.text("Contact Number: " + (globalBookingData.phone || ""), 20, 96);
+      doc.text("Vehicle Type: " + (globalBookingData.vehicle || "Bike") + " | Slot: " + (globalBookingData.slot || selectedSlot), 20, 104);
+      doc.text("Service Address: " + (globalBookingData.address || "Guwahati, Assam"), 20, 112, { maxWidth: 170 });
+
+      doc.line(20, 128, 190, 128);
+      doc.setFont("helvetica", "bold"); doc.text("Service Description", 20, 138); doc.text("Amount (INR)", 155, 138);
+      
+      let subtotal = globalBookingData.total || (TOTAL_PRICE / 1.18);
+      let cgst = globalBookingData.cgst || ((TOTAL_PRICE - subtotal) / 2);
+      let sgst = globalBookingData.sgst || ((TOTAL_PRICE - subtotal) / 2);
+      let grandTotal = globalBookingData.grandTotal || TOTAL_PRICE;
+
+      doc.setFont("helvetica", "normal"); 
+      doc.text("1. " + (globalBookingData.serviceName || "Premium Foam Wash"), 20, 149); 
+
+      if (isPaidVerified) {
+        doc.text("Rs. " + grandTotal.toFixed(2), 155, 149);
+        
+        doc.line(20, 160, 190, 160);
+        doc.setFontSize(10);
+        doc.text(`Taxable Amount (Subtotal):`, 110, 170); doc.text("Rs. " + subtotal.toFixed(2), 155, 170);
+        doc.text(`CGST (9%):`, 110, 177); doc.text("Rs. " + cgst.toFixed(2), 155, 177);
+        doc.text(`SGST (9%):`, 110, 184); doc.text("Rs. " + sgst.toFixed(2), 155, 184);
+        
+        doc.line(20, 189, 190, 189);
+        doc.setFontSize(13); doc.setFont("helvetica", "bold");
+        doc.text("Grand Total (Incl. GST):", 45, 199);
+        doc.setTextColor(255, 90, 0); doc.text("Rs. " + grandTotal.toFixed(2), 155, 199);
+
+        doc.addImage(createRubberStampImage(true), 'PNG', 124, 208, 56, 56);
+
+        doc.setFontSize(10.5); doc.setTextColor(15, 23, 42);
+        let refText = userUtr ? userUtr : (globalBookingData.gpsImage ? "Screenshot Attached" : "Verified");
+        doc.text("Payment Status: Paid & Verified [Ref: " + refText + "]", 20, 220);
+
+      } else {
+        doc.text("Rs. " + grandTotal.toFixed(2), 155, 149);
+
+        doc.line(20, 160, 190, 160);
+        doc.setFontSize(13); doc.setFont("helvetica", "bold");
+        doc.text("Estimated Amount:", 65, 176);
+        doc.setTextColor(255, 90, 0); doc.text("Rs. " + grandTotal.toFixed(2), 155, 176);
+
+        doc.addImage(createRubberStampImage(false), 'PNG', 124, 194, 56, 56);
+
+        doc.setFontSize(10.5); doc.setTextColor(15, 23, 42);
+        doc.text("Payment Status: Payment Due (Pay Cash / QR After Service)", 20, 206);
+      }
+
+      doc.setFont("helvetica", "italic"); doc.setFontSize(9.5); doc.setTextColor(148, 163, 184);
+      doc.text(isPaidVerified ? "This is a system generated valid tax invoice." : "This is a service estimate / job card. Not a tax invoice.", 105, 275, null, null, "center");
+      doc.text("Thank you for choosing MoGo Total Bike Care!", 105, 282, null, null, "center");
+
+      if (globalBookingData.gpsImage) {
+        doc.addPage();
+        doc.setFillColor(255, 255, 255); doc.rect(0, 0, 210, 297, "F");
+        doc.setFont("helvetica", "bold"); doc.setFontSize(15); doc.setTextColor(15, 23, 42);
+        doc.text("ATTACHED PAYMENT PROOF / SCREENSHOT", 105, 25, null, null, "center");
+        doc.setLineWidth(0.4); doc.setDrawColor(226, 232, 240); doc.line(20, 32, 190, 32);
+        doc.setFontSize(10); doc.setFont("helvetica", "normal");
+        doc.text("Verified Date & Time: " + new Date().toLocaleString('en-IN'), 20, 42);
+        doc.text("Booking ID: " + globalBookingData.id + " | Customer: " + globalBookingData.name, 20, 49);
+
+        let maxW = 165, maxH = 200, imgW = globalBookingData.imgW || maxW, imgH = globalBookingData.imgH || maxH;
+        let ratio = Math.min(maxW / imgW, maxH / imgH);
+        doc.addImage(globalBookingData.gpsImage, "JPEG", (210 - imgW * ratio) / 2, 58, imgW * ratio, imgH * ratio);
+      }
+
+      doc.save(isPaidVerified ? `MoGo_Tax_Invoice_${globalBookingData.id}.pdf` : `MoGo_Job_Card_${globalBookingData.id}.pdf`);
+    } catch (e) {
+      showUiAlert("⚠️", "PDF Error", "Could not generate PDF. Please try again.");
+    }
+  }
 </script>
 
 </body>
