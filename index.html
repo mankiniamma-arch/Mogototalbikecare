@@ -73,7 +73,7 @@
     .s-price { font-size: 18px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
     .s-badge { font-size: 9.5px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 6px 9px; border-radius: 8px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 
-    /* SMOOTH ANIMATED EMBEDDED SLOT BOX (HIDDEN BY DEFAULT) */
+    /* TOGGLE EXPAND/COLLAPSE SLOT BOX */
     .embedded-slot-box {
       max-height: 0;
       overflow: hidden;
@@ -182,12 +182,12 @@
     </div>
     <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate GPS' or type manually..." oninput="clearError('cAddr')"></textarea>
 
-    <label>Select Service & Book Time Slot</label>
+    <label>Our Services & Slot Booking</label>
     <div class="services-stack">
       
-      <!-- SERVICE 1: PREMIUM FOAM WASH (DEFAULT ACTIVE) -->
-      <div class="service-accordion-item active" id="item-wash">
-        <div class="service-header-row" onclick="selectService('wash', 'Premium Foam Wash', 69)">
+      <!-- SERVICE 1: PREMIUM FOAM WASH (CLICKABLE ACCORDION) -->
+      <div class="service-accordion-item" id="item-wash">
+        <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 69)">
           <div class="service-info">
             <div class="s-title">🫧 Premium Foam Wash</div>
             <div class="s-desc">Complete exterior deep cleaning</div>
@@ -200,9 +200,9 @@
         </div>
       </div>
 
-      <!-- SERVICE 2: GENERAL SERVICING (₹399) -->
+      <!-- SERVICE 2: GENERAL SERVICING (₹399, CLICKABLE ACCORDION) -->
       <div class="service-accordion-item" id="item-general">
-        <div class="service-header-row" onclick="selectService('general', 'General Servicing', 399)">
+        <div class="service-header-row" onclick="toggleService('general', 'General Servicing', 399)">
           <div class="service-info">
             <div class="s-title">🛠️ General Servicing</div>
             <div class="s-desc">Complete mechanical checkup</div>
@@ -363,9 +363,9 @@
 
   let paymentType = "Pay Now";
   let vehicleType = "Bike";
-  let selectedServiceKey = "wash";
-  let selectedServiceName = "Premium Foam Wash";
-  let currentServicePrice = 69;
+  let selectedServiceKey = "";
+  let selectedServiceName = "";
+  let currentServicePrice = 0;
   let selectedSlot = "";
   let globalBookingData = {};
   let customerCoords = null;
@@ -398,22 +398,19 @@
       }
     }
 
-    slotsArr.forEach((slotStr, index) => {
+    slotsArr.forEach((slotStr) => {
       let div = document.createElement('div');
-      div.className = "slot-card-inner" + (index === 0 && containerId === 'slotsContainerWash' ? " active" : "");
+      div.className = "slot-card-inner";
       div.onclick = function(e) {
         e.stopPropagation();
-        document.querySelectorAll('.slot-card-inner').forEach(c => c.classList.remove('active'));
+        let parentBox = container.closest('.service-accordion-item');
+        parentBox.querySelectorAll('.slot-card-inner').forEach(c => c.classList.remove('active'));
         div.classList.add('active');
         selectedSlot = slotStr;
       };
       div.innerHTML = `<div class="slot-time">${slotStr}</div><span class="slot-team">${teamTitle}</span>`;
       container.appendChild(div);
     });
-
-    if (containerId === 'slotsContainerWash') {
-      selectedSlot = slotsArr[0];
-    }
   }
 
   function formatTime(h, m) {
@@ -428,20 +425,37 @@
     buildSlotsForContainer('slotsContainerGeneral', '🛠️ Repair Team');
   });
 
-  function selectService(key, name, price) {
-    selectedServiceKey = key;
-    selectedServiceName = name;
-    currentServicePrice = price;
+  // --- TOGGLE ACCORDION (CLICK TO OPEN / CLOSE) ---
+  function toggleService(key, name, price) {
+    let itemWash = document.getElementById('item-wash');
+    let itemGeneral = document.getElementById('item-general');
 
-    document.getElementById('item-wash').classList.toggle('active', key === 'wash');
-    document.getElementById('item-general').classList.toggle('active', key === 'general');
-
-    if (key === 'wash') {
-      let firstActive = document.querySelector('#slotsContainerWash .slot-card-inner');
-      if (firstActive) selectedSlot = firstActive.querySelector('.slot-time').innerText;
+    if (selectedServiceKey === key) {
+      // If already open, click again to close
+      itemWash.classList.remove('active');
+      itemGeneral.classList.remove('active');
+      selectedServiceKey = "";
+      selectedServiceName = "";
+      currentServicePrice = 0;
+      selectedSlot = "";
     } else {
-      let firstActive = document.querySelector('#slotsContainerGeneral .slot-card-inner');
-      if (firstActive) selectedSlot = firstActive.querySelector('.slot-time').innerText;
+      // Open selected and close other
+      itemWash.classList.toggle('active', key === 'wash');
+      itemGeneral.classList.toggle('active', key === 'general');
+      selectedServiceKey = key;
+      selectedServiceName = name;
+      currentServicePrice = price;
+
+      // Select first slot by default
+      let activeContainer = key === 'wash' ? document.querySelector('#slotsContainerWash') : document.querySelector('#slotsContainerGeneral');
+      if (activeContainer) {
+        let firstSlot = activeContainer.querySelector('.slot-card-inner');
+        if (firstSlot) {
+          activeContainer.querySelectorAll('.slot-card-inner').forEach(c => c.classList.remove('active'));
+          firstSlot.classList.add('active');
+          selectedSlot = firstSlot.querySelector('.slot-time').innerText;
+        }
+      }
     }
   }
 
@@ -542,6 +556,8 @@
     if (!name) { document.getElementById('cName').classList.add('input-error'); return alert("Please enter your full name."); }
     if (!/^[0-9]{10}$/.test(phone)) { document.getElementById('cPhone').classList.add('input-error'); return alert("Please enter a valid 10-digit mobile number."); }
     if (!addr) { document.getElementById('cAddr').classList.add('input-error'); return alert("Please provide your doorstep address."); }
+    if (!selectedServiceKey) { return alert("Please select a service package and time slot."); }
+    if (!selectedSlot) { return alert("Please select a time slot."); }
 
     document.getElementById('bookingForm').style.display = "none";
     document.getElementById('loadingScreen').style.display = "block";
@@ -728,7 +744,7 @@
     let fileInput = document.getElementById('admGpsImg');
 
     let recId = "MOGO" + Math.floor(1000 + Math.random() * 9000);
-    let grandTotal = currentServicePrice;
+    let grandTotal = currentServicePrice || 69;
     let subtotal = grandTotal / 1.18;
     let totalTax = grandTotal - subtotal;
     let cgst = totalTax / 2;
@@ -740,8 +756,8 @@
       name: name,
       phone: phone,
       vehicle: vehicle,
-      serviceName: selectedServiceName,
-      slot: selectedSlot,
+      serviceName: selectedServiceName || "Premium Foam Wash",
+      slot: selectedSlot || "08:00 AM - 08:30 AM",
       total: subtotal,
       cgst: cgst,
       sgst: sgst,
