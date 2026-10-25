@@ -73,7 +73,7 @@
     .s-price { font-size: 18px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
     .s-badge { font-size: 9.5px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 6px 9px; border-radius: 8px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 
-    /* EMBEDDED BOX (SLOTS OR INQUIRY FORM) */
+    /* EMBEDDED BOX */
     .embedded-slot-box {
       max-height: 0;
       overflow: hidden;
@@ -168,8 +168,8 @@
 
     <label>Select Vehicle Type</label>
     <div class="segmented-control">
-      <div class="seg-btn active" id="v-bike" onclick="selectVehicle('Bike')">🏍️ Bike <span>Standard/Sports</span></div>
-      <div class="seg-btn" id="v-scooty" onclick="selectVehicle('Scooty')">🛵 Scooty <span>Gearless</span></div>
+      <div class="seg-btn active" id="v-bike" onclick="selectVehicle('Bike')">Bike <span>Standard/Sports</span></div>
+      <div class="seg-btn" id="v-scooty" onclick="selectVehicle('Scooty')">Scooty <span>Gearless</span></div>
     </div>
 
     <label>Customer Details</label>
@@ -178,18 +178,18 @@
 
     <div class="loc-header">
       <label>Doorstep Address</label>
-      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate GPS</button>
+      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">Auto Locate GPS</button>
     </div>
     <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate GPS' or type manually..." oninput="clearError('cAddr')"></textarea>
 
-    <label>Our Services & Slot Booking</label>
+    <label>Select Service & Book Time Slot</label>
     <div class="services-stack">
       
       <!-- SERVICE 1: PREMIUM FOAM WASH -->
       <div class="service-accordion-item" id="item-wash">
         <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 69)">
           <div class="service-info">
-            <div class="s-title">🫧 Premium Foam Wash</div>
+            <div class="s-title">Premium Foam Wash</div>
             <div class="s-desc">Complete exterior deep cleaning</div>
           </div>
           <div class="s-price">₹69</div>
@@ -204,7 +204,7 @@
       <div class="service-accordion-item" id="item-general">
         <div class="service-header-row" onclick="toggleService('general', 'General Servicing', 399)">
           <div class="service-info">
-            <div class="s-title">🛠️ General Servicing</div>
+            <div class="s-title">General Servicing</div>
             <div class="s-desc">Complete mechanical checkup</div>
           </div>
           <div class="s-price">₹399</div>
@@ -215,18 +215,18 @@
         </div>
       </div>
 
-      <!-- SERVICE 3: BIKE INSURANCE (WITH VEHICLE NUMBER & OWNER NAME) -->
+      <!-- SERVICE 3: BIKE INSURANCE -->
       <div class="service-accordion-item" id="item-insurance">
         <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 0)">
           <div class="service-info">
-            <div class="s-title">🛡️ Bike Insurance Renewal</div>
+            <div class="s-title">Bike Insurance Renewal</div>
             <div class="s-desc">Instant quotes & doorstep policy delivery</div>
           </div>
-          <div class="s-badge" style="background:#E0F2FE; color:#0284C7;">Enquire</div>
+          <div class="s-badge" style="background:#E0F2FE; color:#0284C7;">Enquiry</div>
         </div>
         <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Enter Insurance Inquiry Details:</label>
-          <input type="text" id="insBikeNo" placeholder="Bike Registration Number (e.g. AS01AB1234)" style="margin-bottom:8px; padding:12px; font-size:13px;">
+          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Enter Insurance Details:</label>
+          <input type="text" id="insBikeNo" placeholder="Bike Number (e.g. AS01AB1234)" style="margin-bottom:8px; padding:12px; font-size:13px;">
           <input type="text" id="insOwnerName" placeholder="Registered Owner Name" style="margin-bottom:8px; padding:12px; font-size:13px;">
           <input type="tel" id="insPhone" placeholder="Contact Mobile Number" maxlength="10" style="padding:12px; font-size:13px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
@@ -236,14 +236,14 @@
       <div class="service-accordion-item" id="item-puc">
         <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 100)">
           <div class="service-info">
-            <div class="s-title">💨 Pollution Check (PUC)</div>
+            <div class="s-title">Pollution Check (PUC)</div>
             <div class="s-desc">Doorstep emission testing & certification</div>
           </div>
           <div class="s-price">₹100</div>
         </div>
         <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Enter PUC Test Details:</label>
-          <input type="text" id="pucBikeNo" placeholder="Bike Registration Number (e.g. AS01AB1234)" style="margin-bottom:8px; padding:12px; font-size:13px;">
+          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Enter PUC Details:</label>
+          <input type="text" id="pucBikeNo" placeholder="Bike Number (e.g. AS01AB1234)" style="margin-bottom:8px; padding:12px; font-size:13px;">
           <input type="text" id="pucOwnerName" placeholder="Registered Owner Name" style="margin-bottom:8px; padding:12px; font-size:13px;">
           <div class="slots-grid-inner" id="slotsContainerPuc" style="margin-top:8px;"></div>
         </div>
@@ -252,7 +252,10 @@
       <!-- SERVICE 5: MONTHLY MAINTENANCE (MMC) -->
       <div class="service-accordion-item disabled">
         <div class="service-header-row">
-          <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance contract</div></div>
+          <div class="service-info">
+            <div class="s-title">Monthly Maintenance (MMC)</div>
+            <div class="s-desc">Whole month maintenance contract</div>
+          </div>
           <div class="s-badge">Coming Soon</div>
         </div>
       </div>
@@ -261,15 +264,15 @@
 
     <label style="margin-top:20px;">Payment Method</label>
     <div class="segmented-control">
-      <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">💳 Pay Now <span>Online / QR</span></div>
-      <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
+      <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">Pay Now <span>Online / QR</span></div>
+      <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">Pay After <span>Cash / UPI</span></div>
     </div>
 
     <button class="btn-main" onclick="submitBooking()">Confirm Booking & Slot 🚀</button>
     
     <div class="portal-links">
-      <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
-      <span class="portal-link" onclick="openMechanicPortal()" style="color:#0284C7;">🔧 Mechanic Portal</span>
+      <span class="portal-link" onclick="openAdminPortal()">Admin Portal</span>
+      <span class="portal-link" onclick="openMechanicPortal()" style="color:#0284C7;">Mechanic Portal</span>
     </div>
   </div>
 
@@ -309,7 +312,7 @@
 <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
   <div class="ui-modal-box">
     <div id="adminPinSection">
-      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center;">🔐 Admin Portal</h3>
+      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center;">Admin Portal</h3>
       <label style="margin-top:0;">Enter Admin PIN (4882):</label>
       <input type="password" id="adminPinInput" placeholder="Enter 4-Digit PIN" maxlength="4" style="margin-bottom: 15px;">
       <button class="ui-modal-btn" onclick="verifyAdminPin()">Unlock Portal</button>
@@ -317,7 +320,7 @@
     </div>
 
     <div id="adminDashboard" style="display: none;">
-      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900;">📊 Admin Portal</h3>
+      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900;">Admin Portal</h3>
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards</div>
         <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Invoices</div>
@@ -350,7 +353,7 @@
           <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px;">
           <input type="text" id="admUtr" placeholder="UTR / Ref Number" style="padding:10px; font-size:13px;">
         </div>
-        <button class="ui-modal-btn-green" onclick="processAdminForm()">📄 Generate & Download PDF</button>
+        <button class="ui-modal-btn-green" onclick="processAdminForm()">Generate & Download PDF</button>
       </div>
 
       <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 15px;">Close Portal</button>
@@ -364,7 +367,7 @@
 <div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
   <div class="ui-modal-box">
     <div id="mechPinSection">
-      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center; color:#0284C7;">🔧 Mechanic Portal</h3>
+      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center; color:#0284C7;">Mechanic Portal</h3>
       <label style="margin-top:0;">Enter Mechanic PIN (7788):</label>
       <input type="password" id="mechPinInput" placeholder="4-Digit PIN" maxlength="4" style="margin-bottom: 15px;">
       <button class="ui-modal-btn" onclick="verifyMechPin()" style="background:#0284C7;">Unlock Mechanic Portal</button>
@@ -372,7 +375,7 @@
     </div>
 
     <div id="mechDashboard" style="display: none;">
-      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900; color:#0284C7;">🛵 Assigned Doorstep Jobs</h3>
+      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900; color:#0284C7;">Assigned Doorstep Jobs</h3>
       <div id="mechJobList" class="db-list"></div>
       <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 15px;">Close Portal</button>
     </div>
@@ -443,9 +446,9 @@
   }
 
   window.addEventListener('load', () => {
-    buildSlotsForContainer('slotsContainerWash', '🫧 Foam Wash Team');
-    buildSlotsForContainer('slotsContainerGeneral', '🛠️ Repair Team');
-    buildSlotsForContainer('slotsContainerPuc', '💨 PUC Testing Unit');
+    buildSlotsForContainer('slotsContainerWash', 'Foam Wash Team');
+    buildSlotsForContainer('slotsContainerGeneral', 'Repair Team');
+    buildSlotsForContainer('slotsContainerPuc', 'PUC Testing Unit');
   });
 
   // --- TOGGLE ACCORDION (CLICK TO OPEN / CLOSE) ---
@@ -532,10 +535,10 @@
     let utr = document.getElementById('customerUtr')?.value.trim() || "";
     let btn = document.getElementById('pdfDownloadBtn');
     if (paymentType === 'Pay Now' && utr.length >= 4) {
-      btn.innerHTML = "📄 Download Paid Tax Invoice (PDF)";
+      btn.innerHTML = "Download Paid Tax Invoice (PDF)";
       btn.style.background = "#16A34A";
     } else {
-      btn.innerHTML = "📄 Download Service Job Card (PDF)";
+      btn.innerHTML = "Download Service Job Card (PDF)";
       btn.style.background = "#0F172A";
     }
   }
@@ -544,11 +547,11 @@
     const addrInput = document.getElementById('cAddr');
     const locBtn = document.getElementById('locBtn');
     locBtn.disabled = true;
-    locBtn.innerHTML = "⏳ Locating...";
+    locBtn.innerHTML = "Locating...";
 
     if (!navigator.geolocation) {
       locBtn.disabled = false;
-      locBtn.innerHTML = "📍 Auto Locate GPS";
+      locBtn.innerHTML = "Auto Locate GPS";
       alert("Geolocation is not supported by your browser.");
       return;
     }
@@ -559,7 +562,7 @@
         let lon = pos.coords.longitude;
         customerCoords = { lat, lon };
         locBtn.disabled = false;
-        locBtn.innerHTML = "✅ GPS Locked";
+        locBtn.innerHTML = "GPS Locked";
         
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`)
           .then(res => res.json())
@@ -572,7 +575,7 @@
       },
       err => {
         locBtn.disabled = false;
-        locBtn.innerHTML = "📍 Auto Locate GPS";
+        locBtn.innerHTML = "Auto Locate GPS";
         alert("GPS Access Denied or Unavailable. Please type your address manually.");
       },
       { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
@@ -589,7 +592,6 @@
     if (!addr) { document.getElementById('cAddr').classList.add('input-error'); return alert("Please provide your doorstep address."); }
     if (!selectedServiceKey) { return alert("Please select a service package and time slot/inquiry."); }
 
-    // If insurance selected, grab specific fields
     let extraInfo = "";
     if (selectedServiceKey === 'insurance') {
       let bNo = document.getElementById('insBikeNo').value.trim();
@@ -660,8 +662,8 @@
         document.getElementById('qrSection').style.display = "none";
       }
 
-      let msg = `*New MoGo Booking/Inquiry!* 🚀\n\n*ID:* ${id}\n*Customer:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Service:* ${selectedServiceName}${extraInfo}\n*Slot:* ${selectedSlot}\n*Address:* ${addr}`;
-      if (maps) msg += `\n🗺️ *Maps:* ${maps}`;
+      let msg = `*New MoGo Booking/Inquiry!*\n\n*ID:* ${id}\n*Customer:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Service:* ${selectedServiceName}${extraInfo}\n*Slot:* ${selectedSlot}\n*Address:* ${addr}`;
+      if (maps) msg += `\n*Maps:* ${maps}`;
       document.getElementById('waBtn').href = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(msg)}`;
     }, 300);
   }
@@ -714,8 +716,8 @@
           <strong>${item.id} - ${item.name}</strong> (${item.phone})<br>
           Vehicle: ${item.vehicle} | Service: ${item.serviceName}<br>
           Slot: ${item.slot || 'Standard'}<br>
-          📍 ${item.address}<br>
-          <a href="tel:${item.phone}" style="display:inline-block; margin-top:8px; background:#16A34A; color:#fff; padding:6px 12px; border-radius:8px; text-decoration:none; font-weight:800; font-size:11px;">📞 Call Customer</a>
+          ${item.address}<br>
+          <a href="tel:${item.phone}" style="display:inline-block; margin-top:8px; background:#16A34A; color:#fff; padding:6px 12px; border-radius:8px; text-decoration:none; font-weight:800; font-size:11px;">Call Customer</a>
         </div>`;
     });
     document.getElementById('mechJobList').innerHTML = html || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No assigned jobs yet.</p>';
@@ -736,14 +738,14 @@
 
     db.forEach(item => {
       let isInv = item.forceType === 'TAX_INVOICE';
-      let badge = isInv ? `<span class="badge b-ready">🟢 Paid Invoice</span>` : `<span class="badge b-booked">⏳ Job Card</span>`;
+      let badge = isInv ? `<span class="badge b-ready">Paid Invoice</span>` : `<span class="badge b-booked">Job Card</span>`;
       
       let actions = !isInv
-        ? `<button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">📄 Job Card</button>
-           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">💬 WhatsApp</button>
-           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">✅ Make Invoice</button>`
-        : `<button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true)">📄 Invoice PDF</button>
-           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">💬 WhatsApp</button>`;
+        ? `<button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">Job Card</button>
+           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">WhatsApp</button>
+           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">Make Invoice</button>`
+        : `<button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true)">Invoice PDF</button>
+           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">WhatsApp</button>`;
 
       let card = `
         <div class="db-item">
