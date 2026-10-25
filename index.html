@@ -58,29 +58,35 @@
 
     .input-error { border-color: var(--error) !important; background: #FEF2F2 !important; }
 
-    /* SERVICES & EMBEDDED SLOTS */
+    /* SERVICES ACCORDION STACK */
     .services-stack { display: flex; flex-direction: column; gap: 12px; }
     .service-accordion-item {
-      background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; overflow: hidden; transition: 0.2s;
+      background: #FFFFFF; border: 2px solid var(--border); border-radius: 18px; overflow: hidden; transition: all 0.25s ease;
     }
-    .service-accordion-item.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 6px 16px rgba(255,90,0,0.08); }
+    .service-accordion-item.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 8px 20px rgba(255,90,0,0.08); }
     .service-accordion-item.disabled { background: #F8FAFC; opacity: 0.8; }
     
-    .service-header-row { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
+    .service-header-row { padding: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
     .service-info { flex: 1; min-width: 0; }
     .s-title { font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.3; }
     .s-desc { font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
     .s-price { font-size: 18px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
     .s-badge { font-size: 9.5px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 6px 9px; border-radius: 8px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 
-    /* EMBEDDED SLOT BOX INSIDE ACTIVE SERVICE */
+    /* ANIMATED EMBEDDED SLOT BOX */
     .embedded-slot-box {
-      display: none;
-      padding: 0 16px 16px;
-      border-top: 1px dashed var(--border);
-      margin-top: 4px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease-out, padding 0.35s ease-out;
+      padding: 0 16px;
+      border-top: 0px dashed var(--border);
     }
-    .service-accordion-item.active .embedded-slot-box { display: block; }
+    .service-accordion-item.active .embedded-slot-box {
+      max-height: 320px;
+      padding: 0 16px 16px;
+      border-top: 1px dashed rgba(255, 90, 0, 0.25);
+    }
+
     .slots-grid-inner {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -92,7 +98,7 @@
     }
     .slot-card-inner {
       background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 12px;
-      padding: 10px 8px; cursor: pointer; transition: 0.2s; text-align: left;
+      padding: 10px 8px; cursor: pointer; transition: all 0.2s; text-align: left;
     }
     .slot-card-inner.active { background: #FFFFFF; border-color: var(--primary); box-shadow: 0 4px 12px rgba(255,90,0,0.15); }
     .slot-time { font-size: 11.5px; font-weight: 900; color: var(--text-main); }
@@ -176,10 +182,10 @@
     </div>
     <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate GPS' or type manually..." oninput="clearError('cAddr')"></textarea>
 
-    <label>Our Services & Slot Booking</label>
+    <label>Select Service & Book Time Slot</label>
     <div class="services-stack">
       
-      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE WITH EMBEDDED SLOTS) -->
+      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE WITH EXPANDABLE SLOTS) -->
       <div class="service-accordion-item active" id="item-wash">
         <div class="service-header-row" onclick="selectService('wash', 'Premium Foam Wash', 69)">
           <div class="service-info">
@@ -189,12 +195,12 @@
           <div class="s-price">₹69</div>
         </div>
         <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:8px 0 6px; color:var(--primary);">Select Foam Wash Time Window (08:00 AM - 08:00 PM):</label>
+          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Select Foam Wash Time Window (08:00 AM - 08:00 PM):</label>
           <div class="slots-grid-inner" id="slotsContainerWash"></div>
         </div>
       </div>
 
-      <!-- SERVICE 2: GENERAL SERVICING (₹399 WITH EMBEDDED SLOTS) -->
+      <!-- SERVICE 2: GENERAL SERVICING (₹399 WITH EXPANDABLE SLOTS) -->
       <div class="service-accordion-item" id="item-general">
         <div class="service-header-row" onclick="selectService('general', 'General Servicing', 399)">
           <div class="service-info">
@@ -204,7 +210,7 @@
           <div class="s-price">₹399</div>
         </div>
         <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:8px 0 6px; color:var(--primary);">Select Repair Time Window (08:00 AM - 08:00 PM):</label>
+          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Select Repair Time Window (08:00 AM - 08:00 PM):</label>
           <div class="slots-grid-inner" id="slotsContainerGeneral"></div>
         </div>
       </div>
@@ -231,7 +237,7 @@
 
     </div>
 
-    <label style="margin-top:24px;">Payment Method</label>
+    <label style="margin-top:20px;">Payment Method</label>
     <div class="segmented-control">
       <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">💳 Pay Now <span>Online / QR</span></div>
       <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
@@ -642,7 +648,7 @@
       html += `
         <div class="db-item">
           <strong>${item.id} - ${item.name}</strong> (${item.phone})<br>
-          Vehicle: ${item.vehicle} | Service: ${item.serviceName}<br>
+          Vehicle: ${item.vehicle} | Service: ${item.serviceName} (₹${item.grandTotal})<br>
           Slot: ${item.slot || 'Standard'}<br>
           📍 ${item.address}<br>
           <a href="tel:${item.phone}" style="display:inline-block; margin-top:8px; background:#16A34A; color:#fff; padding:6px 12px; border-radius:8px; text-decoration:none; font-weight:800; font-size:11px;">📞 Call Customer</a>
