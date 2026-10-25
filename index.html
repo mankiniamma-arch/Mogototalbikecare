@@ -152,6 +152,11 @@
     .btn-sm { flex: 1; padding: 9px 12px; font-size: 12px; font-weight: 800; border-radius: 10px; cursor: pointer; border: none; background: #E2E8F0; color: #0B0F19; text-align: center; }
     .btn-del { flex: 0 0 38px; background: #FEE2E2; color: #B91C1C; border-radius: 10px; border: none; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
+    /* JOB CARD VIEW MODAL */
+    .view-card-modal { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999; opacity: 0; visibility: hidden; transition: 0.2s; }
+    .view-card-modal.show { opacity: 1; visibility: visible; }
+    .view-card-box { background: #FFFFFF; width: 100%; max-width: 380px; border-radius: 24px; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); text-align: left; }
+
     /* CUSTOM DIALOG POPUPS */
     .custom-alert-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999; opacity: 0; visibility: hidden; transition: 0.2s ease; }
     .custom-alert-overlay.show { opacity: 1; visibility: visible; }
@@ -314,6 +319,18 @@
   </div>
 </div>
 
+<!-- JOB CARD VIEW MODAL -->
+<div class="view-card-modal" id="viewCardModal" onclick="if(event.target === this) closeViewCard()">
+  <div class="view-card-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="margin:0; font-size:18px; font-weight:900;">Job Card Preview</h3>
+      <button onclick="closeViewCard()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer;">✕</button>
+    </div>
+    <div id="viewCardContent" style="font-size:13px; color:#475569; line-height:1.6; background:#F8FAFC; padding:14px; border-radius:14px; border:1px solid var(--border); margin-bottom:14px;"></div>
+    <button class="btn-main" id="modalDownloadPdfBtn" style="margin-top:0;">Download PDF</button>
+  </div>
+</div>
+
 <!-- CUSTOM ALERT / PROMPT POPUPS -->
 <div class="custom-alert-overlay" id="customAlertModal">
   <div class="custom-alert-box">
@@ -460,6 +477,23 @@
       alertCallback = null;
     }
   }
+
+  // --- VIEW CARD MODAL ---
+  function viewJobCardModal(id) {
+    let rec = getRecord(id);
+    if (!rec) return;
+    let html = `<strong>Booking ID:</strong> ${rec.id}<br>
+                <strong>Date:</strong> ${rec.date}<br>
+                <strong>Customer:</strong> ${rec.name} (${rec.phone})<br>
+                <strong>Vehicle:</strong> ${rec.vehicle}<br>
+                <strong>Service:</strong> ${rec.serviceName} (₹${rec.grandTotal})<br>
+                <strong>Time Slot:</strong> ${rec.slot}<br>
+                <strong>Address:</strong> ${rec.address}`;
+    document.getElementById('viewCardContent').innerHTML = html;
+    document.getElementById('modalDownloadPdfBtn').onclick = function() { generatePDFFromDB(id, false); };
+    document.getElementById('viewCardModal').classList.add('show');
+  }
+  function closeViewCard() { document.getElementById('viewCardModal').classList.remove('show'); }
 
   // --- DYNAMIC 30-MIN SLOTS GENERATOR (8:00 AM to 8:00 PM) ---
   function buildSlotsForContainer(containerId, teamTitle) {
@@ -769,8 +803,9 @@
           <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Card</span></div>
           <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName}<br>Slot: ${item.slot || 'Standard'}<br>📍 ${item.address}</div>
           <div class="db-action">
-            <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:block;">Call Customer</a>
-            <button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">Job Card PDF</button>
+            <button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}')">View Job Card</button>
+            <button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">Download PDF</button>
+            <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">Call</a>
           </div>
         </div>`;
     });
@@ -795,11 +830,13 @@
       let badge = isInv ? `<span class="badge b-ready">Paid Invoice</span>` : `<span class="badge b-booked">Job Card</span>`;
       
       let actions = !isInv
-        ? `<button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">Job Card</button>
-           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">WhatsApp</button>
-           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">Make Invoice</button>`
-        : `<button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true)">Invoice PDF</button>
-           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">WhatsApp</button>`;
+        ? `<button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}')">View</button>
+           <button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">PDF</button>
+           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">WA</button>
+           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">Invoice</button>`
+        : `<button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}')">View</button>
+           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true)">PDF</button>
+           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">WA</button>`;
 
       let card = `
         <div class="db-item">
