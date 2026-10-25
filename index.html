@@ -128,22 +128,10 @@
     .portal-links { display: flex; justify-content: space-around; margin-top: 25px; font-size: 12px; font-weight: 800; padding: 0 10px; }
     .portal-link { cursor: pointer; }
 
-    /* =======================================================
-       WORLD-CLASS SILICON VALLEY UI/UX FOR MODALS & ALERTS
-       ======================================================= */
-    .ui-modal-overlay { 
-      position: fixed; inset: 0; background: rgba(11, 15, 25, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.25s ease; 
-    }
+    /* Modal Styles */
+    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.65); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.25s ease; }
     .ui-modal-overlay.show { opacity: 1; visibility: visible; }
-    
-    .ui-modal-box { 
-      background: #FFFFFF; width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto; 
-      border-radius: 28px; padding: 28px; text-align: left; 
-      box-shadow: 0 25px 60px -15px rgba(11, 15, 25, 0.3); border: 1px solid rgba(226, 232, 240, 0.8);
-      animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    @keyframes modalPop { from { transform: scale(0.95) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto; border-radius: 28px; padding: 28px; text-align: left; box-shadow: 0 25px 60px -15px rgba(11, 15, 25, 0.3); border: 1px solid rgba(226, 232, 240, 0.8); }
 
     .portal-header-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin-bottom: 6px; letter-spacing: -0.5px; }
     .portal-header-subtitle { font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 20px; }
@@ -153,36 +141,21 @@
     .db-tab.active { background: #FFFFFF; color: var(--primary); box-shadow: 0 4px 12px rgba(11, 15, 25, 0.06); }
     
     .db-list { display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
-    
-    .db-item { padding: 16px; border: 1.5px solid var(--border); border-radius: 18px; background: #FAFAFA; transition: 0.2s; }
-    .db-item:hover { border-color: rgba(255, 90, 0, 0.3); background: #FFFBF9; }
-    
+    .db-item { padding: 16px; border: 1.5px solid var(--border); border-radius: 18px; background: #FAFAFA; }
     .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .db-id { font-weight: 900; font-size: 14px; color: var(--text-main); letter-spacing: -0.3px; }
-    
-    .badge { font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .db-id { font-weight: 900; font-size: 14px; color: var(--text-main); }
+    .badge { font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 8px; text-transform: uppercase; }
     .b-booked { background: #FEF3C7; color: #B45309; }
     .b-ready { background: #DCFCE7; color: #15803D; }
-
     .db-info { font-size: 12.5px; color: #475569; font-weight: 600; line-height: 1.5; margin-bottom: 12px; }
     .db-action { display: flex; gap: 8px; flex-wrap: wrap; }
-    
-    .btn-sm { flex: 1; padding: 9px 12px; font-size: 12px; font-weight: 800; border-radius: 10px; cursor: pointer; border: none; background: #E2E8F0; color: #0B0F19; transition: 0.2s; text-align: center; }
-    .btn-sm:hover { opacity: 0.9; transform: translateY(-1px); }
-    
+    .btn-sm { flex: 1; padding: 9px 12px; font-size: 12px; font-weight: 800; border-radius: 10px; cursor: pointer; border: none; background: #E2E8F0; color: #0B0F19; text-align: center; }
     .btn-del { flex: 0 0 38px; background: #FEE2E2; color: #B91C1C; border-radius: 10px; border: none; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* CUSTOM CUSTOM DIALOG POPUP STYLES */
-    .custom-alert-overlay {
-      position: fixed; inset: 0; background: rgba(11, 15, 25, 0.6); backdrop-filter: blur(8px);
-      display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999;
-      opacity: 0; visibility: hidden; transition: 0.2s ease;
-    }
+    /* CUSTOM DIALOG POPUPS */
+    .custom-alert-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999; opacity: 0; visibility: hidden; transition: 0.2s ease; }
     .custom-alert-overlay.show { opacity: 1; visibility: visible; }
-    .custom-alert-box {
-      background: #FFFFFF; width: 100%; max-width: 360px; border-radius: 24px; padding: 24px; text-align: center;
-      box-shadow: 0 25px 50px rgba(11, 15, 25, 0.25); border: 1px solid var(--border);
-    }
+    .custom-alert-box { background: #FFFFFF; width: 100%; max-width: 360px; border-radius: 24px; padding: 24px; text-align: center; box-shadow: 0 25px 50px rgba(11, 15, 25, 0.25); border: 1px solid var(--border); }
   </style>
 </head>
 <body>
@@ -429,7 +402,7 @@
 
     <div id="mechDashboard" style="display: none;">
       <div class="portal-header-title" style="color:#0284C7;">Assigned Jobs</div>
-      <div class="portal-header-subtitle">Active doorstep service requests</div>
+      <div class="portal-header-subtitle">Active doorstep service requests & job cards</div>
       <div id="mechJobList" class="db-list"></div>
       <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
@@ -793,10 +766,11 @@
     db.forEach(item => {
       html += `
         <div class="db-item">
-          <div class="db-header"><span class="db-id">${item.id}</span></div>
+          <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Card</span></div>
           <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName}<br>Slot: ${item.slot || 'Standard'}<br>📍 ${item.address}</div>
           <div class="db-action">
             <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:block;">Call Customer</a>
+            <button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">Job Card PDF</button>
           </div>
         </div>`;
     });
