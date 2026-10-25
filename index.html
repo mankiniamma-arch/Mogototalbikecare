@@ -64,7 +64,7 @@
       background: #FFFFFF; border: 2px solid var(--border); border-radius: 18px; overflow: hidden; transition: all 0.25s ease;
     }
     .service-accordion-item.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 8px 20px rgba(255,90,0,0.08); }
-    .service-accordion-item.disabled { background: #F8FAFC; opacity: 0.8; }
+    .service-accordion-item.disabled { background: #F8FAFC; opacity: 0.9; }
     
     .service-header-row { padding: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
     .service-info { flex: 1; min-width: 0; }
@@ -73,7 +73,7 @@
     .s-price { font-size: 18px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
     .s-badge { font-size: 9.5px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 6px 9px; border-radius: 8px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 
-    /* TOGGLE EXPAND/COLLAPSE SLOT BOX */
+    /* EMBEDDED BOX (SLOTS OR INQUIRY FORM) */
     .embedded-slot-box {
       max-height: 0;
       overflow: hidden;
@@ -82,7 +82,7 @@
       border-top: 0px dashed var(--border);
     }
     .service-accordion-item.active .embedded-slot-box {
-      max-height: 320px;
+      max-height: 380px;
       padding: 0 16px 16px;
       border-top: 1px dashed rgba(255, 90, 0, 0.25);
     }
@@ -185,7 +185,7 @@
     <label>Our Services & Slot Booking</label>
     <div class="services-stack">
       
-      <!-- SERVICE 1: PREMIUM FOAM WASH (CLICKABLE ACCORDION) -->
+      <!-- SERVICE 1: PREMIUM FOAM WASH -->
       <div class="service-accordion-item" id="item-wash">
         <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 69)">
           <div class="service-info">
@@ -200,7 +200,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 2: GENERAL SERVICING (₹399, CLICKABLE ACCORDION) -->
+      <!-- SERVICE 2: GENERAL SERVICING (₹399) -->
       <div class="service-accordion-item" id="item-general">
         <div class="service-header-row" onclick="toggleService('general', 'General Servicing', 399)">
           <div class="service-info">
@@ -215,22 +215,44 @@
         </div>
       </div>
 
-      <!-- OTHER COMING SOON SERVICES -->
-      <div class="service-accordion-item disabled">
-        <div class="service-header-row">
-          <div class="service-info"><div class="s-title">🛡️ Bike Insurance</div><div class="s-desc">Instant renewal & claim support</div></div>
-          <div class="s-badge">Coming Soon</div>
+      <!-- SERVICE 3: BIKE INSURANCE (WITH VEHICLE NUMBER & OWNER NAME) -->
+      <div class="service-accordion-item" id="item-insurance">
+        <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 0)">
+          <div class="service-info">
+            <div class="s-title">🛡️ Bike Insurance Renewal</div>
+            <div class="s-desc">Instant quotes & doorstep policy delivery</div>
+          </div>
+          <div class="s-badge" style="background:#E0F2FE; color:#0284C7;">Enquire</div>
+        </div>
+        <div class="embedded-slot-box">
+          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Enter Insurance Inquiry Details:</label>
+          <input type="text" id="insBikeNo" placeholder="Bike Registration Number (e.g. AS01AB1234)" style="margin-bottom:8px; padding:12px; font-size:13px;">
+          <input type="text" id="insOwnerName" placeholder="Registered Owner Name" style="margin-bottom:8px; padding:12px; font-size:13px;">
+          <input type="tel" id="insPhone" placeholder="Contact Mobile Number" maxlength="10" style="padding:12px; font-size:13px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
       </div>
-      <div class="service-accordion-item disabled">
-        <div class="service-header-row">
-          <div class="service-info"><div class="s-title">💨 Pollution Check (PUC)</div><div class="s-desc">Doorstep emission testing</div></div>
-          <div class="s-badge">Coming Soon</div>
+
+      <!-- SERVICE 4: POLLUTION CHECK (PUC) -->
+      <div class="service-accordion-item" id="item-puc">
+        <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 100)">
+          <div class="service-info">
+            <div class="s-title">💨 Pollution Check (PUC)</div>
+            <div class="s-desc">Doorstep emission testing & certification</div>
+          </div>
+          <div class="s-price">₹100</div>
+        </div>
+        <div class="embedded-slot-box">
+          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Enter PUC Test Details:</label>
+          <input type="text" id="pucBikeNo" placeholder="Bike Registration Number (e.g. AS01AB1234)" style="margin-bottom:8px; padding:12px; font-size:13px;">
+          <input type="text" id="pucOwnerName" placeholder="Registered Owner Name" style="margin-bottom:8px; padding:12px; font-size:13px;">
+          <div class="slots-grid-inner" id="slotsContainerPuc" style="margin-top:8px;"></div>
         </div>
       </div>
+
+      <!-- SERVICE 5: MONTHLY MAINTENANCE (MMC) -->
       <div class="service-accordion-item disabled">
         <div class="service-header-row">
-          <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance</div></div>
+          <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance contract</div></div>
           <div class="s-badge">Coming Soon</div>
         </div>
       </div>
@@ -423,31 +445,33 @@
   window.addEventListener('load', () => {
     buildSlotsForContainer('slotsContainerWash', '🫧 Foam Wash Team');
     buildSlotsForContainer('slotsContainerGeneral', '🛠️ Repair Team');
+    buildSlotsForContainer('slotsContainerPuc', '💨 PUC Testing Unit');
   });
 
   // --- TOGGLE ACCORDION (CLICK TO OPEN / CLOSE) ---
   function toggleService(key, name, price) {
     let itemWash = document.getElementById('item-wash');
     let itemGeneral = document.getElementById('item-general');
+    let itemIns = document.getElementById('item-insurance');
+    let itemPuc = document.getElementById('item-puc');
 
-    if (selectedServiceKey === key) {
-      // If already open, click again to close
-      itemWash.classList.remove('active');
-      itemGeneral.classList.remove('active');
-      selectedServiceKey = "";
-      selectedServiceName = "";
-      currentServicePrice = 0;
-      selectedSlot = "";
-    } else {
-      // Open selected and close other
-      itemWash.classList.toggle('active', key === 'wash');
-      itemGeneral.classList.toggle('active', key === 'general');
+    let targetItem = document.getElementById('item-' + key);
+    let isOpen = targetItem.classList.contains('active');
+
+    // Close all
+    itemWash.classList.remove('active');
+    itemGeneral.classList.remove('active');
+    itemIns.classList.remove('active');
+    itemPuc.classList.remove('active');
+
+    if (!isOpen) {
+      targetItem.classList.add('active');
       selectedServiceKey = key;
       selectedServiceName = name;
       currentServicePrice = price;
 
-      // Select first slot by default
-      let activeContainer = key === 'wash' ? document.querySelector('#slotsContainerWash') : document.querySelector('#slotsContainerGeneral');
+      // Select first slot by default if it has slots
+      let activeContainer = targetItem.querySelector('.slots-grid-inner');
       if (activeContainer) {
         let firstSlot = activeContainer.querySelector('.slot-card-inner');
         if (firstSlot) {
@@ -455,7 +479,14 @@
           firstSlot.classList.add('active');
           selectedSlot = firstSlot.querySelector('.slot-time').innerText;
         }
+      } else {
+        selectedSlot = "Document Processing / Inquiry";
       }
+    } else {
+      selectedServiceKey = "";
+      selectedServiceName = "";
+      currentServicePrice = 0;
+      selectedSlot = "";
     }
   }
 
@@ -556,8 +587,22 @@
     if (!name) { document.getElementById('cName').classList.add('input-error'); return alert("Please enter your full name."); }
     if (!/^[0-9]{10}$/.test(phone)) { document.getElementById('cPhone').classList.add('input-error'); return alert("Please enter a valid 10-digit mobile number."); }
     if (!addr) { document.getElementById('cAddr').classList.add('input-error'); return alert("Please provide your doorstep address."); }
-    if (!selectedServiceKey) { return alert("Please select a service package and time slot."); }
-    if (!selectedSlot) { return alert("Please select a time slot."); }
+    if (!selectedServiceKey) { return alert("Please select a service package and time slot/inquiry."); }
+
+    // If insurance selected, grab specific fields
+    let extraInfo = "";
+    if (selectedServiceKey === 'insurance') {
+      let bNo = document.getElementById('insBikeNo').value.trim();
+      let oName = document.getElementById('insOwnerName').value.trim();
+      let iPh = document.getElementById('insPhone').value.trim();
+      if (!bNo || !oName) { return alert("Please enter Bike Number and Owner Name for Insurance."); }
+      extraInfo = ` | Bike No: ${bNo}, Owner: ${oName}`;
+    } else if (selectedServiceKey === 'puc') {
+      let bNo = document.getElementById('pucBikeNo').value.trim();
+      let oName = document.getElementById('pucOwnerName').value.trim();
+      if (!bNo || !oName) { return alert("Please enter Bike Number and Owner Name for PUC."); }
+      extraInfo = ` | Bike No: ${bNo}, Owner: ${oName}`;
+    }
 
     document.getElementById('bookingForm').style.display = "none";
     document.getElementById('loadingScreen').style.display = "block";
@@ -566,7 +611,7 @@
     let maps = customerCoords ? `https://www.google.com/maps?q=${customerCoords.lat},${customerCoords.lon}` : "";
     
     let grandTotal = currentServicePrice;
-    let subtotal = grandTotal / 1.18;
+    let subtotal = grandTotal > 0 ? grandTotal / 1.18 : 0;
     let totalTax = grandTotal - subtotal;
     let cgst = totalTax / 2;
     let sgst = totalTax / 2;
@@ -577,7 +622,7 @@
       name: name,
       phone: phone,
       vehicle: vehicleType,
-      serviceName: selectedServiceName,
+      serviceName: selectedServiceName + extraInfo,
       slot: selectedSlot,
       total: subtotal,
       cgst: cgst,
@@ -606,13 +651,16 @@
     setTimeout(() => {
       document.getElementById('loadingScreen').style.display = "none";
       document.getElementById('successScreen').style.display = "block";
-      document.getElementById('successSubtitle').innerText = `Slot Locked: ${selectedSlot}`;
-      document.getElementById('qrPriceTitle').innerText = `Scan & Pay ₹${grandTotal} Securely`;
+      document.getElementById('successSubtitle').innerText = grandTotal > 0 ? `Slot Locked: ${selectedSlot}` : `Inquiry Registered Successfully`;
       
-      if (paymentType === "Pay Now") {
+      if (grandTotal > 0 && paymentType === "Pay Now") {
         document.getElementById('qrSection').style.display = "block";
+        document.getElementById('qrPriceTitle').innerText = `Scan & Pay ₹${grandTotal} Securely`;
+      } else {
+        document.getElementById('qrSection').style.display = "none";
       }
-      let msg = `*New MoGo Service Booking!* 🚀\n\n*Booking ID:* ${id}\n*Customer:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Service:* ${selectedServiceName} (₹${grandTotal})\n*Slot:* ${selectedSlot}\n*Address:* ${addr}`;
+
+      let msg = `*New MoGo Booking/Inquiry!* 🚀\n\n*ID:* ${id}\n*Customer:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Service:* ${selectedServiceName}${extraInfo}\n*Slot:* ${selectedSlot}\n*Address:* ${addr}`;
       if (maps) msg += `\n🗺️ *Maps:* ${maps}`;
       document.getElementById('waBtn').href = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(msg)}`;
     }, 300);
@@ -892,15 +940,15 @@
       doc.setFont("helvetica", "bold"); doc.text("Service Description", 20, 138); doc.text("Amount (INR)", 155, 138);
       
       let grandTotal = globalBookingData.grandTotal || currentServicePrice;
-      let subtotal = globalBookingData.total || (grandTotal / 1.18);
-      let cgst = globalBookingData.cgst || ((grandTotal - subtotal) / 2);
-      let sgst = globalBookingData.sgst || ((grandTotal - subtotal) / 2);
+      let subtotal = grandTotal > 0 ? grandTotal / 1.18 : 0;
+      let cgst = grandTotal > 0 ? (grandTotal - subtotal) / 2 : 0;
+      let sgst = cgst;
 
       doc.setFont("helvetica", "normal"); 
       doc.text("1. " + (globalBookingData.serviceName || selectedServiceName), 20, 149); 
       doc.text("Rs. " + grandTotal.toFixed(2), 155, 149);
 
-      if (isPaidVerified) {
+      if (grandTotal > 0 && isPaidVerified) {
         doc.line(20, 160, 190, 160);
         doc.setFontSize(10);
         doc.text("Taxable Amount:", 110, 170); doc.text("Rs. " + subtotal.toFixed(2), 155, 170);
