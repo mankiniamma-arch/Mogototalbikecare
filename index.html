@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MoGo - Total Bike Care | Guwahati</title>
   
-  <!-- EXACT MATCHING BRAND WHEEL FAVICON -->
+  <!-- FAVICON -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%23FF5A00' stroke-width='14'/><circle cx='50' cy='50' r='36' fill='none' stroke='%23CBD5E1' stroke-width='2' stroke-dasharray='4 4'/><path d='M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19' stroke='%230B0F19' stroke-width='5'/><circle cx='50' cy='50' r='9' fill='%23FF5A00'/><circle cx='50' cy='50' r='3.5' fill='%23FFFFFF'/></svg>">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -58,54 +58,50 @@
 
     .input-error { border-color: var(--error) !important; background: #FEF2F2 !important; }
 
-    .services-list { display: flex; flex-direction: column; gap: 10px; }
-    .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+    /* SERVICES & EMBEDDED SLOTS */
+    .services-stack { display: flex; flex-direction: column; gap: 12px; }
+    .service-accordion-item {
+      background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; overflow: hidden; transition: 0.2s;
+    }
+    .service-accordion-item.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 6px 16px rgba(255,90,0,0.08); }
+    .service-accordion-item.disabled { background: #F8FAFC; opacity: 0.8; }
+    
+    .service-header-row { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
     .service-info { flex: 1; min-width: 0; }
-    .service-card.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 6px 16px rgba(255,90,0,0.08); }
-    .service-card.disabled { background: #F8FAFC; border: 1px solid #E2E8F0; opacity: 0.85; }
     .s-title { font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.3; }
     .s-desc { font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
     .s-price { font-size: 18px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
     .s-badge { font-size: 9.5px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 6px 9px; border-radius: 8px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 
-    .segmented-control { display: flex; background: var(--input-bg); padding: 5px; border-radius: 18px; border: 1px solid var(--border); gap: 4px; }
+    /* EMBEDDED SLOT BOX INSIDE ACTIVE SERVICE */
+    .embedded-slot-box {
+      display: none;
+      padding: 0 16px 16px;
+      border-top: 1px dashed var(--border);
+      margin-top: 4px;
+    }
+    .service-accordion-item.active .embedded-slot-box { display: block; }
+    .slots-grid-inner {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 10px;
+      padding-right: 2px;
+    }
+    .slot-card-inner {
+      background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 10px 8px; cursor: pointer; transition: 0.2s; text-align: left;
+    }
+    .slot-card-inner.active { background: #FFFFFF; border-color: var(--primary); box-shadow: 0 4px 12px rgba(255,90,0,0.15); }
+    .slot-time { font-size: 11.5px; font-weight: 900; color: var(--text-main); }
+    .slot-team { font-size: 9.5px; font-weight: 800; color: var(--primary); margin-top: 2px; display: block; text-transform: uppercase; }
+
+    .segmented-control { display: flex; background: var(--input-bg); padding: 5px; border-radius: 18px; border: 1.5px solid var(--border); gap: 4px; }
     .seg-btn { flex: 1; text-align: center; padding: 13px 8px; font-size: 14px; font-weight: 700; color: var(--text-muted); border-radius: 14px; cursor: pointer; transition: 0.2s; }
     .seg-btn.active { background: #FFFFFF; color: var(--primary); box-shadow: 0 4px 12px rgba(11, 15, 25, 0.06); }
     .seg-btn span { display: block; font-size: 10.5px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
-
-    /* ULTRA-INTERACTIVE 30-MIN SLOTS CONTAINER */
-    .slots-container {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      max-height: 240px;
-      overflow-y: auto;
-      padding: 4px;
-      background: var(--input-bg);
-      border: 1.5px solid var(--border);
-      border-radius: 18px;
-    }
-    .slot-pill {
-      background: #FFFFFF;
-      border: 2px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 10px;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      text-align: left;
-      position: relative;
-    }
-    .slot-pill:hover {
-      border-color: var(--primary);
-      transform: translateY(-1px);
-    }
-    .slot-pill.active {
-      background: #FFFBF9;
-      border-color: var(--primary);
-      box-shadow: 0 6px 16px rgba(255, 90, 0, 0.15);
-    }
-    .slot-time { font-size: 13px; font-weight: 900; color: var(--text-main); }
-    .slot-team { font-size: 10px; font-weight: 800; color: var(--primary); margin-top: 4px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
 
     .loc-header { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; margin-bottom: 10px; gap: 10px; }
     .loc-header label { margin: 0; }
@@ -180,36 +176,62 @@
     </div>
     <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate GPS' or type manually..." oninput="clearError('cAddr')"></textarea>
 
-    <label>Our Services</label>
-    <div class="services-list">
-      <div class="service-card active" id="srv-wash" onclick="selectService('wash', 'Premium Foam Wash', 69)">
-        <div class="service-info"><div class="s-title">🫧 Premium Foam Wash</div><div class="s-desc">Complete exterior deep cleaning</div></div>
-        <div class="s-price">₹69</div>
+    <label>Our Services & Slot Booking</label>
+    <div class="services-stack">
+      
+      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE WITH EMBEDDED SLOTS) -->
+      <div class="service-accordion-item active" id="item-wash">
+        <div class="service-header-row" onclick="selectService('wash', 'Premium Foam Wash', 69)">
+          <div class="service-info">
+            <div class="s-title">🫧 Premium Foam Wash</div>
+            <div class="s-desc">Complete exterior deep cleaning</div>
+          </div>
+          <div class="s-price">₹69</div>
+        </div>
+        <div class="embedded-slot-box">
+          <label style="font-size:10px; margin:8px 0 6px; color:var(--primary);">Select Foam Wash Time Window (08:00 AM - 08:00 PM):</label>
+          <div class="slots-grid-inner" id="slotsContainerWash"></div>
+        </div>
       </div>
-      <div class="service-card" id="srv-general" onclick="selectService('general', 'General Servicing', 499)">
-        <div class="service-info"><div class="s-title">🛠️ General Servicing</div><div class="s-desc">Complete mechanical checkup</div></div>
-        <div class="s-price">₹499</div>
+
+      <!-- SERVICE 2: GENERAL SERVICING (₹399 WITH EMBEDDED SLOTS) -->
+      <div class="service-accordion-item" id="item-general">
+        <div class="service-header-row" onclick="selectService('general', 'General Servicing', 399)">
+          <div class="service-info">
+            <div class="s-title">🛠️ General Servicing</div>
+            <div class="s-desc">Complete mechanical checkup</div>
+          </div>
+          <div class="s-price">₹399</div>
+        </div>
+        <div class="embedded-slot-box">
+          <label style="font-size:10px; margin:8px 0 6px; color:var(--primary);">Select Repair Time Window (08:00 AM - 08:00 PM):</label>
+          <div class="slots-grid-inner" id="slotsContainerGeneral"></div>
+        </div>
       </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">🛡️ Bike Insurance</div><div class="s-desc">Instant renewal & claim support</div></div>
-        <div class="s-badge">Coming Soon</div>
+
+      <!-- OTHER COMING SOON SERVICES -->
+      <div class="service-accordion-item disabled">
+        <div class="service-header-row">
+          <div class="service-info"><div class="s-title">🛡️ Bike Insurance</div><div class="s-desc">Instant renewal & claim support</div></div>
+          <div class="s-badge">Coming Soon</div>
+        </div>
       </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">💨 Pollution Check (PUC)</div><div class="s-desc">Doorstep emission testing</div></div>
-        <div class="s-badge">Coming Soon</div>
+      <div class="service-accordion-item disabled">
+        <div class="service-header-row">
+          <div class="service-info"><div class="s-title">💨 Pollution Check (PUC)</div><div class="s-desc">Doorstep emission testing</div></div>
+          <div class="s-badge">Coming Soon</div>
+        </div>
       </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance</div></div>
-        <div class="s-badge">Coming Soon</div>
+      <div class="service-accordion-item disabled">
+        <div class="service-header-row">
+          <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance</div></div>
+          <div class="s-badge">Coming Soon</div>
+        </div>
       </div>
+
     </div>
 
-    <label id="slotHeaderLabel">Select Foam Wash Time Slot (08:00 AM - 08:00 PM)</label>
-    <div class="slots-container" id="slotsContainer">
-      <!-- Dynamically generated 30-min slots from 8 AM to 8 PM -->
-    </div>
-
-    <label>Payment Method</label>
+    <label style="margin-top:24px;">Payment Method</label>
     <div class="segmented-control">
       <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">💳 Pay Now <span>Online / QR</span></div>
       <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
@@ -237,7 +259,7 @@
     <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will arrive shortly.</p>
     
     <div id="qrSection" class="official-qr-box" style="display:none;">
-      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;" id="qrPriceTitle">Scan & Pay ₹69 Securely</p>
+      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;" id="qrPriceTitle">Scan & Pay Securely</p>
       <p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Pvt Ltd</p>
       <img src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=69.00%26cu=INR&margin=10';">
       <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
@@ -342,12 +364,12 @@
   let globalBookingData = {};
   let customerCoords = null;
 
-  // --- DYNAMIC 30-MIN SLOTS GENERATOR (8 AM to 8 PM) ---
-  function generateSlots(serviceType) {
-    const container = document.getElementById('slotsContainer');
+  // --- DYNAMIC 30-MIN SLOTS GENERATOR (8:00 AM to 8:00 PM) ---
+  function buildSlotsForContainer(containerId, teamTitle) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
     container.innerHTML = "";
-    
-    let teamName = (serviceType === 'wash') ? '🫧 Foam Wash Team' : '🛠️ Repair Team';
+
     let startHour = 8; // 8 AM
     let endHour = 20;  // 8 PM
 
@@ -372,17 +394,20 @@
 
     slotsArr.forEach((slotStr, index) => {
       let div = document.createElement('div');
-      div.className = "slot-pill" + (index === 0 ? " active" : "");
-      div.onclick = function() {
-        document.querySelectorAll('.slot-pill').forEach(c => c.classList.remove('active'));
+      div.className = "slot-card-inner" + (index === 0 && containerId === 'slotsContainerWash' ? " active" : "");
+      div.onclick = function(e) {
+        e.stopPropagation();
+        document.querySelectorAll('.slot-card-inner').forEach(c => c.classList.remove('active'));
         div.classList.add('active');
         selectedSlot = slotStr;
       };
-      div.innerHTML = `<div class="slot-time">${slotStr}</div><span class="slot-team">${teamName}</span>`;
+      div.innerHTML = `<div class="slot-time">${slotStr}</div><span class="slot-team">${teamTitle}</span>`;
       container.appendChild(div);
     });
 
-    selectedSlot = slotsArr[0];
+    if (containerId === 'slotsContainerWash') {
+      selectedSlot = slotsArr[0];
+    }
   }
 
   function formatTime(h, m) {
@@ -393,7 +418,8 @@
   }
 
   window.addEventListener('load', () => {
-    generateSlots('wash');
+    buildSlotsForContainer('slotsContainerWash', '🫧 Foam Wash Team');
+    buildSlotsForContainer('slotsContainerGeneral', '🛠️ Repair Team');
   });
 
   function selectService(key, name, price) {
@@ -401,11 +427,16 @@
     selectedServiceName = name;
     currentServicePrice = price;
 
-    document.getElementById('srv-wash').classList.toggle('active', key === 'wash');
-    document.getElementById('srv-general').classList.toggle('active', key === 'general');
-    
-    document.getElementById('slotHeaderLabel').innerText = `Select ${name} Time Window (08:00 AM - 08:00 PM)`;
-    generateSlots(key);
+    document.getElementById('item-wash').classList.toggle('active', key === 'wash');
+    document.getElementById('item-general').classList.toggle('active', key === 'general');
+
+    if (key === 'wash') {
+      let firstActive = document.querySelector('#slotsContainerWash .slot-card-inner');
+      if (firstActive) selectedSlot = firstActive.querySelector('.slot-time').innerText;
+    } else {
+      let firstActive = document.querySelector('#slotsContainerGeneral .slot-card-inner');
+      if (firstActive) selectedSlot = firstActive.querySelector('.slot-time').innerText;
+    }
   }
 
   function getDB() {
