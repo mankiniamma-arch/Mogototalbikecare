@@ -23,14 +23,30 @@
     }
     
     * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; background: var(--bg); color: var(--text-main); padding: 15px; display: flex; justify-content: center; min-height: 100vh; align-items: flex-start; }
+    body { 
+      margin: 0; 
+      background: radial-gradient(circle at top right, #FFF7ED, #F8FAFC 45%); 
+      color: var(--text-main); 
+      padding: 15px; 
+      display: flex; 
+      justify-content: center; 
+      min-height: 100vh; 
+      align-items: flex-start; 
+    }
     
-    .app-container { width: 100%; max-width: 430px; margin-top: 10px; padding-bottom: 40px; }
+    /* MOBILE FIRST DEFAULT (Up to 767px) */
+    .app-container { 
+      width: 100%; 
+      max-width: 440px; 
+      margin-top: 10px; 
+      padding-bottom: 40px; 
+      transition: max-width 0.3s ease;
+    }
     
     .card { 
       background: var(--card); 
       border-radius: 28px; 
-      padding: 30px 22px; 
+      padding: 28px 22px; 
       margin-bottom: 20px; 
       box-shadow: 0 20px 40px -15px rgba(11, 15, 25, 0.08), 0 4px 12px rgba(11, 15, 25, 0.03); 
       border: 1px solid rgba(226, 232, 240, 0.8);
@@ -55,8 +71,8 @@
       background: #0F172A;
       color: #FFFFFF;
       border-radius: 16px;
-      padding: 12px 14px;
-      margin-bottom: 18px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -77,9 +93,22 @@
       70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
       100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
-    .radar-title { font-size: 12px; font-weight: 800; color: #F8FAFC; line-height: 1.2; }
-    .radar-sub { font-size: 10.5px; font-weight: 600; color: #94A3B8; margin-top: 2px; }
-    .radar-badge { background: rgba(255, 90, 0, 0.18); color: #FF7A33; border: 1px solid rgba(255, 90, 0, 0.4); font-size: 10px; font-weight: 800; padding: 5px 8px; border-radius: 8px; white-space: nowrap; }
+    .radar-title { font-size: 12.5px; font-weight: 800; color: #F8FAFC; line-height: 1.2; }
+    .radar-sub { font-size: 11px; font-weight: 600; color: #94A3B8; margin-top: 2px; }
+    .radar-badge { background: rgba(255, 90, 0, 0.18); color: #FF7A33; border: 1px solid rgba(255, 90, 0, 0.4); font-size: 10.5px; font-weight: 800; padding: 5px 10px; border-radius: 8px; white-space: nowrap; }
+
+    /* RESPONSIVE GRID WRAPPER FOR FORM */
+    .booking-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0px;
+    }
+
+    .customer-inputs-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
     label { display: block; font-size: 11.5px; font-weight: 800; color: var(--text-muted); margin: 22px 0 10px; text-transform: uppercase; letter-spacing: 1px; }
     
@@ -90,8 +119,8 @@
 
     .input-error { border-color: var(--error) !important; background: #FEF2F2 !important; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12) !important; }
 
-    .services-list { display: flex; flex-direction: column; gap: 10px; }
-    .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .services-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: 0.2s; }
     .service-info { flex: 1; min-width: 0; }
     .service-card.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 6px 16px rgba(255,90,0,0.06); }
     .service-card.disabled { background: #F8FAFC; border: 1px solid #E2E8F0; opacity: 0.85; }
@@ -111,12 +140,12 @@
       background: var(--input-bg);
       border: 1.5px solid var(--border);
       border-radius: 16px;
-      padding: 12px 10px;
+      padding: 13px 12px;
       cursor: pointer;
       transition: all 0.2s ease;
       text-align: left;
-      position: relative;
     }
+    .slot-card:hover { border-color: #CBD5E1; }
     .slot-card.active {
       background: #FFFBF9;
       border-color: var(--primary);
@@ -131,7 +160,6 @@
     .slot-status { font-size: 10px; font-weight: 800; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; }
     .st-avail { color: #16A34A; }
     .st-fast { color: #D97706; }
-    .st-full { color: #DC2626; }
 
     .loc-header { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; margin-bottom: 10px; gap: 10px; }
     .loc-header label { margin: 0; }
@@ -152,10 +180,11 @@
     .geo-fence-pill.outside { display: flex; background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
 
     .btn-main { width: 100%; padding: 18px; border-radius: 16px; border: none; background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 25px; box-shadow: 0 10px 25px rgba(255, 90, 0, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
+    .btn-main:hover { filter: brightness(1.04); transform: translateY(-1px); }
     .btn-main:active { transform: scale(0.98); }
     .btn-outline { width: 100%; padding: 16px; border-radius: 16px; background: #F1F5F9; color: var(--text-main); border: 1px solid var(--border); margin-top: 12px; font-weight: 800; font-size: 15px; cursor: pointer; }
 
-    #loadingScreen, #successScreen { display: none; text-align: center; padding: 40px 10px; }
+    #loadingScreen, #successScreen { display: none; text-align: center; padding: 40px 20px; max-width: 540px; margin: 20px auto; }
     .loader { width: 50px; height: 50px; border: 4px solid #E2E8F0; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     
@@ -179,7 +208,7 @@
     /* Modal Styles */
     .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 9999; opacity: 0; visibility: visible; pointer-events: none; transition: all 0.2s; }
     .ui-modal-overlay.show { opacity: 1; pointer-events: auto; }
-    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 24px; text-align: left; box-shadow: 0 25px 50px -12px rgba(11, 15, 25, 0.28); border: 1px solid rgba(255, 90, 0, 0.18); transform: scale(0.95); transition: all 0.2s; }
+    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 26px; text-align: left; box-shadow: 0 25px 50px -12px rgba(11, 15, 25, 0.28); border: 1px solid rgba(255, 90, 0, 0.18); transform: scale(0.95); transition: all 0.2s; }
     .ui-modal-overlay.show .ui-modal-box { transform: scale(1); }
     .ui-modal-icon { width: 60px; height: 60px; border-radius: 18px; background: #FFF5F0; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px; border: 1.5px solid #FFE0D1; }
     .ui-modal-title { font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 8px; }
@@ -208,6 +237,66 @@
     .db-action { display: flex; gap: 6px; flex-wrap: wrap;}
     .btn-sm { flex: 1; padding: 8px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: none; text-align: center; color: var(--text-main); background: #E2E8F0; }
     .btn-del { flex: 0 0 34px; padding: 0; background: #FEE2E2; color: #B91C1C; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: 8px; cursor: pointer; border: none; }
+
+    /* =========================================================
+       📱 TABLET VIEW (iPad / Android Tabs: 768px to 1023px)
+       ========================================================= */
+    @media (min-width: 768px) {
+      body { padding: 30px 24px; }
+      .app-container { max-width: 760px; }
+      .card { padding: 36px 34px; border-radius: 32px; }
+      .customer-inputs-grid { flex-direction: row; gap: 14px; }
+      .services-list { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .service-card.active { grid-column: span 2; } /* Featured wash spans full width on tablet */
+      .slots-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* =========================================================
+       💻 LAPTOP & DESKTOP VIEW (1024px and above)
+       ========================================================= */
+    @media (min-width: 1024px) {
+      body { padding: 40px; align-items: center; }
+      .app-container { max-width: 1120px; margin-top: 0; }
+      .card { padding: 42px 48px; border-radius: 36px; }
+      
+      .brand-header {
+        flex-direction: row;
+        justify-content: space-between;
+        padding-bottom: 24px;
+        margin-bottom: 24px;
+      }
+      .logo-tagline { margin-top: 0; font-size: 14px; letter-spacing: 5px; }
+
+      /* 2-Column Silicon Valley Dashboard Split on Laptop */
+      .booking-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 44px;
+        align-items: start;
+      }
+
+      .col-left label:first-child,
+      .col-right label:first-child {
+        margin-top: 4px;
+      }
+
+      .col-right {
+        background: #F8FAFC;
+        padding: 28px;
+        border-radius: 26px;
+        border: 1.5px solid #E2E8F0;
+      }
+
+      .col-right input,
+      .col-right textarea,
+      .col-right .segmented-control {
+        background: #FFFFFF;
+      }
+
+      .services-list { grid-template-columns: repeat(2, 1fr); }
+      .service-card.active { grid-column: span 2; padding: 18px 20px; }
+      .slots-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -238,81 +327,94 @@
           <div class="radar-sub" id="radarSub">3 Mobile Van Units Ready Near You</div>
         </div>
       </div>
-      <div class="radar-badge" id="radarBadge">18 KM ZONE</div>
+      <div class="radar-badge" id="radarBadge">22 KM ZONE</div>
     </div>
 
-    <label>Select Vehicle Type</label>
-    <div class="segmented-control">
-      <div class="seg-btn active" id="v-bike" onclick="selectVehicle('Bike')">🏍️ Bike <span>Standard/Sports</span></div>
-      <div class="seg-btn" id="v-scooty" onclick="selectVehicle('Scooty')">🛵 Scooty <span>Gearless</span></div>
-    </div>
+    <!-- MULTI-DEVICE RESPONSIVE 2-COLUMN GRID -->
+    <div class="booking-grid">
+      
+      <!-- LEFT COLUMN (Vehicle, Services & Time Slots) -->
+      <div class="col-left">
+        <label>Select Vehicle Type</label>
+        <div class="segmented-control">
+          <div class="seg-btn active" id="v-bike" onclick="selectVehicle('Bike')">🏍️ Bike <span>Standard/Sports</span></div>
+          <div class="seg-btn" id="v-scooty" onclick="selectVehicle('Scooty')">🛵 Scooty <span>Gearless</span></div>
+        </div>
 
-    <label>Customer Details</label>
-    <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
-    <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
+        <label>Our Services</label>
+        <div class="services-list">
+          <div class="service-card active">
+            <div class="service-info"><div class="s-title">🫧 Premium Foam Wash</div><div class="s-desc">Complete exterior deep cleaning at doorstep</div></div>
+            <div class="s-price">₹69</div>
+          </div>
+          <div class="service-card disabled">
+            <div class="service-info"><div class="s-title">🛠️ General Servicing</div><div class="s-desc">Complete mechanical checkup</div></div>
+            <div class="s-badge">Coming Soon</div>
+          </div>
+          <div class="service-card disabled">
+            <div class="service-info"><div class="s-title">🛡️ Bike Insurance</div><div class="s-desc">Instant renewal & claim support</div></div>
+            <div class="s-badge">Coming Soon</div>
+          </div>
+          <div class="service-card disabled">
+            <div class="service-info"><div class="s-title">💨 Pollution Check (PUC)</div><div class="s-desc">Doorstep emission testing</div></div>
+            <div class="s-badge">Coming Soon</div>
+          </div>
+          <div class="service-card disabled">
+            <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance</div></div>
+            <div class="s-badge">Coming Soon</div>
+          </div>
+        </div>
 
-    <label>Our Services</label>
-    <div class="services-list">
-      <div class="service-card active">
-        <div class="service-info"><div class="s-title">🫧 Premium Foam Wash</div><div class="s-desc">Complete exterior deep cleaning</div></div>
-        <div class="s-price">₹69</div>
+        <!-- TIME SLOT BOOKING ENGINE -->
+        <label>Select Doorstep Time Slot</label>
+        <div class="slots-grid" id="slotsGrid">
+          <div class="slot-card active" onclick="selectTimeSlot(this, '08:00 AM - 09:30 AM')">
+            <div class="slot-time">08:00 AM - 09:30 AM</div>
+            <div class="slot-status st-avail">● AVAILABLE (2 Vans)</div>
+          </div>
+          <div class="slot-card" onclick="selectTimeSlot(this, '10:00 AM - 11:30 AM')">
+            <div class="slot-time">10:00 AM - 11:30 AM</div>
+            <div class="slot-status st-fast">⚡ FAST FILLING (1 Left)</div>
+          </div>
+          <div class="slot-card" onclick="selectTimeSlot(this, '12:00 PM - 01:30 PM')">
+            <div class="slot-time">12:00 PM - 01:30 PM</div>
+            <div class="slot-status st-avail">● AVAILABLE (3 Vans)</div>
+          </div>
+          <div class="slot-card" onclick="selectTimeSlot(this, '02:30 PM - 04:00 PM')">
+            <div class="slot-time">02:30 PM - 04:00 PM</div>
+            <div class="slot-status st-avail">● AVAILABLE (2 Vans)</div>
+          </div>
+        </div>
       </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">🛠️ General Servicing</div><div class="s-desc">Complete mechanical checkup</div></div>
-        <div class="s-badge">Coming Soon</div>
-      </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">🛡️ Bike Insurance</div><div class="s-desc">Instant renewal & claim support</div></div>
-        <div class="s-badge">Coming Soon</div>
-      </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">💨 Pollution Check (PUC)</div><div class="s-desc">Doorstep emission testing</div></div>
-        <div class="s-badge">Coming Soon</div>
-      </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">🤝 Monthly Maintenance Contract (MMC)</div><div class="s-desc">Whole month maintenance</div></div>
-        <div class="s-badge">Coming Soon</div>
-      </div>
-    </div>
 
-    <!-- TIME SLOT BOOKING ENGINE -->
-    <label>Select Doorstep Time Slot</label>
-    <div class="slots-grid" id="slotsGrid">
-      <div class="slot-card active" onclick="selectTimeSlot(this, '08:00 AM - 09:30 AM')">
-        <div class="slot-time">08:00 AM - 09:30 AM</div>
-        <div class="slot-status st-avail">● AVAILABLE (2 Vans)</div>
-      </div>
-      <div class="slot-card" onclick="selectTimeSlot(this, '10:00 AM - 11:30 AM')">
-        <div class="slot-time">10:00 AM - 11:30 AM</div>
-        <div class="slot-status st-fast">⚡ FAST FILLING (1 Left)</div>
-      </div>
-      <div class="slot-card" onclick="selectTimeSlot(this, '12:00 PM - 01:30 PM')">
-        <div class="slot-time">12:00 PM - 01:30 PM</div>
-        <div class="slot-status st-avail">● AVAILABLE (3 Vans)</div>
-      </div>
-      <div class="slot-card" onclick="selectTimeSlot(this, '02:30 PM - 04:00 PM')">
-        <div class="slot-time">02:30 PM - 04:00 PM</div>
-        <div class="slot-status st-avail">● AVAILABLE (2 Vans)</div>
-      </div>
-    </div>
+      <!-- RIGHT COLUMN (Customer Details, Geo-Fenced Address & Payment) -->
+      <div class="col-right">
+        <label>Customer Details</label>
+        <div class="customer-inputs-grid">
+          <input type="text" id="cName" placeholder="Full Name" oninput="clearError('cName')">
+          <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
+        </div>
 
-    <div class="loc-header">
-      <label>Doorstep Address (Geo-Fenced)</label>
-      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate</button>
-    </div>
-    <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate' for GPS Geo-Fence check or type Guwahati address..." oninput="clearError('cAddr'); checkManualAddressGeo(this.value)"></textarea>
-    <div id="geoFenceBanner" class="geo-fence-pill"></div>
+        <div class="loc-header">
+          <label>Doorstep Address (Geo-Fenced)</label>
+          <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate</button>
+        </div>
+        <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate' for GPS Geo-Fence check or type Guwahati address..." oninput="clearError('cAddr'); checkManualAddressGeo(this.value)"></textarea>
+        <div id="geoFenceBanner" class="geo-fence-pill"></div>
 
-    <label>Payment Method</label>
-    <div class="segmented-control">
-      <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">💳 Pay Now <span>Instant UPI / QR</span></div>
-      <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
-    </div>
+        <label>Payment Method</label>
+        <div class="segmented-control">
+          <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">💳 Pay Now <span>Instant UPI / QR</span></div>
+          <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
+        </div>
 
-    <button class="btn-main" onclick="submitBooking()">Confirm Booking & Slot 🚀</button>
-    
-    <div class="portal-links">
-      <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
+        <button class="btn-main" onclick="submitBooking()">Confirm Booking & Slot 🚀</button>
+        
+        <div class="portal-links">
+          <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -334,7 +436,6 @@
       <p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Pvt Ltd</p>
       <img id="dynamicQrImg" src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=69.00%26cu=INR&margin=10';">
       
-      <!-- 1-TAP UPI PAYMENT GATEWAY BUTTONS -->
       <div style="font-size:11px; font-weight:800; color:#64748B; margin:6px 0;">OR TAP TO PAY DIRECTLY VIA UPI APP</div>
       <div class="upi-app-grid">
         <a id="gpayLink" href="upi://pay?pa=mankiniamma@okhdfcbank&pn=Mankiniamma%20Technologies%20Pvt%20Ltd&am=69.00&cu=INR" class="upi-app-btn">⚡ GPay</a>
