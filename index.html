@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MoGo - Total Bike Care | Guwahati</title>
   
-  <!-- FAVICON DYNAMIC GENERATOR -->
-  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%23FF5A00' stroke-width='16'/><circle cx='50' cy='50' r='8.5' fill='%23FF5A00'/></svg>">
+  <!-- EXACT MATCHING BRAND WHEEL FAVICON -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%23FF5A00' stroke-width='14'/><circle cx='50' cy='50' r='36' fill='none' stroke='%23CBD5E1' stroke-width='2' stroke-dasharray='4 4'/><path d='M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19' stroke='%230B0F19' stroke-width='5'/><circle cx='50' cy='50' r='9' fill='%23FF5A00'/><circle cx='50' cy='50' r='3.5' fill='%23FFFFFF'/></svg>">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -44,7 +44,6 @@
     .logo-letter { font-size: 52px; font-weight: 900; color: var(--text-main); letter-spacing: -2px; }
     .logo-symbol { font-size: 34px; font-weight: 800; color: var(--primary); margin: 0 2px; }
     
-    /* SPINNING WHEEL ANIMATION */
     .spin-wheel-clockwise { width: 52px; height: 52px; animation: rotateClockwise 3s linear infinite; filter: drop-shadow(0 4px 8px rgba(255, 90, 0, 0.25)); }
     @keyframes rotateClockwise { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -60,7 +59,7 @@
     .input-error { border-color: var(--error) !important; background: #FEF2F2 !important; }
 
     .services-list { display: flex; flex-direction: column; gap: 10px; }
-    .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
     .service-info { flex: 1; min-width: 0; }
     .service-card.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 6px 16px rgba(255,90,0,0.06); }
     .service-card.disabled { background: #F8FAFC; border: 1px solid #E2E8F0; opacity: 0.85; }
@@ -74,14 +73,22 @@
     .seg-btn.active { background: #FFFFFF; color: var(--primary); box-shadow: 0 4px 12px rgba(11, 15, 25, 0.06); }
     .seg-btn span { display: block; font-size: 10.5px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
 
-    .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .slot-card {
-      background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 14px;
-      padding: 12px 10px; cursor: pointer; transition: all 0.2s; text-align: left;
+    /* 30-MIN INTERVAL SLOTS CONTAINER */
+    .slots-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 4px;
     }
-    .slot-card.active { background: #FFFBF9; border-color: var(--primary); box-shadow: 0 4px 12px rgba(255,90,0,0.1); }
-    .slot-time { font-size: 12px; font-weight: 800; color: var(--text-main); }
-    .slot-tag { font-size: 9.5px; font-weight: 800; color: var(--success); margin-top: 3px; display: block; }
+    .slot-pill {
+      background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 10px 8px; cursor: pointer; transition: all 0.2s; text-align: left;
+    }
+    .slot-pill.active { background: #FFFBF9; border-color: var(--primary); box-shadow: 0 4px 12px rgba(255,90,0,0.1); }
+    .slot-time { font-size: 11.5px; font-weight: 800; color: var(--text-main); }
+    .slot-team { font-size: 9px; font-weight: 800; color: var(--primary); margin-top: 2px; display: block; text-transform: uppercase; }
 
     .loc-header { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; margin-bottom: 10px; gap: 10px; }
     .loc-header label { margin: 0; }
@@ -158,13 +165,13 @@
 
     <label>Our Services</label>
     <div class="services-list">
-      <div class="service-card active">
+      <div class="service-card active" id="srv-wash" onclick="selectService('wash', 'Premium Foam Wash', 69)">
         <div class="service-info"><div class="s-title">🫧 Premium Foam Wash</div><div class="s-desc">Complete exterior deep cleaning</div></div>
         <div class="s-price">₹69</div>
       </div>
-      <div class="service-card disabled">
+      <div class="service-card" id="srv-general" onclick="selectService('general', 'General Servicing', 499)">
         <div class="service-info"><div class="s-title">🛠️ General Servicing</div><div class="s-desc">Complete mechanical checkup</div></div>
-        <div class="s-badge">Coming Soon</div>
+        <div class="s-price">₹499</div>
       </div>
       <div class="service-card disabled">
         <div class="service-info"><div class="s-title">🛡️ Bike Insurance</div><div class="s-desc">Instant renewal & claim support</div></div>
@@ -180,28 +187,9 @@
       </div>
     </div>
 
-    <label>Choose Doorstep Time Slot</label>
-    <div class="slots-grid">
-      <div class="slot-card active" onclick="selectTimeSlot(this, '08:00 AM - 09:30 AM')">
-        <div class="slot-time">08:00 AM - 09:30 AM</div>
-        <span class="slot-tag">● Available</span>
-      </div>
-      <div class="slot-card" onclick="selectTimeSlot(this, '10:00 AM - 11:30 AM')">
-        <div class="slot-time">10:00 AM - 11:30 AM</div>
-        <span class="slot-tag" style="color:#D97706;">⚡ Fast Filling</span>
-      </div>
-      <div class="slot-card" onclick="selectTimeSlot(this, '12:00 PM - 01:30 PM')">
-        <div class="slot-time">12:00 PM - 01:30 PM</div>
-        <span class="slot-tag">● Available</span>
-      </div>
-      <div class="slot-card" onclick="selectTimeSlot(this, '02:30 PM - 04:00 PM')">
-        <div class="slot-time">02:30 PM - 04:00 PM</div>
-        <span class="slot-tag">● Available</span>
-      </div>
-      <div class="slot-card" onclick="selectTimeSlot(this, '04:30 PM - 06:00 PM')">
-        <div class="slot-time">04:30 PM - 06:00 PM</div>
-        <span class="slot-tag">● Available</span>
-      </div>
+    <label id="slotHeaderLabel">Choose Foam Wash Time Slot (08:00 AM - 08:00 PM)</label>
+    <div class="slots-container" id="slotsContainer">
+      <!-- Generated dynamically every 30 mins from 8 AM to 8 PM -->
     </div>
 
     <label>Payment Method</label>
@@ -222,7 +210,7 @@
   <div class="card" id="loadingScreen">
     <div class="loader"></div>
     <h3 style="margin:0 0 8px; font-size:20px;">Booking Your Slot...</h3>
-    <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & job card generation.</p>
+    <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating job card.</p>
   </div>
 
   <!-- SUCCESS SCREEN -->
@@ -232,7 +220,7 @@
     <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will arrive shortly.</p>
     
     <div id="qrSection" class="official-qr-box" style="display:none;">
-      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;">Scan & Pay ₹69 Securely</p>
+      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;" id="qrPriceTitle">Scan & Pay ₹69 Securely</p>
       <p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Pvt Ltd</p>
       <img src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=69.00%26cu=INR&margin=10';">
       <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
@@ -327,13 +315,81 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyp9jl7Uu5thiilCriCwi8yE7Sc0Z2cY4OUkCdx3WDp1MmvWgNgMyszl77eWxrPIH4u-Q/exec";
   const MY_WHATSAPP = "919954924948";
-  const TOTAL_PRICE = 69;
 
   let paymentType = "Pay Now";
   let vehicleType = "Bike";
-  let selectedSlot = "08:00 AM - 09:30 AM";
+  let selectedServiceKey = "wash";
+  let selectedServiceName = "Premium Foam Wash";
+  let currentServicePrice = 69;
+  let selectedSlot = "";
   let globalBookingData = {};
   let customerCoords = null;
+
+  // --- DYNAMIC 30-MIN SLOTS GENERATOR (8:00 AM to 8:00 PM) ---
+  function generateSlots(serviceType) {
+    const container = document.getElementById('slotsContainer');
+    container.innerHTML = "";
+    
+    let teamName = (serviceType === 'wash') ? '🫧 Foam Wash Team' : '🛠️ Repair Team';
+    let startHour = 8; // 8 AM
+    let endHour = 20;  // 8 PM (20:00)
+
+    let slotsArr = [];
+    for (let h = startHour; h < endHour; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        let startH = h;
+        let startM = m;
+        let endH = h;
+        let endM = m + 30;
+
+        if (endM >= 60) {
+          endH += 1;
+          endM -= 60;
+        }
+
+        let fmtStart = formatTime(startH, startM);
+        let fmtEnd = formatTime(endH, endM);
+        slotsArr.push(`${fmtStart} - ${fmtEnd}`);
+      }
+    }
+
+    slotsArr.forEach((slotStr, index) => {
+      let div = document.createElement('div');
+      div.className = "slot-pill" + (index === 0 ? " active" : "");
+      div.onclick = function() {
+        document.querySelectorAll('.slot-pill').forEach(c => c.classList.remove('active'));
+        div.classList.add('active');
+        selectedSlot = slotStr;
+      };
+      div.innerHTML = `<div class="slot-time">${slotStr}</div><span class="slot-tag">${teamName}</span>`;
+      container.appendChild(div);
+    });
+
+    selectedSlot = slotsArr[0];
+  }
+
+  function formatTime(h, m) {
+    let period = h >= 12 ? "PM" : "AM";
+    let hour12 = h % 12 === 0 ? 12 : h % 12;
+    let minStr = m === 0 ? "00" : "30";
+    return `${hour12}:${minStr} ${period}`;
+  }
+
+  window.addEventListener('load', () => {
+    generateSlots('wash');
+  });
+
+  function selectService(key, name, price) {
+    selectedServiceKey = key;
+    selectedServiceName = name;
+    currentServicePrice = price;
+
+    document.getElementById('srv-wash').classList.toggle('active', key === 'wash');
+    document.getElementById('srv-general').classList.toggle('active', key === 'general');
+    
+    document.getElementById('slotHeaderLabel').innerText = `Choose ${name} Time Window (08:00 AM - 08:00 PM)`;
+    generateSlots(key);
+  }
 
   function getDB() {
     try {
@@ -364,12 +420,6 @@
     vehicleType = t;
     document.getElementById('v-bike').classList.toggle('active', t === 'Bike');
     document.getElementById('v-scooty').classList.toggle('active', t === 'Scooty');
-  }
-
-  function selectTimeSlot(el, slotText) {
-    document.querySelectorAll('.slot-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    selectedSlot = slotText;
   }
 
   function selectPayType(t) {
@@ -445,7 +495,7 @@
     let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
     let maps = customerCoords ? `https://www.google.com/maps?q=${customerCoords.lat},${customerCoords.lon}` : "";
     
-    let grandTotal = TOTAL_PRICE;
+    let grandTotal = currentServicePrice;
     let subtotal = grandTotal / 1.18;
     let totalTax = grandTotal - subtotal;
     let cgst = totalTax / 2;
@@ -457,7 +507,7 @@
       name: name,
       phone: phone,
       vehicle: vehicleType,
-      serviceName: "Premium Foam Wash",
+      serviceName: selectedServiceName,
       slot: selectedSlot,
       total: subtotal,
       cgst: cgst,
@@ -487,10 +537,12 @@
       document.getElementById('loadingScreen').style.display = "none";
       document.getElementById('successScreen').style.display = "block";
       document.getElementById('successSubtitle').innerText = `Slot Locked: ${selectedSlot}`;
+      document.getElementById('qrPriceTitle').innerText = `Scan & Pay ₹${grandTotal} Securely`;
+      
       if (paymentType === "Pay Now") {
         document.getElementById('qrSection').style.display = "block";
       }
-      let msg = `*New MoGo Service Booking!* 🚀\n\n*Booking ID:* ${id}\n*Customer:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Slot:* ${selectedSlot}\n*Address:* ${addr}`;
+      let msg = `*New MoGo Service Booking!* 🚀\n\n*Booking ID:* ${id}\n*Customer:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Service:* ${selectedServiceName} (₹${grandTotal})\n*Slot:* ${selectedSlot}\n*Address:* ${addr}`;
       if (maps) msg += `\n🗺️ *Maps:* ${maps}`;
       document.getElementById('waBtn').href = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(msg)}`;
     }, 300);
@@ -542,7 +594,8 @@
       html += `
         <div class="db-item">
           <strong>${item.id} - ${item.name}</strong> (${item.phone})<br>
-          Vehicle: ${item.vehicle} | Slot: ${item.slot || 'Standard'}<br>
+          Vehicle: ${item.vehicle} | Service: ${item.serviceName}<br>
+          Slot: ${item.slot || 'Standard'}<br>
           📍 ${item.address}<br>
           <a href="tel:${item.phone}" style="display:inline-block; margin-top:8px; background:#16A34A; color:#fff; padding:6px 12px; border-radius:8px; text-decoration:none; font-weight:800; font-size:11px;">📞 Call Customer</a>
         </div>`;
@@ -577,10 +630,10 @@
       let card = `
         <div class="db-item">
           <div class="db-header"><span class="db-id">${item.id}</span> ${badge}</div>
-          <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹69) | Slot: ${item.slot || 'Standard'}<br>${item.date} | ${item.address}</div>
+          <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} | ${item.serviceName} (₹${item.grandTotal})<br>Slot: ${item.slot || 'Standard'}<br>${item.date} | ${item.address}</div>
           <div class="db-action">
             ${actions}
-            <button class="btn-del" onclick="deleteRecord('${item.id}'); renderAdminDB();">✖</button>
+            <button class="btn-del" onclick="let db=getDB().filter(x=>x.id!=='${item.id}'); saveDB(db); renderAdminDB();">✖</button>
           </div>
         </div>`;
 
@@ -621,7 +674,7 @@
     let fileInput = document.getElementById('admGpsImg');
 
     let recId = "MOGO" + Math.floor(1000 + Math.random() * 9000);
-    let grandTotal = TOTAL_PRICE;
+    let grandTotal = currentServicePrice;
     let subtotal = grandTotal / 1.18;
     let totalTax = grandTotal - subtotal;
     let cgst = totalTax / 2;
@@ -633,8 +686,8 @@
       name: name,
       phone: phone,
       vehicle: vehicle,
-      serviceName: "Premium Foam Wash",
-      slot: "08:00 AM - 09:30 AM",
+      serviceName: selectedServiceName,
+      slot: selectedSlot,
       total: subtotal,
       cgst: cgst,
       sgst: sgst,
@@ -768,13 +821,13 @@
       doc.line(20, 128, 190, 128);
       doc.setFont("helvetica", "bold"); doc.text("Service Description", 20, 138); doc.text("Amount (INR)", 155, 138);
       
-      let grandTotal = globalBookingData.grandTotal || TOTAL_PRICE;
+      let grandTotal = globalBookingData.grandTotal || currentServicePrice;
       let subtotal = globalBookingData.total || (grandTotal / 1.18);
       let cgst = globalBookingData.cgst || ((grandTotal - subtotal) / 2);
       let sgst = globalBookingData.sgst || ((grandTotal - subtotal) / 2);
 
       doc.setFont("helvetica", "normal"); 
-      doc.text("1. " + (globalBookingData.serviceName || "Premium Foam Wash"), 20, 149); 
+      doc.text("1. " + (globalBookingData.serviceName || selectedServiceName), 20, 149); 
       doc.text("Rs. " + grandTotal.toFixed(2), 155, 149);
 
       if (isPaidVerified) {
@@ -796,7 +849,7 @@
         doc.addImage(createRubberStampImage(false), 'PNG', 124, 194, 56, 56);
       }
 
-      doc.save(isPaidVerified ? `MoGo_Invoice_${globalBookingData.id}.pdf` : `MoGo_Job_Card_${globalBookingData.id}.pdf`);
+      doc.save(isPaidVerified ? `MoGo_Tax_Invoice_${globalBookingData.id}.pdf` : `MoGo_Job_Card_${globalBookingData.id}.pdf`);
     } catch (e) {
       alert("Error generating PDF.");
     }
