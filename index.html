@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MoGo — Total Bike Care | World-Class Mobile App UI</title>
+  <title>MoGo — Total Bike Care | Enterprise Mobile & Desktop Experience</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
       --primary: #FF5A00; 
       --primary-hover: #E04F00;
       --primary-subtle: #FFF7F2;
-      --bg: #F4F6F9; 
+      --bg: #F8FAFC; 
       --surface: #FFFFFF; 
       --text-main: #0B0F19; 
       --text-secondary: #334155;
@@ -36,12 +36,11 @@
       display: flex;
       flex-direction: column;
       -webkit-font-smoothing: antialiased;
-      padding-bottom: 40px;
     }
 
-    /* APP HEADER / TOP BAR */
+    /* TOP HEADER / APP BAR */
     .app-header {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       position: sticky;
@@ -50,49 +49,64 @@
       width: 100%;
     }
     .header-inner {
-      max-width: 900px;
+      max-width: 1180px;
       margin: 0 auto;
-      padding: 14px 20px;
+      padding: 16px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .brand-group { display: flex; align-items: center; gap: 10px; }
-    .logo-letter { font-size: 28px; font-weight: 900; color: var(--text-main); letter-spacing: -1.5px; line-height: 1; }
-    .logo-symbol { font-size: 18px; font-weight: 800; color: var(--primary); }
-    .spin-wheel-clockwise { width: 28px; height: 28px; animation: rotateClockwise 3s linear infinite; }
+    .brand-group { display: flex; align-items: center; gap: 12px; }
+    .logo-letter { font-size: 30px; font-weight: 900; color: var(--text-main); letter-spacing: -1.5px; line-height: 1; }
+    .logo-symbol { font-size: 20px; font-weight: 800; color: var(--primary); }
+    .spin-wheel-clockwise { width: 30px; height: 30px; animation: rotateClockwise 3s linear infinite; }
     @keyframes rotateClockwise { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .logo-tagline { font-size: 9.5px; font-weight: 800; color: var(--primary); letter-spacing: 2.5px; text-transform: uppercase; }
+    .logo-tagline { font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 3px; text-transform: uppercase; }
 
-    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .header-actions { display: flex; align-items: center; gap: 12px; }
     .hub-pill {
-      background: #F1F5F9; border: 1px solid var(--border); padding: 5px 10px;
-      border-radius: 999px; font-size: 11px; font-weight: 700; color: var(--text-secondary);
+      background: #F1F5F9; border: 1px solid var(--border); padding: 6px 12px;
+      border-radius: 999px; font-size: 11.5px; font-weight: 700; color: var(--text-secondary);
       display: flex; align-items: center; gap: 6px;
     }
-    .hub-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+    .hub-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
     .admin-btn {
-      background: #0B0F19; color: #FFF; border: none; padding: 7px 12px;
-      border-radius: 8px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+      background: var(--text-main); color: #FFF; border: none; padding: 8px 14px;
+      border-radius: 9px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;
     }
+    .admin-btn:hover { background: var(--primary); }
 
-    /* MAIN APP CONTAINER (Mobile App Experience) */
-    .app-main {
+    /* RESPONSIVE DESKTOP & MOBILE WORKSPACE */
+    .workspace {
       width: 100%;
-      max-width: 680px;
-      margin: 20px auto 0;
-      padding: 0 16px;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+      flex: 1;
     }
 
-    .app-card {
+    .page-header { margin-bottom: 28px; }
+    .page-title { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; margin: 0 0 4px; }
+    .page-subtitle { font-size: 14px; color: var(--text-muted); font-weight: 500; margin: 0; }
+
+    /* DESKTOP 2-COLUMN SPLIT LAYOUT */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-xl);
-      padding: 24px 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 10px 30px -10px rgba(11, 15, 25, 0.05);
+      padding: 24px 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(11, 15, 25, 0.03);
     }
+    .card:last-child { margin-bottom: 0; }
 
     .card-title {
       font-size: 12px;
@@ -109,10 +123,10 @@
       background: var(--input-bg); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border); gap: 4px;
     }
     .app-tab {
-      padding: 12px 14px; border-radius: 9px; cursor: pointer; text-align: left;
+      padding: 14px; border-radius: 10px; cursor: pointer; text-align: left;
       border: 1px solid transparent; transition: 0.2s;
     }
-    .app-tab-title { font-size: 13.5px; font-weight: 800; color: var(--text-muted); }
+    .app-tab-title { font-size: 14px; font-weight: 800; color: var(--text-muted); }
     .app-tab-sub { font-size: 11px; font-weight: 600; color: #94A3B8; margin-top: 2px; }
     .app-tab.active {
       background: var(--surface);
@@ -124,32 +138,31 @@
     /* SERVICES LIST */
     .service-row {
       background: var(--input-bg); border: 1px solid var(--border);
-      border-radius: var(--radius-md); padding: 16px; display: flex; justify-content: space-between; align-items: center;
+      border-radius: var(--radius-md); padding: 18px; display: flex; justify-content: space-between; align-items: center;
     }
     .service-row.active { border-color: var(--primary); background: var(--primary-subtle); }
-    .sr-title { font-size: 14px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+    .sr-title { font-size: 14.5px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
     .sr-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
-    .sr-desc { font-size: 11.5px; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
-    .sr-price { font-size: 18px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
+    .sr-desc { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-top: 3px; }
+    .sr-price { font-size: 20px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
 
     /* TIME SLOTS GRID */
     .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .slot-pill {
       background: var(--input-bg); border: 1px solid var(--border); border-radius: var(--radius-md);
-      padding: 14px 12px; cursor: pointer; transition: 0.2s; text-align: left;
+      padding: 14px; cursor: pointer; transition: 0.2s; text-align: left;
     }
     .slot-pill.active { background: var(--primary-subtle); border-color: var(--primary); }
-    .slot-time { font-size: 12.5px; font-weight: 800; color: var(--text-main); }
-    .slot-tag { font-size: 10px; font-weight: 700; color: var(--success); margin-top: 4px; text-transform: uppercase; }
+    .slot-time { font-size: 13px; font-weight: 800; color: var(--text-main); }
+    .slot-tag { font-size: 10.5px; font-weight: 700; color: var(--success); margin-top: 4px; text-transform: uppercase; }
 
     /* INPUTS & FORM */
-    .input-group { margin-bottom: 14px; }
-    .input-group:last-child { margin-bottom: 0; }
+    .input-row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px; }
     input, textarea {
-      width: 100%; padding: 13px 16px; background: var(--input-bg); border: 1px solid var(--border);
+      width: 100%; padding: 14px 16px; background: var(--input-bg); border: 1px solid var(--border);
       border-radius: var(--radius-md); color: var(--text-main); font-size: 14px; font-weight: 600; outline: none; transition: 0.2s;
     }
-    textarea { min-height: 76px; resize: none; line-height: 1.4; }
+    textarea { min-height: 84px; resize: none; line-height: 1.5; }
     input:focus, textarea:focus { border-color: var(--primary); background: #FFF; box-shadow: 0 0 0 3px var(--primary-subtle); }
     input::placeholder, textarea::placeholder { color: #94A3B8; font-weight: 500; }
 
@@ -158,17 +171,20 @@
       border-radius: 8px; font-size: 11.5px; font-weight: 800; cursor: pointer;
     }
 
-    /* CHECKOUT DOCK (Bottom / Sticky Summary) */
-    .checkout-dock {
+    /* DESKTOP STICKY CHECKOUT SUMMARY PANEL */
+    .checkout-panel {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl);
-      padding: 24px 20px; box-shadow: 0 20px 40px rgba(11,15,25,0.06);
+      padding: 28px; box-shadow: 0 10px 30px rgba(11,15,25,0.05); position: sticky; top: 92px;
     }
-    .dock-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; color: var(--text-muted); font-weight: 600; }
-    .dock-val { color: var(--text-main); font-weight: 700; }
-    .dock-divider { height: 1px; background: var(--border); margin: 14px 0; }
-    .dock-total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; }
-    .dock-total-label { font-size: 15px; font-weight: 800; color: var(--text-main); }
-    .dock-total-val { font-size: 26px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
+    .cp-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .cp-badge { font-size: 11px; font-weight: 700; color: var(--success); background: #F0FDF4; padding: 3px 8px; border-radius: 6px; border: 1px solid #BBF7D0; }
+
+    .cp-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 12px; color: var(--text-muted); font-weight: 600; }
+    .cp-val { color: var(--text-main); font-weight: 700; }
+    .cp-divider { height: 1px; background: var(--border); margin: 16px 0; }
+    .cp-total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 22px; }
+    .cp-total-label { font-size: 15px; font-weight: 800; color: var(--text-main); }
+    .cp-total-val { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
 
     .btn-action {
       width: 100%; padding: 16px; border-radius: var(--radius-md); border: none;
@@ -176,19 +192,28 @@
       color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer;
       box-shadow: 0 8px 20px rgba(255,90,0,0.25); transition: 0.2s;
     }
+    .btn-action:hover { filter: brightness(1.05); transform: translateY(-1px); }
     .btn-action:active { transform: scale(0.99); }
 
     /* STATES & MODALS */
-    .state-screen { display: none; max-width: 520px; margin: 40px auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 36px 24px; text-align: center; }
-    .loader { width: 40px; height: 40px; border: 3px solid #E2E8F0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    .state-screen { display: none; max-width: 520px; margin: 40px auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 40px 24px; text-align: center; }
+    .loader { width: 44px; height: 44px; border: 3px solid #E2E8F0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
     .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11,15,25,0.5); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 9999; opacity: 0; pointer-events: none; transition: 0.2s; }
     .ui-modal-overlay.show { opacity: 1; pointer-events: auto; }
-    .ui-modal-box { background: var(--surface); width: 100%; max-width: 440px; border-radius: var(--radius-xl); padding: 26px; border: 1px solid var(--border); }
+    .ui-modal-box { background: var(--surface); width: 100%; max-width: 460px; border-radius: var(--radius-xl); padding: 28px; border: 1px solid var(--border); }
 
+    /* RESPONSIVE MEDIA QUERIES */
     @media (min-width: 640px) {
+      .input-row { grid-template-columns: repeat(2, 1fr); }
       .slots-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr 410px;
+        gap: 32px;
+      }
     }
   </style>
 </head>
@@ -205,121 +230,149 @@
           <svg class="spin-wheel-clockwise" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FF5A00" stroke-width="13"/><circle cx="50" cy="50" r="37" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19" stroke="#0B0F19" stroke-width="3.5"/><circle cx="50" cy="50" r="8.5" fill="#FF5A00"/><circle cx="50" cy="50" r="3.5" fill="#FFFFFF"/></svg>
           <span class="logo-symbol">=</span>
         </div>
-        <div style="width:1px; height:18px; background:var(--border);"></div>
+        <div style="width:1px; height:20px; background:var(--border);"></div>
         <div class="logo-tagline">Total Bike Care</div>
       </div>
       <div class="header-actions">
         <div class="hub-pill"><span class="hub-dot"></span> Guwahati Hub</div>
-        <button class="admin-btn" onclick="openAdminPortal()">Admin</button>
+        <button class="admin-btn" onclick="openAdminPortal()">Admin Console</button>
       </div>
     </div>
   </header>
 
-  <!-- APP WORKSPACE -->
-  <main class="app-main">
+  <!-- WORKSPACE -->
+  <main class="workspace">
     <div id="bookingForm">
-      
-      <!-- CARD 1: VEHICLE & SERVICE -->
-      <div class="app-card">
-        <div class="card-title">Select Vehicle Category</div>
-        <div class="app-tabs">
-          <div class="app-tab active" id="v-bike" onclick="selectVehicle('Bike')">
-            <div class="app-tab-title">Motorcycle</div>
-            <div class="app-tab-sub">Standard / Sports</div>
-          </div>
-          <div class="app-tab" id="v-scooty" onclick="selectVehicle('Scooty')">
-            <div class="app-tab-title">Scooter</div>
-            <div class="app-tab-sub">Gearless Automatic</div>
-          </div>
-        </div>
-
-        <div class="card-title" style="margin-top:22px;">Selected Service Package</div>
-        <div class="service-row active">
-          <div>
-            <div class="sr-title"><span class="sr-dot"></span> Premium High-Pressure Foam Wash</div>
-            <div class="sr-desc">Complete exterior snow-foam clean & tyre dressing</div>
-          </div>
-          <div class="sr-price">₹69</div>
-        </div>
+      <div class="page-header">
+        <h1 class="page-title">Doorstep Mobility Service</h1>
+        <p class="page-subtitle">On-demand mobile high-pressure foam wash & care across Greater Guwahati.</p>
       </div>
 
-      <!-- CARD 2: TIME SLOTS -->
-      <div class="app-card">
-        <div class="card-title">Choose Doorstep Dispatch Slot</div>
-        <div class="slots-grid" id="slotsGrid">
-          <div class="slot-pill active" onclick="selectTimeSlot(this, '08:00 AM - 09:30 AM')">
-            <div class="slot-time">08:00 – 09:30 AM</div>
-            <div class="slot-tag">● Available</div>
-          </div>
-          <div class="slot-pill" onclick="selectTimeSlot(this, '10:00 AM - 11:30 AM')">
-            <div class="slot-time">10:00 – 11:30 AM</div>
-            <div class="slot-tag" style="color:#D97706;">⚡ Fast Filling</div>
-          </div>
-          <div class="slot-pill" onclick="selectTimeSlot(this, '12:00 PM - 01:30 PM')">
-            <div class="slot-time">12:00 – 01:30 PM</div>
-            <div class="slot-tag">● Available</div>
-          </div>
-          <div class="slot-pill" onclick="selectTimeSlot(this, '02:30 PM - 04:00 PM')">
-            <div class="slot-time">02:30 – 04:00 PM</div>
-            <div class="slot-tag">● Available</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CARD 3: CUSTOMER DETAILS & ADDRESS -->
-      <div class="app-card">
-        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
-          <span>Customer & Location</span>
-          <button class="loc-trigger" onclick="getLocation()" type="button">Detect GPS</button>
-        </div>
-
-        <div class="input-group">
-          <input type="text" id="cName" placeholder="Full Name">
-        </div>
-        <div class="input-group">
-          <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        </div>
-        <div class="input-group">
-          <textarea id="cAddr" rows="2" placeholder="Doorstep Address (House/Flat, Street, Landmark)..."></textarea>
-        </div>
-      </div>
-
-      <!-- CHECKOUT DOCK -->
-      <div class="checkout-dock">
-        <div class="dock-row"><span>Service Package</span><span class="dock-val">Foam Wash</span></div>
-        <div class="dock-row"><span>Vehicle Type</span><span class="dock-val" id="sumVehicle">Motorcycle</span></div>
-        <div class="dock-row"><span>Time Window</span><span class="dock-val" id="sumSlot">08:00 AM - 09:30 AM</span></div>
+      <div class="main-grid">
         
-        <div class="dock-divider"></div>
+        <!-- LEFT CONFIGURATION COLUMN -->
+        <div class="config-column">
+          
+          <div class="card">
+            <div class="card-title">01. Select Vehicle Category</div>
+            <div class="app-tabs">
+              <div class="app-tab active" id="v-bike" onclick="selectVehicle('Bike')">
+                <div class="app-tab-title">Motorcycle</div>
+                <div class="app-tab-sub">Standard / Sports</div>
+              </div>
+              <div class="app-tab" id="v-scooty" onclick="selectVehicle('Scooty')">
+                <div class="app-tab-title">Scooter</div>
+                <div class="app-tab-sub">Gearless Automatic</div>
+              </div>
+            </div>
 
-        <div class="dock-row"><span>Taxable Value + GST (18%)</span><span class="dock-val">₹69.00</span></div>
-        <div class="dock-total">
-          <span class="dock-total-label">Total Payable</span>
-          <span class="dock-total-val">₹69.00</span>
+            <div class="card-title" style="margin-top:24px;">02. Service Package</div>
+            <div class="service-row active">
+              <div>
+                <div class="sr-title"><span class="sr-dot"></span> Premium High-Pressure Foam Wash</div>
+                <div class="sr-desc">Complete exterior snow-foam clean, chain degrease & tyre dressing</div>
+              </div>
+              <div class="sr-price">₹69</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">03. Choose Dispatch Window</div>
+            <div class="slots-grid" id="slotsGrid">
+              <div class="slot-pill active" onclick="selectTimeSlot(this, '08:00 AM - 09:30 AM')">
+                <div class="slot-time">08:00 – 09:30 AM</div>
+                <div class="slot-tag">● Available</div>
+              </div>
+              <div class="slot-pill" onclick="selectTimeSlot(this, '10:00 AM - 11:30 AM')">
+                <div class="slot-time">10:00 – 11:30 AM</div>
+                <div class="slot-tag" style="color:#D97706;">⚡ Fast Filling</div>
+              </div>
+              <div class="slot-pill" onclick="selectTimeSlot(this, '12:00 PM - 01:30 PM')">
+                <div class="slot-time">12:00 – 01:30 PM</div>
+                <div class="slot-tag">● Available</div>
+              </div>
+              <div class="slot-pill" onclick="selectTimeSlot(this, '02:30 PM - 04:00 PM')">
+                <div class="slot-time">02:30 – 04:00 PM</div>
+                <div class="slot-tag">● Available</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>04. Customer & Location Coordinates</span>
+              <button class="loc-trigger" onclick="getLocation()" type="button">Detect GPS</button>
+            </div>
+
+            <div class="input-row">
+              <input type="text" id="cName" placeholder="Full Name">
+              <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+            <div>
+              <textarea id="cAddr" rows="3" placeholder="Doorstep Address (House/Flat, Street, Landmark in Guwahati)..."></textarea>
+            </div>
+          </div>
+
         </div>
 
-        <button class="btn-action" onclick="submitBooking()">
-          Confirm & Dispatch Unit 🚀
-        </button>
-      </div>
+        <!-- RIGHT STICKY CHECKOUT SUMMARY PANEL -->
+        <aside class="checkout-panel">
+          <div class="cp-title">
+            <span>Order Summary</span>
+            <span class="cp-badge">GST Compliant</span>
+          </div>
 
+          <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border);">
+            <div class="cp-row"><span class="cp-label">Service</span><span class="cp-val">Foam Wash</span></div>
+            <div class="cp-row"><span class="cp-label">Vehicle</span><span class="cp-val" id="sumVehicle">Motorcycle</span></div>
+            <div class="cp-row"><span class="cp-label">Window</span><span class="cp-val" id="sumSlot">08:00 AM - 09:30 AM</span></div>
+          </div>
+
+          <div class="card-title" style="margin-bottom:10px;">Settlement Mode</div>
+          <div class="app-tabs" style="margin-bottom:20px;">
+            <div class="app-tab active" id="opt-now" onclick="selectPayType('Pay Now')">
+              <div class="app-tab-title">Pay Online</div>
+              <div class="app-tab-sub">Instant UPI QR</div>
+            </div>
+            <div class="app-tab" id="opt-after" onclick="selectPayType('Pay After Service')">
+              <div class="app-tab-title">Post-Service</div>
+              <div class="app-tab-sub">Cash / UPI</div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border);">
+            <div class="cp-row"><span class="cp-label">Taxable Value</span><span class="cp-val">₹58.47</span></div>
+            <div class="cp-row"><span class="cp-label">CGST + SGST (18%)</span><span class="cp-val">₹10.53</span></div>
+          </div>
+
+          <div class="cp-total">
+            <span class="cp-total-label">Total Payable</span>
+            <span class="cp-total-val">₹69.00</span>
+          </div>
+
+          <button class="btn-action" onclick="submitBooking()">
+            Confirm & Dispatch Unit 🚀
+          </button>
+        </aside>
+
+      </div>
     </div>
 
     <!-- LOADING SCREEN -->
     <div class="state-screen" id="loadingScreen">
       <div class="loader"></div>
-      <h3 style="font-size:17px; font-weight:800; margin:0 0 6px;">Locking Mobile Unit</h3>
-      <p style="color:var(--text-muted); font-size:13px; margin:0;">Generating official PDF job card...</p>
+      <h3 style="font-size:18px; font-weight:800; margin:0 0 6px;">Locking Service Unit</h3>
+      <p style="color:var(--text-muted); font-size:13.5px; margin:0;">Generating official PDF job card...</p>
     </div>
 
     <!-- SUCCESS SCREEN -->
     <div class="state-screen" id="successScreen">
-      <h2 style="font-size:22px; font-weight:800; margin:0 0 6px; color:var(--success);">Dispatch Confirmed</h2>
-      <p style="color:var(--text-muted); font-size:13px; margin:0 0 20px;" id="successSubtitle">Your slot has been successfully registered.</p>
+      <h2 style="font-size:24px; font-weight:800; margin:0 0 6px; color:var(--success);">Dispatch Confirmed</h2>
+      <p style="color:var(--text-muted); font-size:14px; margin:0. 0 24px;" id="successSubtitle">Your slot has been successfully registered.</p>
       
       <button class="btn-action" id="pdfDownloadBtn" onclick="downloadInvoice(false)">Download Service Job Card (PDF)</button>
-      <a id="waBtn" href="#" target="_blank" class="btn-action" style="background:#22C55E; text-decoration:none; margin-top:10px; display:block;">Send Details via WhatsApp</a>
-      <button class="btn-action" style="background:#F1F5F9; color:var(--text-main); margin-top:10px; box-shadow:none;" onclick="location.reload()">Book Another Service</button>
+      <a id="waBtn" href="#" target="_blank" class="btn-action" style="background:#22C55E; text-decoration:none; margin-top:12px; display:block;">Send Details via WhatsApp</a>
+      <button class="btn-action" style="background:#F1F5F9; color:var(--text-main); margin-top:12px; box-shadow:none;" onclick="location.reload()">Book Another Service</button>
     </div>
   </main>
 
@@ -346,6 +399,7 @@
 
   let vehicleType = "Bike";
   let selectedSlot = "08:00 AM - 09:30 AM";
+  let paymentType = "Pay Now";
   let globalBookingData = {};
   let customerCoords = null;
 
@@ -361,6 +415,12 @@
     el.classList.add('active');
     selectedSlot = slotText;
     document.getElementById('sumSlot').innerText = slotText;
+  }
+
+  function selectPayType(t) {
+    paymentType = t;
+    document.getElementById('opt-now').classList.toggle('active', t === 'Pay Now');
+    document.getElementById('opt-after').classList.toggle('active', t !== 'Pay Now');
   }
 
   function getLocation() {
@@ -395,11 +455,11 @@
       serviceName: "Premium Foam Wash",
       slot: selectedSlot,
       total: TOTAL_PRICE / 1.18,
-      cgst: (TOTAL_PRICE - (TOTAL_PRICE / 1.18)) / 2,
-      sgst: (TOTAL_PRICE - (TOTAL_PRICE / 1.18)) / 2,
+      cgst: (TOTAL_PRICE - (TOTAL_PRIC / 1.18)) / 2,
+      sgst: (TOTAL_PRICE - (TOTAL_PRIC / 1.18)) / 2,
       grandTotal: TOTAL_PRICE,
       address: addr,
-      paymentType: "Pay Now",
+      paymentType: paymentType,
       forceType: "JOB_CARD"
     };
 
