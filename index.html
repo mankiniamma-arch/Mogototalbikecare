@@ -155,7 +155,7 @@
     /* VIEW CARD MODAL */
     .view-card-modal { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999; opacity: 0; visibility: hidden; transition: 0.2s; }
     .view-card-modal.show { opacity: 1; visibility: visible; }
-    .view-card-box { background: #FFFFFF; width: 100%; max-width: 380px; border-radius: 24px; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); text-align: left; }
+    .view-card-box { background: #FFFFFF; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); text-align: left; }
 
     /* CUSTOM DIALOG POPUPS */
     .custom-alert-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999; opacity: 0; visibility: hidden; transition: 0.2s ease; }
@@ -327,7 +327,10 @@
       <button onclick="closeViewCard()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer;">✕</button>
     </div>
     <div id="viewCardContent" style="font-size:13px; color:#475569; line-height:1.6; background:#F8FAFC; padding:14px; border-radius:14px; border:1px solid var(--border); margin-bottom:14px;"></div>
-    <button class="btn-main" id="modalDownloadPdfBtn" style="margin-top:0;">Download PDF</button>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-main" id="modalDownloadPdfBtn" style="margin-top:0;">Download PDF</button>
+      <button class="btn-outline" onclick="closeViewCard()" style="margin-top:0;">Close</button>
+    </div>
   </div>
 </div>
 
@@ -478,19 +481,25 @@
     }
   }
 
-  // --- VIEW CARD MODAL ---
+  // --- VIEW CARD MODAL WITH STAMP PREVIEW ---
   function viewJobCardModal(id) {
     let rec = getRecord(id);
     if (!rec) return;
+    let isPaid = rec.forceType === 'TAX_INVOICE' || rec.paymentType === 'Pay Now';
+    let stampHtml = isPaid 
+      ? `<div style="display:inline-block; border:4px solid #16A34A; color:#16A34A; font-weight:900; padding:6px 16px; border-radius:12px; font-size:18px; transform:rotate(-8deg); margin-top:10px;">PAID</div>`
+      : `<div style="display:inline-block; border:4px solid #DC2626; color:#DC2626; font-weight:900; padding:6px 16px; border-radius:12px; font-size:18px; transform:rotate(-8deg); margin-top:10px;">UNPAID</div>`;
+
     let html = `<strong>Booking ID:</strong> ${rec.id}<br>
                 <strong>Date:</strong> ${rec.date}<br>
                 <strong>Customer:</strong> ${rec.name} (${rec.phone})<br>
                 <strong>Vehicle:</strong> ${rec.vehicle}<br>
                 <strong>Service:</strong> ${rec.serviceName} (₹${rec.grandTotal})<br>
                 <strong>Time Slot:</strong> ${rec.slot}<br>
-                <strong>Address:</strong> ${rec.address}`;
+                <strong>Address:</strong> ${rec.address}<br>
+                <div style="text-align:center; margin-top:12px;">${stampHtml}</div>`;
     document.getElementById('viewCardContent').innerHTML = html;
-    document.getElementById('modalDownloadPdfBtn').onclick = function() { generatePDFFromDB(id, false); };
+    document.getElementById('modalDownloadPdfBtn').onclick = function() { generatePDFFromDB(id, isPaid); };
     document.getElementById('viewCardModal').classList.add('show');
   }
   function closeViewCard() { document.getElementById('viewCardModal').classList.remove('show'); }
@@ -987,20 +996,77 @@
     return canvas.toDataURL('image/png');
   }
 
+  // --- APPROVED CURVED RUBBER STAMP (RED / GREEN) ---
   function createRubberStampImage(isGreen) {
     const canvas = document.createElement('canvas');
-    canvas.width = 600; canvas.height = 600;
+    canvas.width = 600;
+    canvas.height = 600;
     const ctx = canvas.getContext('2d');
-    const cx = 300, cy = 300, col = isGreen ? '#16A34A' : '#DC2626';
-    ctx.save(); ctx.translate(cx, cy); ctx.rotate(-15 * Math.PI / 180);
-    ctx.strokeStyle = col; ctx.fillStyle = col;
+    const cx = 300, cy = 300;
+    const col = isGreen ? '#16A34A' : '#DC2626';
+    const bgFill = isGreen ? '#FFFFFF' : '#FEFCE8';
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(-15 * Math.PI / 180);
+    ctx.strokeStyle = col;
+    ctx.fillStyle = col;
+
     ctx.lineWidth = 16; ctx.beginPath(); ctx.arc(0, 0, 230, 0, Math.PI * 2); ctx.stroke();
+    ctx.lineWidth = 4;  ctx.beginPath(); ctx.arc(0, 0, 208, 0, Math.PI * 2); ctx.stroke();
+    ctx.lineWidth = 6;  ctx.beginPath(); ctx.arc(0, 0, 136, 0, Math.PI * 2); ctx.stroke();
+    ctx.lineWidth = 2.5;ctx.beginPath(); ctx.arc(0, 0, 124, 0, Math.PI * 2); ctx.stroke();
+
+    ctx.fillStyle = col;
+    ctx.font = 'bold 48px Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    let topText = "MTPL", topAngle = 0.9, startT = -Math.PI / 2 - topAngle / 2;
+    for (let i = 0; i < topText.length; i++) {
+      let theta = startT + (i / (topText.length - 1)) * topAngle;
+      ctx.save();
+      ctx.translate(172 * Math.cos(theta), 172 * Math.sin(theta));
+      ctx.rotate(theta + Math.PI / 2);
+      ctx.fillText(topText[i], 0, 0);
+      ctx.restore();
+    }
+
+    ctx.fillStyle = col;
+    ctx.font = 'bold 26px Arial, sans-serif';
+    let botText = "MOGO BIKES CARE", botAngle = 1.95, startB = Math.PI / 2 + botAngle / 2;
+    for (let i = 0; i < botText.length; i++) {
+      let theta = startB - (i / (botText.length - 1)) * botAngle;
+      ctx.save();
+      ctx.translate(172 * Math.cos(theta), 172 * Math.sin(theta));
+      ctx.rotate(theta - Math.PI / 2);
+      ctx.fillText(botText[i], 0, 0);
+      ctx.restore();
+    }
+
+    ctx.fillStyle = col;
+    ctx.font = 'bold 24px Arial, sans-serif';
+    ctx.fillText('★', -54, -80); ctx.fillText('★', 54, -80);
+    ctx.font = 'bold 36px Arial, sans-serif';
+    ctx.fillText('★', 0, -84);
+    ctx.font = 'bold 24px Arial, sans-serif';
+    ctx.fillText('★', -54, 80);  ctx.fillText('★', 54, 80);
+    ctx.font = 'bold 36px Arial, sans-serif';
+    ctx.fillText('★', 0, 84);
+
     const bw = 540, bh = 106;
-    ctx.fillStyle = isGreen ? '#FFF' : '#FEFCE8'; ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
-    ctx.strokeStyle = col; ctx.lineWidth = 12; ctx.strokeRect(-bw / 2, -bh / 2, bw, bh);
-    ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.font = 'bold 78px Arial, sans-serif'; ctx.fillText(isGreen ? "PAID" : "UNPAID", 0, 4);
+    ctx.fillStyle = bgFill;
+    ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 12; ctx.strokeRect(-bw / 2, -bh / 2, bw, bh);
+    ctx.lineWidth = 3;  ctx.strokeRect(-bw / 2 + 10, -bh / 2 + 10, bw - 20, bh - 20);
+
+    ctx.fillStyle = col;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = isGreen ? 'bold 78px Arial, sans-serif' : 'bold 70px Arial, sans-serif';
+    ctx.fillText(isGreen ? "PAID" : "UNPAID", 0, 4);
     ctx.restore();
+
     return canvas.toDataURL('image/png');
   }
 
