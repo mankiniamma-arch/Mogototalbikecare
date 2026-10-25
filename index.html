@@ -3,432 +3,343 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MoGo — Total Bike Care | Enterprise Mobile & Desktop Experience</title>
+  <title>MoGo - Total Bike Care | Guwahati</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   
   <style>
     :root { 
       --primary: #FF5A00; 
-      --primary-hover: #E04F00;
-      --primary-subtle: #FFF7F2;
+      --primary-dark: #E65100;
       --bg: #F8FAFC; 
-      --surface: #FFFFFF; 
+      --card: #FFFFFF; 
       --text-main: #0B0F19; 
-      --text-secondary: #334155;
       --text-muted: #64748B; 
       --border: #E2E8F0;
-      --input-bg: #F8FAFC;
+      --input-bg: #F1F5F9;
+      --error: #EF4444;
       --success: #16A34A;
-      --radius-xl: 24px;
-      --radius-lg: 18px;
-      --radius-md: 12px;
     }
     
     * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; background: var(--bg); color: var(--text-main); padding: 12px; display: flex; justify-content: center; min-height: 100vh; align-items: flex-start; }
     
-    body { 
-      margin: 0; 
-      background-color: var(--bg); 
-      color: var(--text-main); 
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
+    .app-container { width: 100%; max-width: 440px; margin: 0 auto; padding-bottom: 40px; transition: max-width 0.3s ease; }
+    
+    .card { 
+      background: var(--card); 
+      border-radius: 28px; 
+      padding: 26px 20px; 
+      margin-bottom: 20px; 
+      box-shadow: 0 20px 40px -15px rgba(11, 15, 25, 0.08), 0 4px 12px rgba(11, 15, 25, 0.03); 
+      border: 1px solid rgba(226, 232, 240, 0.8);
     }
 
-    /* TOP HEADER / APP BAR */
-    .app-header {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      width: 100%;
-    }
-    .header-inner {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .brand-group { display: flex; align-items: center; gap: 12px; }
-    .logo-letter { font-size: 30px; font-weight: 900; color: var(--text-main); letter-spacing: -1.5px; line-height: 1; }
-    .logo-symbol { font-size: 20px; font-weight: 800; color: var(--primary); }
-    .spin-wheel-clockwise { width: 30px; height: 30px; animation: rotateClockwise 3s linear infinite; }
+    /* ORIGINAL LARGE BRAND HEADER & SPINNING WHEELS */
+    .brand-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid #F1F5F9; }
+    .logo-container { display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 6px; }
+    .logo-letter { font-size: 52px; font-weight: 900; color: var(--text-main); letter-spacing: -2px; }
+    .logo-symbol { font-size: 34px; font-weight: 800; color: var(--primary); margin: 0 2px; }
+    
+    .spin-wheel-clockwise { width: 52px; height: 52px; animation: rotateClockwise 3s linear infinite; filter: drop-shadow(0 4px 8px rgba(255, 90, 0, 0.25)); }
     @keyframes rotateClockwise { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .logo-tagline { font-size: 10px; font-weight: 800; color: var(--primary); letter-spacing: 3px; text-transform: uppercase; }
 
-    .header-actions { display: flex; align-items: center; gap: 12px; }
-    .hub-pill {
-      background: #F1F5F9; border: 1px solid var(--border); padding: 6px 12px;
-      border-radius: 999px; font-size: 11.5px; font-weight: 700; color: var(--text-secondary);
-      display: flex; align-items: center; gap: 6px;
-    }
-    .hub-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
-    .admin-btn {
-      background: var(--text-main); color: #FFF; border: none; padding: 8px 14px;
-      border-radius: 9px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;
-    }
-    .admin-btn:hover { background: var(--primary); }
+    .logo-tagline { font-size: 12.5px; font-weight: 800; color: var(--primary); letter-spacing: 4px; text-transform: uppercase; margin-top: 6px; }
 
-    /* RESPONSIVE DESKTOP & MOBILE WORKSPACE */
-    .workspace {
-      width: 100%;
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 32px 24px 80px;
-      flex: 1;
-    }
+    label { display: block; font-size: 11.5px; font-weight: 800; color: var(--text-muted); margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 1px; }
+    
+    input, select, textarea { width: 100%; padding: 15px; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 16px; color: var(--text-main); font-size: 14.5px; font-weight: 700; outline: none; transition: all 0.2s ease; }
+    textarea { min-height: 80px; resize: none; line-height: 1.45; display: block; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); background: #FFFFFF; box-shadow: 0 0 0 4px rgba(255,90,0,0.12); }
+    input::placeholder, textarea::placeholder { color: #94A3B8; font-weight: 500; }
 
-    .page-header { margin-bottom: 28px; }
-    .page-title { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; margin: 0 0 4px; }
-    .page-subtitle { font-size: 14px; color: var(--text-muted); font-weight: 500; margin: 0; }
-
-    /* DESKTOP 2-COLUMN SPLIT LAYOUT */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 24px 22px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 20px rgba(11, 15, 25, 0.03);
-    }
-    .card:last-child { margin-bottom: 0; }
-
-    .card-title {
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin-bottom: 14px;
-    }
-
-    /* VEHICLE TABS */
-    .app-tabs {
-      display: grid; grid-template-columns: repeat(2, 1fr);
-      background: var(--input-bg); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border); gap: 4px;
-    }
-    .app-tab {
-      padding: 14px; border-radius: 10px; cursor: pointer; text-align: left;
-      border: 1px solid transparent; transition: 0.2s;
-    }
-    .app-tab-title { font-size: 14px; font-weight: 800; color: var(--text-muted); }
-    .app-tab-sub { font-size: 11px; font-weight: 600; color: #94A3B8; margin-top: 2px; }
-    .app-tab.active {
-      background: var(--surface);
-      border-color: var(--border);
-      box-shadow: 0 4px 12px rgba(11, 15, 25, 0.06);
-    }
-    .app-tab.active .app-tab-title { color: var(--primary); }
+    .input-error { border-color: var(--error) !important; background: #FEF2F2 !important; }
 
     /* SERVICES LIST */
-    .service-row {
-      background: var(--input-bg); border: 1px solid var(--border);
-      border-radius: var(--radius-md); padding: 18px; display: flex; justify-content: space-between; align-items: center;
-    }
-    .service-row.active { border-color: var(--primary); background: var(--primary-subtle); }
-    .sr-title { font-size: 14.5px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
-    .sr-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
-    .sr-desc { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-top: 3px; }
-    .sr-price { font-size: 20px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
+    .services-list { display: flex; flex-direction: column; gap: 10px; }
+    .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .service-card.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 6px 16px rgba(255,90,0,0.06); }
+    .service-card.disabled { background: #F8FAFC; border: 1px solid #E2E8F0; opacity: 0.85; }
+    .s-title { font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.3; }
+    .s-desc { font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
+    .s-price { font-size: 18px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
+    .s-badge { font-size: 9.5px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 6px 9px; border-radius: 8px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+
+    /* SEGMENTED CONTROL */
+    .segmented-control { display: flex; background: var(--input-bg); padding: 5px; border-radius: 18px; border: 1px solid var(--border); gap: 4px; }
+    .seg-btn { flex: 1; text-align: center; padding: 12px 8px; font-size: 13.5px; font-weight: 700; color: var(--text-muted); border-radius: 14px; cursor: pointer; transition: 0.2s; }
+    .seg-btn.active { background: #FFFFFF; color: var(--primary); box-shadow: 0 4px 12px rgba(11, 15, 25, 0.06); }
+    .seg-btn span { display: block; font-size: 10px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
 
     /* TIME SLOTS GRID */
     .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .slot-pill {
-      background: var(--input-bg); border: 1px solid var(--border); border-radius: var(--radius-md);
-      padding: 14px; cursor: pointer; transition: 0.2s; text-align: left;
+    .slot-card {
+      background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 14px;
+      padding: 12px 10px; cursor: pointer; transition: all 0.2s; text-align: left;
     }
-    .slot-pill.active { background: var(--primary-subtle); border-color: var(--primary); }
-    .slot-time { font-size: 13px; font-weight: 800; color: var(--text-main); }
-    .slot-tag { font-size: 10.5px; font-weight: 700; color: var(--success); margin-top: 4px; text-transform: uppercase; }
+    .slot-card.active { background: #FFFBF9; border-color: var(--primary); box-shadow: 0 4px 12px rgba(255,90,0,0.1); }
+    .slot-time { font-size: 12px; font-weight: 800; color: var(--text-main); }
+    .slot-tag { font-size: 9.5px; font-weight: 800; color: var(--success); margin-top: 3px; display: block; }
 
-    /* INPUTS & FORM */
-    .input-row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px; }
-    input, textarea {
-      width: 100%; padding: 14px 16px; background: var(--input-bg); border: 1px solid var(--border);
-      border-radius: var(--radius-md); color: var(--text-main); font-size: 14px; font-weight: 600; outline: none; transition: 0.2s;
-    }
-    textarea { min-height: 84px; resize: none; line-height: 1.5; }
-    input:focus, textarea:focus { border-color: var(--primary); background: #FFF; box-shadow: 0 0 0 3px var(--primary-subtle); }
-    input::placeholder, textarea::placeholder { color: #94A3B8; font-weight: 500; }
+    .loc-header { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 8px; gap: 10px; }
+    .loc-header label { margin: 0; }
+    .loc-btn { background: #E0F2FE; color: #0284C7; border: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; flex-shrink: 0; }
 
-    .loc-trigger {
-      background: #E0F2FE; color: #0284C7; border: none; padding: 6px 12px;
-      border-radius: 8px; font-size: 11.5px; font-weight: 800; cursor: pointer;
-    }
+    .btn-main { width: 100%; padding: 18px; border-radius: 16px; border: none; background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 22px; box-shadow: 0 10px 25px rgba(255, 90, 0, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; }
+    .btn-outline { width: 100%; padding: 15px; border-radius: 16px; background: #F1F5F9; color: var(--text-main); border: 1px solid var(--border); margin-top: 10px; font-weight: 800; font-size: 14.5px; cursor: pointer; }
 
-    /* DESKTOP STICKY CHECKOUT SUMMARY PANEL */
-    .checkout-panel {
-      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl);
-      padding: 28px; box-shadow: 0 10px 30px rgba(11,15,25,0.05); position: sticky; top: 92px;
-    }
-    .cp-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0 0 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .cp-badge { font-size: 11px; font-weight: 700; color: var(--success); background: #F0FDF4; padding: 3px 8px; border-radius: 6px; border: 1px solid #BBF7D0; }
-
-    .cp-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 12px; color: var(--text-muted); font-weight: 600; }
-    .cp-val { color: var(--text-main); font-weight: 700; }
-    .cp-divider { height: 1px; background: var(--border); margin: 16px 0; }
-    .cp-total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 22px; }
-    .cp-total-label { font-size: 15px; font-weight: 800; color: var(--text-main); }
-    .cp-total-val { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
-
-    .btn-action {
-      width: 100%; padding: 16px; border-radius: var(--radius-md); border: none;
-      background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%);
-      color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer;
-      box-shadow: 0 8px 20px rgba(255,90,0,0.25); transition: 0.2s;
-    }
-    .btn-action:hover { filter: brightness(1.05); transform: translateY(-1px); }
-    .btn-action:active { transform: scale(0.99); }
-
-    /* STATES & MODALS */
-    .state-screen { display: none; max-width: 520px; margin: 40px auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 40px 24px; text-align: center; }
-    .loader { width: 44px; height: 44px; border: 3px solid #E2E8F0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    #loadingScreen, #successScreen { display: none; text-align: center; padding: 40px 10px; }
+    .loader { width: 50px; height: 50px; border: 4px solid #E2E8F0; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
+    
+    .official-qr-box { background: #FFF9F5; padding: 20px; border-radius: 20px; margin: 20px 0; border: 2px solid #FF5A00; text-align: center; }
+    .official-qr-box img { width: 200px; height: 200px; border-radius: 12px; border: 3px solid #FFFFFF; box-shadow: 0 6px 16px rgba(0,0,0,0.1); margin-bottom: 12px; object-fit: contain; }
 
-    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11,15,25,0.5); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 9999; opacity: 0; pointer-events: none; transition: 0.2s; }
-    .ui-modal-overlay.show { opacity: 1; pointer-events: auto; }
-    .ui-modal-box { background: var(--surface); width: 100%; max-width: 460px; border-radius: var(--radius-xl); padding: 28px; border: 1px solid var(--border); }
+    .portal-links { display: flex; justify-content: center; margin-top: 22px; font-size: 12px; color: var(--text-muted); font-weight: 700; }
+    .portal-link { cursor: pointer; }
 
-    /* RESPONSIVE MEDIA QUERIES */
-    @media (min-width: 640px) {
-      .input-row { grid-template-columns: repeat(2, 1fr); }
-      .slots-grid { grid-template-columns: repeat(4, 1fr); }
-    }
+    /* Modals & Admin */
+    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.55); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.2s; }
+    .ui-modal-overlay.show { opacity: 1; visibility: visible; }
+    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 420px; border-radius: 24px; padding: 24px; text-align: left; box-shadow: 0 25px 50px rgba(11, 15, 25, 0.28); }
+
+    .db-tab-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+    .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 800; background: #F1F5F9; color: #64748B; padding: 10px; border-radius: 10px; cursor: pointer; }
+    .db-tab.active { background: #FF5A00; color: #FFF; }
+    .db-list { display: flex; flex-direction: column; gap: 10px; max-height: 340px; overflow-y: auto; }
+    .db-item { padding: 14px; border: 1.5px solid #E2E8F0; border-radius: 16px; background: #F8FAFC; }
+    .btn-sm { padding: 8px 12px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: none; background: #E2E8F0; }
+
+    /* DESKTOP RESPONSIVE MEDIA QUERY */
     @media (min-width: 1024px) {
-      .main-grid {
-        grid-template-columns: 1fr 410px;
-        gap: 32px;
-      }
+      .app-container { max-width: 760px; }
+      .card { padding: 36px 40px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- APP HEADER -->
-  <header class="app-header">
-    <div class="header-inner">
-      <div class="brand-group">
-        <div style="display:flex; align-items:center; gap:2px;">
-          <span class="logo-letter">M</span><span class="logo-symbol">+</span>
-          <svg class="spin-wheel-clockwise" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FF5A00" stroke-width="13"/><circle cx="50" cy="50" r="37" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19" stroke="#0B0F19" stroke-width="3.5"/><circle cx="50" cy="50" r="8.5" fill="#FF5A00"/><circle cx="50" cy="50" r="3.5" fill="#FFFFFF"/></svg>
-          <span class="logo-symbol">+</span><span class="logo-letter">G</span><span class="logo-symbol">+</span>
-          <svg class="spin-wheel-clockwise" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FF5A00" stroke-width="13"/><circle cx="50" cy="50" r="37" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19" stroke="#0B0F19" stroke-width="3.5"/><circle cx="50" cy="50" r="8.5" fill="#FF5A00"/><circle cx="50" cy="50" r="3.5" fill="#FFFFFF"/></svg>
-          <span class="logo-symbol">=</span>
-        </div>
-        <div style="width:1px; height:20px; background:var(--border);"></div>
-        <div class="logo-tagline">Total Bike Care</div>
+<div class="app-container">
+  
+  <!-- CUSTOMER BOOKING FORM -->
+  <div class="card" id="bookingForm">
+    
+    <!-- ORIGINAL LARGE BRAND HEADER & SPINNING WHEELS -->
+    <div class="brand-header">
+      <div class="logo-container">
+        <span class="logo-letter">M</span><span class="logo-symbol">+</span>
+        <svg class="spin-wheel-clockwise" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FF5A00" stroke-width="13"/><circle cx="50" cy="50" r="37" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19" stroke="#0B0F19" stroke-width="3.5"/><circle cx="50" cy="50" r="8.5" fill="#FF5A00"/><circle cx="50" cy="50" r="3.5" fill="#FFFFFF"/></svg>
+        <span class="logo-symbol">+</span><span class="logo-letter">G</span><span class="logo-symbol">+</span>
+        <svg class="spin-wheel-clockwise" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#FF5A00" stroke-width="13"/><circle cx="50" cy="50" r="37" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19" stroke="#0B0F19" stroke-width="3.5"/><circle cx="50" cy="50" r="8.5" fill="#FF5A00"/><circle cx="50" cy="50" r="3.5" fill="#FFFFFF"/></svg>
+        <span class="logo-symbol">=</span>
       </div>
-      <div class="header-actions">
-        <div class="hub-pill"><span class="hub-dot"></span> Guwahati Hub</div>
-        <button class="admin-btn" onclick="openAdminPortal()">Admin Console</button>
-      </div>
+      <div class="logo-tagline">TOTAL BIKE CARE</div>
     </div>
-  </header>
 
-  <!-- WORKSPACE -->
-  <main class="workspace">
-    <div id="bookingForm">
-      <div class="page-header">
-        <h1 class="page-title">Doorstep Mobility Service</h1>
-        <p class="page-subtitle">On-demand mobile high-pressure foam wash & care across Greater Guwahati.</p>
+    <label>Select Vehicle Type</label>
+    <div class="segmented-control">
+      <div class="seg-btn active" id="v-bike" onclick="selectVehicle('Bike')">🏍️ Bike <span>Standard/Sports</span></div>
+      <div class="seg-btn" id="v-scooty" onclick="selectVehicle('Scooty')">🛵 Scooty <span>Gearless</span></div>
+    </div>
+
+    <label>Customer Details</label>
+    <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
+    <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" style="margin-bottom: 12px;" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
+
+    <div class="loc-header">
+      <label style="margin:0;">Doorstep Address</label>
+      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate GPS</button>
+    </div>
+    <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate' or type your Guwahati address..." oninput="clearError('cAddr')"></textarea>
+
+    <label>Our Services</label>
+    <div class="services-list">
+      <div class="service-card active">
+        <div class="service-info"><div class="s-title">🫧 Premium Foam Wash</div><div class="s-desc">Complete exterior deep cleaning</div></div>
+        <div class="s-price">₹69</div>
       </div>
-
-      <div class="main-grid">
-        
-        <!-- LEFT CONFIGURATION COLUMN -->
-        <div class="config-column">
-          
-          <div class="card">
-            <div class="card-title">01. Select Vehicle Category</div>
-            <div class="app-tabs">
-              <div class="app-tab active" id="v-bike" onclick="selectVehicle('Bike')">
-                <div class="app-tab-title">Motorcycle</div>
-                <div class="app-tab-sub">Standard / Sports</div>
-              </div>
-              <div class="app-tab" id="v-scooty" onclick="selectVehicle('Scooty')">
-                <div class="app-tab-title">Scooter</div>
-                <div class="app-tab-sub">Gearless Automatic</div>
-              </div>
-            </div>
-
-            <div class="card-title" style="margin-top:24px;">02. Service Package</div>
-            <div class="service-row active">
-              <div>
-                <div class="sr-title"><span class="sr-dot"></span> Premium High-Pressure Foam Wash</div>
-                <div class="sr-desc">Complete exterior snow-foam clean, chain degrease & tyre dressing</div>
-              </div>
-              <div class="sr-price">₹69</div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">03. Choose Dispatch Window</div>
-            <div class="slots-grid" id="slotsGrid">
-              <div class="slot-pill active" onclick="selectTimeSlot(this, '08:00 AM - 09:30 AM')">
-                <div class="slot-time">08:00 – 09:30 AM</div>
-                <div class="slot-tag">● Available</div>
-              </div>
-              <div class="slot-pill" onclick="selectTimeSlot(this, '10:00 AM - 11:30 AM')">
-                <div class="slot-time">10:00 – 11:30 AM</div>
-                <div class="slot-tag" style="color:#D97706;">⚡ Fast Filling</div>
-              </div>
-              <div class="slot-pill" onclick="selectTimeSlot(this, '12:00 PM - 01:30 PM')">
-                <div class="slot-time">12:00 – 01:30 PM</div>
-                <div class="slot-tag">● Available</div>
-              </div>
-              <div class="slot-pill" onclick="selectTimeSlot(this, '02:30 PM - 04:00 PM')">
-                <div class="slot-time">02:30 – 04:00 PM</div>
-                <div class="slot-tag">● Available</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" style="margin-bottom:0;">
-            <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
-              <span>04. Customer & Location Coordinates</span>
-              <button class="loc-trigger" onclick="getLocation()" type="button">Detect GPS</button>
-            </div>
-
-            <div class="input-row">
-              <input type="text" id="cName" placeholder="Full Name">
-              <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            </div>
-            <div>
-              <textarea id="cAddr" rows="3" placeholder="Doorstep Address (House/Flat, Street, Landmark in Guwahati)..."></textarea>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- RIGHT STICKY CHECKOUT SUMMARY PANEL -->
-        <aside class="checkout-panel">
-          <div class="cp-title">
-            <span>Order Summary</span>
-            <span class="cp-badge">GST Compliant</span>
-          </div>
-
-          <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border);">
-            <div class="cp-row"><span class="cp-label">Service</span><span class="cp-val">Foam Wash</span></div>
-            <div class="cp-row"><span class="cp-label">Vehicle</span><span class="cp-val" id="sumVehicle">Motorcycle</span></div>
-            <div class="cp-row"><span class="cp-label">Window</span><span class="cp-val" id="sumSlot">08:00 AM - 09:30 AM</span></div>
-          </div>
-
-          <div class="card-title" style="margin-bottom:10px;">Settlement Mode</div>
-          <div class="app-tabs" style="margin-bottom:20px;">
-            <div class="app-tab active" id="opt-now" onclick="selectPayType('Pay Now')">
-              <div class="app-tab-title">Pay Online</div>
-              <div class="app-tab-sub">Instant UPI QR</div>
-            </div>
-            <div class="app-tab" id="opt-after" onclick="selectPayType('Pay After Service')">
-              <div class="app-tab-title">Post-Service</div>
-              <div class="app-tab-sub">Cash / UPI</div>
-            </div>
-          </div>
-
-          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border);">
-            <div class="cp-row"><span class="cp-label">Taxable Value</span><span class="cp-val">₹58.47</span></div>
-            <div class="cp-row"><span class="cp-label">CGST + SGST (18%)</span><span class="cp-val">₹10.53</span></div>
-          </div>
-
-          <div class="cp-total">
-            <span class="cp-total-label">Total Payable</span>
-            <span class="cp-total-val">₹69.00</span>
-          </div>
-
-          <button class="btn-action" onclick="submitBooking()">
-            Confirm & Dispatch Unit 🚀
-          </button>
-        </aside>
-
+      <div class="service-card disabled">
+        <div class="service-info"><div class="s-title">🛠️ General Servicing</div><div class="s-desc">Complete mechanical checkup</div></div>
+        <div class="s-badge">Coming Soon</div>
+      </div>
+      <div class="service-card disabled">
+        <div class="service-info"><div class="s-title">🛡️ Bike Insurance</div><div class="s-desc">Instant renewal & claim support</div></div>
+        <div class="s-badge">Coming Soon</div>
+      </div>
+      <div class="service-card disabled">
+        <div class="service-info"><div class="s-title">💨 Pollution Check (PUC)</div><div class="s-desc">Doorstep emission testing</div></div>
+        <div class="s-badge">Coming Soon</div>
+      </div>
+      <div class="service-card disabled">
+        <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance contract</div></div>
+        <div class="s-badge">Coming Soon</div>
       </div>
     </div>
 
-    <!-- LOADING SCREEN -->
-    <div class="state-screen" id="loadingScreen">
-      <div class="loader"></div>
-      <h3 style="font-size:18px; font-weight:800; margin:0 0 6px;">Locking Service Unit</h3>
-      <p style="color:var(--text-muted); font-size:13.5px; margin:0;">Generating official PDF job card...</p>
+    <label>Choose Doorstep Time Slot</label>
+    <div class="slots-grid">
+      <div class="slot-card active" onclick="selectTimeSlot(this, '08:00 AM - 09:30 AM')">
+        <div class="slot-time">08:00 AM - 09:30 AM</div>
+        <span class="slot-tag">● Available</span>
+      </div>
+      <div class="slot-card" onclick="selectTimeSlot(this, '10:00 AM - 11:30 AM')">
+        <div class="slot-time">10:00 AM - 11:30 AM</div>
+        <span class="slot-tag" style="color:#D97706;">⚡ Fast Filling</span>
+      </div>
+      <div class="slot-card" onclick="selectTimeSlot(this, '12:00 PM - 01:30 PM')">
+        <div class="slot-time">12:00 PM - 01:30 PM</div>
+        <span class="slot-tag">● Available</span>
+      </div>
+      <div class="slot-card" onclick="selectTimeSlot(this, '02:30 PM - 04:00 PM')">
+        <div class="slot-time">02:30 PM - 04:00 PM</div>
+        <span class="slot-tag">● Available</span>
+      </div>
+      <div class="slot-card" onclick="selectTimeSlot(this, '04:30 PM - 06:00 PM')">
+        <div class="slot-time">04:30 PM - 06:00 PM</div>
+        <span class="slot-tag">● Available</span>
+      </div>
     </div>
 
-    <!-- SUCCESS SCREEN -->
-    <div class="state-screen" id="successScreen">
-      <h2 style="font-size:24px; font-weight:800; margin:0 0 6px; color:var(--success);">Dispatch Confirmed</h2>
-      <p style="color:var(--text-muted); font-size:14px; margin:0. 0 24px;" id="successSubtitle">Your slot has been successfully registered.</p>
-      
-      <button class="btn-action" id="pdfDownloadBtn" onclick="downloadInvoice(false)">Download Service Job Card (PDF)</button>
-      <a id="waBtn" href="#" target="_blank" class="btn-action" style="background:#22C55E; text-decoration:none; margin-top:12px; display:block;">Send Details via WhatsApp</a>
-      <button class="btn-action" style="background:#F1F5F9; color:var(--text-main); margin-top:12px; box-shadow:none;" onclick="location.reload()">Book Another Service</button>
+    <label>Payment Method</label>
+    <div class="segmented-control">
+      <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">💳 Pay Now <span>Online / QR</span></div>
+      <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
     </div>
-  </main>
 
-  <!-- ADMIN PORTAL (PIN: 4882) -->
-  <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
-    <div class="ui-modal-box">
-      <div id="adminPinSection">
-        <h3 style="margin:0 0 6px; font-size:18px; font-weight:800;">Admin Authentication</h3>
-        <p style="color:var(--text-muted); font-size:12.5px; margin:0 0 16px;">Enter 4-digit security PIN (4882).</p>
-        <input type="password" id="adminPinInput" placeholder="PIN" maxlength="4" style="margin-bottom:14px;">
-        <button class="btn-action" onclick="verifyAdminPin()">Unlock Portal</button>
-      </div>
-      <div id="adminDashboard" style="display: none;">
-        <h3 style="margin:0 0 14px; font-size:18px; font-weight:800;">Operations Console</h3>
-        <button class="btn-action" style="background:#F1F5F9; color:var(--text-main); box-shadow:none;" onclick="closeAdminPortal()">Close Console</button>
-      </div>
+    <button class="btn-main" onclick="submitBooking()">Confirm Booking & Slot 🚀</button>
+    
+    <div class="portal-links">
+      <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
     </div>
   </div>
+
+  <!-- LOADING SCREEN -->
+  <div class="card" id="loadingScreen">
+    <div class="loader"></div>
+    <h3 style="margin:0 0 8px; font-size:20px;">Booking Your Slot...</h3>
+    <p style="color:var(--text-muted); font-size:14px; margin:0;">Generating your official service job card.</p>
+  </div>
+
+  <!-- SUCCESS SCREEN -->
+  <div class="card" id="successScreen">
+    <div style="font-size:56px; margin-bottom:12px;">✅</div>
+    <h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;">Booking Confirmed!</h2>
+    <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will arrive shortly.</p>
+    
+    <div id="qrSection" class="official-qr-box" style="display:none;">
+      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;">Scan & Pay ₹69 Securely</p>
+      <p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Pvt Ltd</p>
+      <img src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=69.00%26cu=INR&margin=10';">
+      <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
+      <div style="margin-top:12px; text-align:left;">
+        <label style="font-size:11px; margin:0 0 4px;">Enter UPI UTR / Transaction ID (For Paid Tax Invoice):</label>
+        <input type="text" id="customerUtr" placeholder="e.g. 429381928312" style="padding: 12px; font-size: 14px;" oninput="updatePdfButtonText()">
+      </div>
+    </div>
+
+    <button class="btn-main" id="pdfDownloadBtn" style="background:#0F172A;" onclick="downloadInvoice(false)">📄 Download Service Job Card (PDF)</button>
+    <a id="waBtn" href="#" target="_blank" class="btn-main" style="background:#25D366; text-decoration:none;">💬 Send Booking Details on WhatsApp</a>
+    <button class="btn-outline" onclick="location.reload()">Book Another Service</button>
+  </div>
+</div>
+
+<!-- ADMIN PORTAL (PIN: 4882) -->
+<div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
+  <div class="ui-modal-box">
+    <div id="adminPinSection">
+      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center;">🔐 Admin Portal</h3>
+      <label style="margin-top:0;">Enter Admin PIN:</label>
+      <input type="password" id="adminPinInput" placeholder="Enter 4-Digit PIN" maxlength="4" style="margin-bottom: 15px;">
+      <button class="ui-modal-btn" onclick="verifyAdminPin()" style="width:100%; padding:14px; background:#FF5A00; color:#fff; border:none; border-radius:12px; font-weight:800;">Unlock Portal</button>
+    </div>
+    <div id="adminDashboard" style="display: none;">
+      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900;">📊 Admin Portal</h3>
+      <div class="db-tab-bar">
+        <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards</div>
+        <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Invoices</div>
+      </div>
+      <div id="view-jc" class="db-list"></div>
+      <div id="view-inv" class="db-list" style="display: none;"></div>
+      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 15px;">Close Portal</button>
+    </div>
+  </div>
+</div>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyp9jl7Uu5thiilCriCwi8yE7Sc0Z2cY4OUkCdx3WDp1MmvWgNgMyszl77eWxrPIH4u-Q/exec";
   const MY_WHATSAPP = "919954924948";
   const TOTAL_PRICE = 69;
 
+  let paymentType = "Pay Now";
   let vehicleType = "Bike";
   let selectedSlot = "08:00 AM - 09:30 AM";
-  let paymentType = "Pay Now";
   let globalBookingData = {};
   let customerCoords = null;
+
+  function clearError(id) { document.getElementById(id)?.classList.remove('input-error'); }
 
   function selectVehicle(t) {
     vehicleType = t;
     document.getElementById('v-bike').classList.toggle('active', t === 'Bike');
     document.getElementById('v-scooty').classList.toggle('active', t === 'Scooty');
-    document.getElementById('sumVehicle').innerText = t === 'Bike' ? 'Motorcycle' : 'Scooter';
   }
 
   function selectTimeSlot(el, slotText) {
-    document.querySelectorAll('.slot-pill').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.slot-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
     selectedSlot = slotText;
-    document.getElementById('sumSlot').innerText = slotText;
   }
 
   function selectPayType(t) {
     paymentType = t;
     document.getElementById('opt-now').classList.toggle('active', t === 'Pay Now');
     document.getElementById('opt-after').classList.toggle('active', t !== 'Pay Now');
+    updatePdfButtonText();
+  }
+
+  function updatePdfButtonText() {
+    let utr = document.getElementById('customerUtr')?.value.trim() || "";
+    let btn = document.getElementById('pdfDownloadBtn');
+    if (paymentType === 'Pay Now' && utr.length >= 4) {
+      btn.innerHTML = "📄 Download Paid Tax Invoice (PDF)";
+      btn.style.background = "#16A34A";
+    } else {
+      btn.innerHTML = "📄 Download Service Job Card (PDF)";
+      btn.style.background = "#0F172A";
+    }
   }
 
   function getLocation() {
+    const addrInput = document.getElementById('cAddr');
+    const locBtn = document.getElementById('locBtn');
+    locBtn.disabled = true;
+    locBtn.innerHTML = "⏳ Locating...";
+
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        customerCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-        document.getElementById('cAddr').value = `Guwahati, Assam (${customerCoords.lat.toFixed(4)}, ${customerCoords.lon.toFixed(4)})`;
-      });
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          let lat = pos.coords.latitude;
+          let lon = pos.coords.longitude;
+          customerCoords = { lat, lon };
+          locBtn.disabled = false;
+          locBtn.innerHTML = "✅ GPS Locked";
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18`)
+            .then(res => res.json())
+            .then(data => {
+              addrInput.value = data?.display_name ? data.display_name.replace(/, India$/, '') : `Guwahati (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+            })
+            .catch(() => {
+              addrInput.value = `Guwahati, Assam (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+            });
+        },
+        () => {
+          locBtn.disabled = false;
+          locBtn.innerHTML = "📍 Auto Locate GPS";
+          alert("Please enable location permissions.");
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
     }
   }
 
@@ -437,15 +348,20 @@
     let phone = document.getElementById('cPhone').value.trim();
     let addr = document.getElementById('cAddr').value.trim();
 
-    if (!name || !phone || !addr) {
-      alert("Please fill in customer name, phone number and address.");
-      return;
-    }
+    if (!name) { document.getElementById('cName').classList.add('input-error'); return alert("Please enter your full name."); }
+    if (!/^[0-9]{10}$/.test(phone)) { document.getElementById('cPhone').classList.add('input-error'); return alert("Please enter a valid 10-digit mobile number."); }
+    if (!addr) { document.getElementById('cAddr').classList.add('input-error'); return alert("Please provide your doorstep address."); }
 
     document.getElementById('bookingForm').style.display = "none";
     document.getElementById('loadingScreen').style.display = "block";
 
     let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
+    let maps = customerCoords ? `https://www.google.com/maps?q=${customerCoords.lat},${customerCoords.lon}` : "";
+    
+    let grandTotal = TOTAL_PRICE;
+    let subtotal = grandTotal / 1.18;
+    let totalTax = grandTotal - subtotal;
+
     globalBookingData = {
       id: id,
       date: new Date().toLocaleDateString('en-IN'),
@@ -454,34 +370,82 @@
       vehicle: vehicleType,
       serviceName: "Premium Foam Wash",
       slot: selectedSlot,
-      total: TOTAL_PRICE / 1.18,
-      cgst: (TOTAL_PRICE - (TOTAL_PRIC / 1.18)) / 2,
-      sgst: (TOTAL_PRICE - (TOTAL_PRIC / 1.18)) / 2,
-      grandTotal: TOTAL_PRICE,
+      total: subtotal,
+      cgst: totalTax / 2,
+      sgst: totalTax / 2,
+      grandTotal: grandTotal,
       address: addr,
       paymentType: paymentType,
+      mapsLink: maps,
+      status: "BOOKED",
+      utr: "",
       forceType: "JOB_CARD"
     };
+
+    let db = JSON.parse(localStorage.getItem('mogo_local_db') || '[]');
+    db.unshift(globalBookingData);
+    localStorage.setItem('mogo_local_db', JSON.stringify(db));
+
+    try {
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(globalBookingData)
+      }).catch(() => {});
+    } catch(e) {}
 
     setTimeout(() => {
       document.getElementById('loadingScreen').style.display = "none";
       document.getElementById('successScreen').style.display = "block";
-      let msg = `*MoGo Service Booking*\nID: ${id}\nName: ${name}\nPhone: ${phone}\nVehicle: ${vehicleType}\nSlot: ${selectedSlot}\nAddress: ${addr}`;
+      document.getElementById('successSubtitle').innerText = `Slot Locked: ${selectedSlot}`;
+      if (paymentType === "Pay Now") {
+        document.getElementById('qrSection').style.display = "block";
+      }
+      let msg = `*New MoGo Service Booking!* 🚀\n\n*Booking ID:* ${id}\n*Customer:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Slot:* ${selectedSlot}\n*Address:* ${addr}`;
+      if (maps) msg += `\n🗺️ *Maps:* ${maps}`;
       document.getElementById('waBtn').href = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(msg)}`;
     }, 300);
   }
 
-  function openAdminPortal() { document.getElementById('adminModal').classList.add('show'); }
+  function openAdminPortal() {
+    document.getElementById('adminPinInput').value = "";
+    document.getElementById('adminPinSection').style.display = "block";
+    document.getElementById('adminDashboard').style.display = "none";
+    document.getElementById('adminModal').classList.add('show');
+  }
   function closeAdminPortal() { document.getElementById('adminModal').classList.remove('show'); }
+
   function verifyAdminPin() {
     if (document.getElementById('adminPinInput').value.trim() === "4882") {
       document.getElementById('adminPinSection').style.display = "none";
       document.getElementById('adminDashboard').style.display = "block";
+      renderAdminDB();
     } else {
       alert("Incorrect PIN");
     }
   }
-  function downloadInvoice() { alert("Job Card PDF Generated!"); }
+
+  function switchAdminTab(t) {
+    document.getElementById('tab-jc').classList.toggle('active', t === 'jc');
+    document.getElementById('tab-inv').classList.toggle('active', t === 'inv');
+    document.getElementById('view-jc').style.display = t === 'jc' ? 'flex' : 'none';
+    document.getElementById('view-inv').style.display = t === 'inv' ? 'flex' : 'none';
+  }
+
+  function renderAdminDB() {
+    let db = JSON.parse(localStorage.getItem('mogo_local_db') || '[]');
+    let jcHTML = "", invHTML = "";
+    db.forEach(item => {
+      let isInv = item.forceType === 'TAX_INVOICE';
+      let card = `<div class="db-item"><strong>${item.id} - ${item.name}</strong> (${item.phone})<br>Slot: ${item.slot || 'N/A'}<br>${item.address}</div>`;
+      if (isInv) invHTML += card; else jcHTML += card;
+    });
+    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="font-size:12px; text-align:center; color:#94A3B8;">No Job Cards.</p>';
+    document.getElementById('view-inv').innerHTML = invHTML || '<p style="font-size:12px; text-align:center; color:#94A3B8;">No Invoices.</p>';
+  }
+
+  function downloadInvoice() { alert("PDF Generator Ready"); }
 </script>
 
 </body>
