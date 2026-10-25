@@ -73,11 +73,11 @@
     .s-price { font-size: 18px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
     .s-badge { font-size: 9.5px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 6px 9px; border-radius: 8px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
 
-    /* ANIMATED EMBEDDED SLOT BOX */
+    /* SMOOTH ANIMATED EMBEDDED SLOT BOX (HIDDEN BY DEFAULT) */
     .embedded-slot-box {
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.35s ease-out, padding 0.35s ease-out;
+      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       padding: 0 16px;
       border-top: 0px dashed var(--border);
     }
@@ -91,7 +91,7 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
-      max-height: 220px;
+      max-height: 200px;
       overflow-y: auto;
       margin-top: 10px;
       padding-right: 2px;
@@ -185,7 +185,7 @@
     <label>Select Service & Book Time Slot</label>
     <div class="services-stack">
       
-      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE WITH EXPANDABLE SLOTS) -->
+      <!-- SERVICE 1: PREMIUM FOAM WASH (DEFAULT ACTIVE) -->
       <div class="service-accordion-item active" id="item-wash">
         <div class="service-header-row" onclick="selectService('wash', 'Premium Foam Wash', 69)">
           <div class="service-info">
@@ -200,7 +200,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 2: GENERAL SERVICING (₹399 WITH EXPANDABLE SLOTS) -->
+      <!-- SERVICE 2: GENERAL SERVICING (₹399) -->
       <div class="service-accordion-item" id="item-general">
         <div class="service-header-row" onclick="selectService('general', 'General Servicing', 399)">
           <div class="service-info">
@@ -648,7 +648,7 @@
       html += `
         <div class="db-item">
           <strong>${item.id} - ${item.name}</strong> (${item.phone})<br>
-          Vehicle: ${item.vehicle} | Service: ${item.serviceName} (₹${item.grandTotal})<br>
+          Vehicle: ${item.vehicle} | Service: ${item.serviceName}<br>
           Slot: ${item.slot || 'Standard'}<br>
           📍 ${item.address}<br>
           <a href="tel:${item.phone}" style="display:inline-block; margin-top:8px; background:#16A34A; color:#fff; padding:6px 12px; border-radius:8px; text-decoration:none; font-weight:800; font-size:11px;">📞 Call Customer</a>
