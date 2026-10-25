@@ -129,7 +129,7 @@
     .portal-link { cursor: pointer; }
 
     /* =======================================================
-       WORLD-CLASS SILICON VALLEY UI/UX FOR PORTALS & MODALS
+       WORLD-CLASS SILICON VALLEY UI/UX FOR MODALS & ALERTS
        ======================================================= */
     .ui-modal-overlay { 
       position: fixed; inset: 0; background: rgba(11, 15, 25, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -138,7 +138,7 @@
     .ui-modal-overlay.show { opacity: 1; visibility: visible; }
     
     .ui-modal-box { 
-      background: #FFFFFF; width: 100%; max-width: 440px; max-height: 88vh; overflow-y: auto; 
+      background: #FFFFFF; width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto; 
       border-radius: 28px; padding: 28px; text-align: left; 
       box-shadow: 0 25px 60px -15px rgba(11, 15, 25, 0.3); border: 1px solid rgba(226, 232, 240, 0.8);
       animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -171,6 +171,18 @@
     .btn-sm:hover { opacity: 0.9; transform: translateY(-1px); }
     
     .btn-del { flex: 0 0 38px; background: #FEE2E2; color: #B91C1C; border-radius: 10px; border: none; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    /* CUSTOM CUSTOM DIALOG POPUP STYLES */
+    .custom-alert-overlay {
+      position: fixed; inset: 0; background: rgba(11, 15, 25, 0.6); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999;
+      opacity: 0; visibility: hidden; transition: 0.2s ease;
+    }
+    .custom-alert-overlay.show { opacity: 1; visibility: visible; }
+    .custom-alert-box {
+      background: #FFFFFF; width: 100%; max-width: 360px; border-radius: 24px; padding: 24px; text-align: center;
+      box-shadow: 0 25px 50px rgba(11, 15, 25, 0.25); border: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
@@ -329,23 +341,38 @@
   </div>
 </div>
 
+<!-- CUSTOM ALERT / PROMPT POPUPS -->
+<div class="custom-alert-overlay" id="customAlertModal">
+  <div class="custom-alert-box">
+    <h3 id="customAlertTitle" style="margin:0 0 8px; font-size:18px; font-weight:900; color:var(--text-main);">Notice</h3>
+    <p id="customAlertMsg" style="margin:0 0 18px; font-size:13.5px; color:var(--text-muted); line-height:1.4;">Message</p>
+    <div id="customAlertInputContainer" style="margin-bottom:16px; display:none;">
+      <input type="text" id="customAlertInput" placeholder="Enter details..." style="padding:12px; font-size:13.5px;">
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-main" id="customAlertBtnOk" style="margin-top:0; padding:12px;" onclick="closeCustomAlert(true)">Okay</button>
+      <button class="btn-outline" id="customAlertBtnCancel" style="margin-top:0; padding:12px; display:none;" onclick="closeCustomAlert(false)">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- ========================================== -->
 <!-- 🔐 ADMIN PORTAL (PIN: 4882)                -->
 <!-- ========================================== -->
 <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
   <div class="ui-modal-box">
     <div id="adminPinSection">
-      <div class="portal-header-title">Admin Console</div>
-      <div class="portal-header-subtitle">Enter 4-digit security PIN (4882)</div>
+      <div class="portal-header-title">Admin Portal</div>
+      <div class="portal-header-subtitle">Enter Admin PIN (4882)</div>
       <label style="margin-top:0;">Admin PIN</label>
       <input type="password" id="adminPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 4px; text-align: center; font-size: 18px;">
-      <button class="btn-main" onclick="verifyAdminPin()" style="margin-top:0;">Authenticate Console</button>
+      <button class="btn-main" onclick="verifyAdminPin()" style="margin-top:0;">Unlock Portal</button>
       <button class="btn-outline" onclick="closeAdminPortal()">Cancel</button>
     </div>
 
     <div id="adminDashboard" style="display: none;">
-      <div class="portal-header-title">Operations Console</div>
-      <div class="portal-header-subtitle">Manage service requests & records</div>
+      <div class="portal-header-title">Admin Portal</div>
+      <div class="portal-header-subtitle">Manage service records and invoices</div>
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards</div>
         <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Invoices</div>
@@ -381,7 +408,7 @@
         <button class="btn-main" onclick="processAdminForm()" style="margin-top:0; background:#16A34A; box-shadow:0 8px 20px rgba(22,163,74,0.25);">Generate & Download PDF</button>
       </div>
 
-      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Console</button>
+      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
   </div>
 </div>
@@ -392,11 +419,11 @@
 <div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
   <div class="ui-modal-box">
     <div id="mechPinSection">
-      <div class="portal-header-title" style="color:#0284C7;">Mechanic Terminal</div>
+      <div class="portal-header-title" style="color:#0284C7;">Mechanic Portal</div>
       <div class="portal-header-subtitle">Enter Mechanic PIN (7788)</div>
       <label style="margin-top:0;">Mechanic PIN</label>
       <input type="password" id="mechPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 4px; text-align: center; font-size: 18px;">
-      <button class="btn-main" onclick="verifyMechPin()" style="margin-top:0; background:#0284C7; box-shadow:0 8px 20px rgba(2,132,199,0.25);">Unlock Terminal</button>
+      <button class="btn-main" onclick="verifyMechPin()" style="margin-top:0; background:#0284C7; box-shadow:0 8px 20px rgba(2,132,199,0.25);">Unlock Mechanic Portal</button>
       <button class="btn-outline" onclick="closeMechanicPortal()">Cancel</button>
     </div>
 
@@ -404,7 +431,7 @@
       <div class="portal-header-title" style="color:#0284C7;">Assigned Jobs</div>
       <div class="portal-header-subtitle">Active doorstep service requests</div>
       <div id="mechJobList" class="db-list"></div>
-      <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Terminal</button>
+      <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
   </div>
 </div>
@@ -421,6 +448,45 @@
   let selectedSlot = "Standard Booking";
   let globalBookingData = {};
   let customerCoords = null;
+
+  let alertCallback = null;
+
+  function showCustomAlert(title, message, isPrompt = false, callback = null) {
+    document.getElementById('customAlertTitle').innerText = title;
+    document.getElementById('customAlertMsg').innerText = message;
+    alertCallback = callback;
+
+    let inputContainer = document.getElementById('customAlertInputContainer');
+    let inputField = document.getElementById('customAlertInput');
+    let cancelBtn = document.getElementById('customAlertBtnCancel');
+
+    if (isPrompt) {
+      inputContainer.style.display = 'block';
+      inputField.value = '';
+      cancelBtn.style.display = 'block';
+    } else {
+      inputContainer.style.display = 'none';
+      cancelBtn.style.display = 'none';
+    }
+
+    document.getElementById('customAlertModal').classList.add('show');
+    if (isPrompt) setTimeout(() => inputField.focus(), 100);
+  }
+
+  function closeCustomAlert(isOk) {
+    document.getElementById('customAlertModal').classList.remove('show');
+    let inputField = document.getElementById('customAlertInput');
+    let val = inputField.value.trim();
+
+    if (alertCallback) {
+      if (inputField.parentElement.style.display === 'block') {
+        alertCallback(isOk ? val : null);
+      } else {
+        alertCallback(isOk);
+      }
+      alertCallback = null;
+    }
+  }
 
   // --- DYNAMIC 30-MIN SLOTS GENERATOR (8:00 AM to 8:00 PM) ---
   function buildSlotsForContainer(containerId, teamTitle) {
@@ -479,6 +545,11 @@
 
   // --- TOGGLE ACCORDION (CLICK TO OPEN / CLOSE) ---
   function toggleService(key, name, price) {
+    if (key === 'insurance' || key === 'puc') {
+      showCustomAlert("Coming Soon", `${name} feature is currently under development and will be available soon.`);
+      return;
+    }
+
     let itemWash = document.getElementById('item-wash');
     let itemGeneral = document.getElementById('item-general');
     let itemIns = document.getElementById('item-insurance');
@@ -507,8 +578,6 @@
           firstSlot.classList.add('active');
           selectedSlot = firstSlot.querySelector('.slot-time').innerText;
         }
-      } else {
-        selectedSlot = "Coming Soon / Locked";
       }
     } else {
       selectedServiceKey = "";
@@ -577,7 +646,7 @@
     if (!navigator.geolocation) {
       locBtn.disabled = false;
       locBtn.innerHTML = "Auto Locate GPS";
-      alert("Geolocation is not supported by your browser.");
+      showCustomAlert("Error", "Geolocation is not supported by your browser.");
       return;
     }
 
@@ -601,7 +670,7 @@
       err => {
         locBtn.disabled = false;
         locBtn.innerHTML = "Auto Locate GPS";
-        alert("GPS Access Denied or Unavailable. Please type your address manually.");
+        showCustomAlert("Location Access", "GPS Access Denied or Unavailable. Please type your address manually.");
       },
       { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
     );
@@ -612,13 +681,10 @@
     let phone = document.getElementById('cPhone').value.trim();
     let addr = document.getElementById('cAddr').value.trim();
 
-    if (!name) { document.getElementById('cName').classList.add('input-error'); return alert("Please enter your full name."); }
-    if (!/^[0-9]{10}$/.test(phone)) { document.getElementById('cPhone').classList.add('input-error'); return alert("Please enter a valid 10-digit mobile number."); }
-    if (!addr) { document.getElementById('cAddr').classList.add('input-error'); return alert("Please provide your doorstep address."); }
-    if (!selectedServiceKey) { return alert("Please select an active service package."); }
-    if (selectedServiceKey === 'insurance' || selectedServiceKey === 'puc') {
-      return alert("Insurance and Pollution check features are Coming Soon!");
-    }
+    if (!name) { document.getElementById('cName').classList.add('input-error'); return showCustomAlert("Required Field", "Please enter your full name."); }
+    if (!/^[0-9]{10}$/.test(phone)) { document.getElementById('cPhone').classList.add('input-error'); return showCustomAlert("Invalid Mobile", "Please enter a valid 10-digit mobile number."); }
+    if (!addr) { document.getElementById('cAddr').classList.add('input-error'); return showCustomAlert("Address Missing", "Please provide your doorstep address."); }
+    if (!selectedServiceKey) { return showCustomAlert("Service Required", "Please select an active service package."); }
 
     document.getElementById('bookingForm').style.display = "none";
     document.getElementById('loadingScreen').style.display = "block";
@@ -698,7 +764,7 @@
       renderAdminDB();
       switchAdminTab('jc');
     } else {
-      alert("Incorrect Admin PIN");
+      showCustomAlert("Authentication Failed", "Incorrect Admin PIN entered.");
     }
   }
 
@@ -717,7 +783,7 @@
       document.getElementById('mechDashboard').style.display = "block";
       renderMechanicJobs();
     } else {
-      alert("Incorrect Mechanic PIN");
+      showCustomAlert("Authentication Failed", "Incorrect Mechanic PIN entered.");
     }
   }
 
@@ -779,8 +845,11 @@
   }
 
   function promptConvertToInvoice(id) {
-    let utr = prompt("Payment received. Enter UTR/Transaction ID (Optional):", "");
-    if (utr !== null) { convertToInvoice(id, utr); }
+    showCustomAlert("Payment UTR", "Payment received. Enter UTR/Transaction ID:", true, function(utr) {
+      if (utr !== null) {
+        convertToInvoice(id, utr);
+      }
+    });
   }
 
   function convertToInvoice(id, utr) {
@@ -927,7 +996,7 @@
   // --- PDF DOWNLOAD ENGINE ---
   function downloadInvoice(forcePaid = false) {
     try {
-      if (!window.jspdf) { alert("PDF library loading, please wait."); return; }
+      if (!window.jspdf) { showCustomAlert("Error", "PDF library loading, please wait."); return; }
       const doc = new window.jspdf.jsPDF();
       let userUtr = document.getElementById('customerUtr')?.value.trim() || globalBookingData.utr || "";
       let isPaidVerified = forcePaid || (globalBookingData.forceType === 'TAX_INVOICE') || (globalBookingData.paymentType === 'Pay Now' && userUtr.length >= 4);
@@ -985,7 +1054,7 @@
 
       doc.save(isPaidVerified ? `MoGo_Tax_Invoice_${globalBookingData.id}.pdf` : `MoGo_Job_Card_${globalBookingData.id}.pdf`);
     } catch (e) {
-      alert("Error generating PDF.");
+      showCustomAlert("Error", "Error generating PDF.");
     }
   }
 </script>
