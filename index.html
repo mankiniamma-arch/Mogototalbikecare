@@ -127,45 +127,45 @@
     .utr-box { margin-top: 15px; text-align: left; }
     .utr-box label { font-size: 11px; margin: 0 0 6px; }
 
-    .portal-links { display: flex; justify-content: space-around; margin-top: 25px; font-size: 12px; font-weight: 800; padding: 0 10px; }
-    .portal-link { cursor: pointer; transition: 0.2s; color: var(--text-muted); }
+    .portal-links { display: flex; justify-content: center; margin-top: 25px; font-size: 12px; color: var(--text-muted); font-weight: 700; padding: 0 10px; }
+    .portal-link { cursor: pointer; transition: 0.2s; }
     .portal-link:hover { color: var(--primary); }
 
     /* Modal Styles */
-    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.65); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.25s ease; }
+    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.2s; }
     .ui-modal-overlay.show { opacity: 1; visibility: visible; }
-    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto; border-radius: 28px; padding: 28px; text-align: left; box-shadow: 0 25px 60px -15px rgba(11, 15, 25, 0.3); border: 1px solid rgba(226, 232, 240, 0.8); }
+    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 24px; text-align: left; box-shadow: 0 25px 50px -12px rgba(11, 15, 25, 0.28); border: 1px solid rgba(255, 90, 0, 0.18); transform: scale(0.95); transition: all 0.2s; }
+    .ui-modal-overlay.show .ui-modal-box { transform: scale(1); }
+    .ui-modal-icon { width: 60px; height: 60px; border-radius: 18px; background: #FFF5F0; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px; border: 1.5px solid #FFE0D1; }
+    .ui-modal-title { font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 8px; }
+    .ui-modal-msg { font-size: 13.5px; font-weight: 600; color: var(--text-muted); line-height: 1.5; margin: 0 0 20px; }
 
-    .portal-header-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin-bottom: 6px; letter-spacing: -0.5px; }
-    .portal-header-subtitle { font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 20px; }
+    .ui-modal-btn { width: 100%; padding: 15px; border-radius: 14px; border: none; background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%); color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 90, 0, 0.25); }
+    .ui-modal-btn-green { background: #16A34A; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25); border: none; width: 100%; padding: 15px; border-radius: 14px; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer; }
 
-    .db-tab-bar { display: flex; background: var(--input-bg); padding: 4px; border-radius: 14px; margin-bottom: 18px; border: 1px solid var(--border); gap: 4px; }
-    .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 800; background: transparent; color: var(--text-muted); padding: 10px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
-    .db-tab.active { background: #FFFFFF; color: var(--primary); box-shadow: 0 4px 12px rgba(11, 15, 25, 0.06); }
+    input[type="file"]::file-selector-button { border: none; background: #E2E8F0; padding: 8px 12px; border-radius: 8px; color: #0B0F19; font-weight: 700; cursor: pointer; margin-right: 10px; }
+
+    /* Admin DB Styles */
+    .db-tab-bar { display: flex; gap: 8px; margin-bottom: 18px; }
+    .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 800; background: #F1F5F9; color: #64748B; padding: 11px 8px; border-radius: 12px; cursor: pointer; white-space: nowrap; }
+    .db-tab.active { background: #FF5A00; color: #FFF; }
     
-    .db-list { display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
-    .db-item { padding: 16px; border: 1.5px solid var(--border); border-radius: 18px; background: #FAFAFA; }
-    .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .db-list { display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
+    .db-item { padding: 14px; border: 1.5px solid #E2E8F0; border-radius: 16px; background: #F8FAFC; }
+    .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .db-id { font-weight: 900; font-size: 14px; color: var(--text-main); }
-    .badge { font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 8px; text-transform: uppercase; }
+    
+    .badge { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
     .b-booked { background: #FEF3C7; color: #B45309; }
     .b-ready { background: #DCFCE7; color: #15803D; }
-    .db-info { font-size: 12.5px; color: #475569; font-weight: 600; line-height: 1.5; margin-bottom: 12px; }
-    .db-action { display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn-sm { flex: 1; padding: 9px 12px; font-size: 12px; font-weight: 800; border-radius: 10px; cursor: pointer; border: none; background: #E2E8F0; color: #0B0F19; text-align: center; }
-    .btn-del { flex: 0 0 38px; background: #FEE2E2; color: #B91C1C; border-radius: 10px; border: none; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* VIEW CARD MODAL */
-    .view-card-modal { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999; opacity: 0; visibility: hidden; transition: 0.2s; }
-    .view-card-modal.show { opacity: 1; visibility: visible; }
-    .view-card-box { background: #FFFFFF; width: 100%; max-width: 380px; border-radius: 24px; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); text-align: left; }
+    .db-info { font-size: 12px; color: #475569; font-weight: 600; line-height: 1.5; margin-bottom: 10px; }
+    .db-action { display: flex; gap: 6px; flex-wrap: wrap;}
+    .btn-sm { flex: 1; padding: 8px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: none; text-align: center; color: var(--text-main); background: #E2E8F0; }
+    .btn-del { flex: 0 0 34px; padding: 0; background: #FEE2E2; color: #B91C1C; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: 8px; cursor: pointer; border: none; }
 
-    /* CUSTOM DIALOG POPUPS */
-    .custom-alert-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999; opacity: 0; visibility: hidden; transition: 0.2s ease; }
-    .custom-alert-overlay.show { opacity: 1; visibility: visible; }
-    .custom-alert-box { background: #FFFFFF; width: 100%; max-width: 360px; border-radius: 24px; padding: 24px; text-align: center; box-shadow: 0 25px 50px rgba(11, 15, 25, 0.25); border: 1px solid var(--border); }
-    
-    input[type="file"]::file-selector-button { border: none; background: #E2E8F0; padding: 8px 12px; border-radius: 8px; color: #0B0F19; font-weight: 700; cursor: pointer; margin-right: 10px; }
+    /* HIGH Z-INDEX FOR ALERTS SO THEY DON'T HIDE BEHIND ADMIN PANEL */
+    #uiAlertModal, #customAlertModal { z-index: 999999 !important; }
   </style>
 </head>
 <body>
@@ -196,16 +196,10 @@
     <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
     <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
 
-    <div class="loc-header">
-      <label>Doorstep Address</label>
-      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate</button>
-    </div>
-    <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate' or type manually..." oninput="clearError('cAddr')"></textarea>
-
     <label>Select Service & Book Time Slot</label>
     <div class="services-stack">
       
-      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE) -->
+      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE - ₹89) -->
       <div class="service-accordion-item" id="item-wash">
         <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 89)">
           <div class="service-info">
@@ -266,7 +260,13 @@
 
     </div>
 
-    <label style="margin-top:20px;">Payment Method</label>
+    <div class="loc-header">
+      <label>Doorstep Address</label>
+      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate</button>
+    </div>
+    <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate' or type manually..." oninput="clearError('cAddr')"></textarea>
+
+    <label>Payment Method</label>
     <div class="segmented-control">
       <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">💳 Pay Now <span>Online / QR</span></div>
       <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
@@ -276,7 +276,7 @@
     
     <div class="portal-links">
       <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
-      <span class="portal-link" style="color:#0284C7;" onclick="openMechanicPortal()">🔧 Mechanic Portal</span>
+      <span class="portal-link" style="margin-left: 20px;" onclick="openMechanicPortal()">🔧 Mechanic Portal</span>
     </div>
   </div>
 
@@ -294,7 +294,7 @@
     <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will connect with you.</p>
     
     <div id="qrSection" class="official-qr-box" style="display:none;">
-      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;" id="qrPriceTitle">Scan & Pay Securely</p>
+      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;">Scan & Pay ₹89 Securely</p>
       <p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Pvt Ltd</p>
       <img src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=89.00%26cu=INR&margin=10';">
       <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
@@ -310,32 +310,33 @@
   </div>
 </div>
 
-<!-- JOB CARD VIEW MODAL -->
-<div class="view-card-modal" id="viewCardModal" onclick="if(event.target === this) closeViewCard()">
-  <div class="view-card-box">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-      <h3 style="margin:0; font-size:18px; font-weight:900;">Job Card Preview</h3>
-      <button onclick="closeViewCard()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer; color:#0B0F19;">✕</button>
+<!-- UNIVERSAL ALERT / CONFIRM MODAL -->
+<div class="ui-modal-overlay" id="uiAlertModal" onclick="if(event.target === this) closeUiAlert()">
+  <div class="ui-modal-box" style="text-align: center; max-width: 340px;">
+    <div class="ui-modal-icon" id="uiAlertIcon">⚠️</div>
+    <h3 class="ui-modal-title" id="uiAlertTitle">Alert</h3>
+    <p class="ui-modal-msg" id="uiAlertMsg">Message</p>
+    
+    <div id="alertActionButtons" style="display: none; gap: 10px; margin-bottom: 10px;">
+      <button class="btn-sm" style="flex:1; padding:12px; background:#E2E8F0; color:#0B0F19;" onclick="closeUiAlert()">Cancel</button>
+      <button class="btn-sm" style="flex:1; padding:12px; background:#EF4444; color:#fff;" id="alertConfirmBtn">Delete</button>
     </div>
-    <div id="viewCardContent" style="font-size:13px; color:#475569; line-height:1.6; background:#F8FAFC; padding:16px; border-radius:14px; border:1px solid var(--border); margin-bottom:14px;"></div>
-    <div style="display:flex; gap:8px;">
-      <button class="btn-main" id="modalDownloadPdfBtn" style="margin-top:0;">Download PDF</button>
-      <button class="btn-outline" onclick="closeViewCard()" style="margin-top:0;">Close</button>
-    </div>
+    
+    <button class="ui-modal-btn" id="alertOkBtn" onclick="closeUiAlert()">Got It</button>
   </div>
 </div>
 
-<!-- CUSTOM ALERT / PROMPT POPUPS -->
-<div class="custom-alert-overlay" id="customAlertModal">
-  <div class="custom-alert-box">
+<!-- CUSTOM PROMPT MODAL -->
+<div class="ui-modal-overlay" id="customAlertModal" onclick="if(event.target === this) closeCustomAlert(false)">
+  <div class="ui-modal-box" style="text-align: center; max-width: 340px;">
     <h3 id="customAlertTitle" style="margin:0 0 8px; font-size:18px; font-weight:900; color:var(--text-main);">Notice</h3>
     <p id="customAlertMsg" style="margin:0 0 18px; font-size:13.5px; color:var(--text-muted); line-height:1.4;">Message</p>
     <div id="customAlertInputContainer" style="margin-bottom:16px; display:none;">
       <input type="text" id="customAlertInput" placeholder="Enter details..." style="padding:12px; font-size:13.5px;">
     </div>
     <div style="display:flex; gap:8px;">
+      <button class="btn-sm" id="customAlertBtnCancel" style="margin-top:0; padding:12px; background:#E2E8F0; display:none;" onclick="closeCustomAlert(false)">Cancel</button>
       <button class="btn-main" id="customAlertBtnOk" style="margin-top:0; padding:12px;" onclick="closeCustomAlert(true)">Okay</button>
-      <button class="btn-outline" id="customAlertBtnCancel" style="margin-top:0; padding:12px; display:none;" onclick="closeCustomAlert(false)">Cancel</button>
     </div>
   </div>
 </div>
@@ -347,17 +348,15 @@
   <div class="ui-modal-box">
     
     <div id="adminPinSection">
-      <div class="portal-header-title">Admin Portal</div>
-      <div class="portal-header-subtitle">Secure Access Required</div>
+      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center;">🔐 Admin Portal</h3>
       <label style="margin-top:0;">Enter Admin PIN:</label>
-      <input type="password" id="adminPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
-      <button class="btn-main" onclick="verifyAdminPin()" style="margin-top:0;">Unlock Portal</button>
+      <input type="password" id="adminPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 15px; text-align: center; font-size: 20px; letter-spacing: 6px;">
+      <button class="ui-modal-btn" onclick="verifyAdminPin()">Unlock Portal</button>
       <button class="btn-outline" onclick="closeAdminPortal()">Cancel</button>
     </div>
 
     <div id="adminDashboard" style="display: none;">
-      <div class="portal-header-title">Admin Portal</div>
-      <div class="portal-header-subtitle">Manage service records and invoices</div>
+      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900;">📊 Admin Portal</h3>
       
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards</div>
@@ -370,10 +369,10 @@
 
       <div id="view-gen" style="display: none;">
         <label style="margin-top:0;">Customer Name</label>
-        <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:10px; padding:12px;">
-        <label style="margin-top:4px;">Mobile Number</label>
-        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:10px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
+        <label style="margin-top:8px;">Mobile Number</label>
+        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
           <div style="flex:1;">
             <label style="margin-top:4px;">Vehicle</label>
             <select id="admVehicle" style="padding:12px;"><option value="Bike">Bike</option><option value="Scooty">Scooty</option></select>
@@ -384,17 +383,17 @@
           </div>
         </div>
         <label style="margin-top:4px;">Address</label>
-        <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:12px; padding:12px;">
+        <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:10px; padding:12px;">
         
-        <div style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
-          <label style="color:var(--text-main); margin-top:0; font-size:11px;">Payment Proof / UTR:</label>
-          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;">
-          <input type="text" id="admUtr" placeholder="UTR / Ref Number" style="padding:10px; font-size:13px; background:#FFF;">
+        <div style="background:#F8FAFC; padding:10px; border-radius:12px; border:1px dashed #16A34A; margin-bottom:12px;">
+          <label style="color:#16A34A; margin-top:0;">Payment Screenshot / UTR:</label>
+          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px;">
+          <input type="text" id="admUtr" placeholder="UTR / Ref Number" style="padding:10px; font-size:13px;">
         </div>
-        <button class="btn-main" onclick="processAdminForm()" style="margin-top:0; background:#16A34A; box-shadow:0 8px 20px rgba(22,163,74,0.25);">Generate & Download PDF</button>
+        <button class="ui-modal-btn-green" onclick="processAdminForm()">📄 Generate & Download PDF</button>
       </div>
 
-      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Portal</button>
+      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 15px;">Close Portal</button>
     </div>
 
   </div>
@@ -407,20 +406,19 @@
   <div class="ui-modal-box">
     
     <div id="mechPinSection">
-      <div class="portal-header-title" style="color:#0284C7;">Mechanic Portal</div>
-      <div class="portal-header-subtitle">Secure Access Required</div>
+      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center; color:#0284C7;">🔧 Mechanic Portal</h3>
       <label style="margin-top:0;">Enter Mechanic PIN:</label>
-      <input type="password" id="mechPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
-      <button class="btn-main" onclick="verifyMechPin()" style="margin-top:0; background:#0284C7; box-shadow:0 8px 20px rgba(2,132,199,0.25);">Unlock Mechanic Portal</button>
+      <input type="password" id="mechPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 15px; text-align: center; font-size: 20px; letter-spacing: 6px;">
+      <button class="ui-modal-btn" style="background:#0284C7;" onclick="verifyMechPin()">Unlock Portal</button>
       <button class="btn-outline" onclick="closeMechanicPortal()">Cancel</button>
     </div>
 
     <div id="mechDashboard" style="display: none;">
-      <div class="portal-header-title" style="color:#0284C7;">Assigned Jobs</div>
-      <div class="portal-header-subtitle">Active doorstep service requests & job cards</div>
+      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900; color:#0284C7;">🛵 Assigned Jobs</h3>
       <div id="mechJobList" class="db-list"></div>
-      <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Portal</button>
+      <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 15px;">Close Portal</button>
     </div>
+
   </div>
 </div>
 
@@ -428,8 +426,8 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyp9jl7Uu5thiilCriCwi8yE7Sc0Z2cY4OUkCdx3WDp1MmvWgNgMyszl77eWxrPIH4u-Q/exec";
   const MY_WHATSAPP = "919954924948";
   
-  const TOTAL_PRICE = 89; // Updated premium foam wash price
-  const COMPANY_GSTIN = "18AASCM6250H1Z1"; // Authentic GSTIN
+  const TOTAL_PRICE = 89; 
+  const COMPANY_GSTIN = "18AASCM6250H1Z1"; 
 
   let paymentType = "Pay Now";
   let vehicleType = "Bike";
@@ -502,7 +500,7 @@
   // --- TOGGLE ACCORDION ---
   function toggleService(key, name, price) {
     if (key !== 'wash') {
-      showCustomAlert("Coming Soon", `${name} feature is currently under development and will be available soon.`);
+      showUiAlert("🔒", "Coming Soon", `${name} feature is currently under development and will be available soon.`);
       return;
     }
 
@@ -639,29 +637,6 @@
       fieldToFocus = null;
     }
   }
-
-  // --- VIEW CARD MODAL WITH STAMP PREVIEW ---
-  function viewJobCardModal(id) {
-    let rec = getRecord(id);
-    if (!rec) return;
-    let isPaid = rec.forceType === 'TAX_INVOICE' || rec.paymentType === 'Pay Now';
-    let stampHtml = isPaid 
-      ? `<div style="display:inline-block; border:4px solid #16A34A; color:#16A34A; font-weight:900; padding:6px 16px; border-radius:12px; font-size:18px; transform:rotate(-8deg); margin-top:10px;">PAID</div>`
-      : `<div style="display:inline-block; border:4px solid #DC2626; color:#DC2626; font-weight:900; padding:6px 16px; border-radius:12px; font-size:18px; transform:rotate(-8deg); margin-top:10px;">UNPAID</div>`;
-
-    let html = `<strong>Booking ID:</strong> ${rec.id}<br>
-                <strong>Date:</strong> ${rec.date}<br>
-                <strong>Customer:</strong> ${rec.name} (${rec.phone})<br>
-                <strong>Vehicle:</strong> ${rec.vehicle}<br>
-                <strong>Service:</strong> ${rec.serviceName} (₹${rec.grandTotal})<br>
-                <strong>Time Slot:</strong> ${rec.slot}<br>
-                <strong>Address:</strong> ${rec.address}<br>
-                <div style="text-align:center; margin-top:12px;">${stampHtml}</div>`;
-    document.getElementById('viewCardContent').innerHTML = html;
-    document.getElementById('modalDownloadPdfBtn').onclick = function() { generatePDFFromDB(id, isPaid); };
-    document.getElementById('viewCardModal').classList.add('show');
-  }
-  function closeViewCard() { document.getElementById('viewCardModal').classList.remove('show'); }
 
   function selectVehicle(t) {
     vehicleType = t;
@@ -845,7 +820,7 @@
       renderAdminDB();
       switchAdminTab('jc');
     } else {
-      showCustomAlert("Authentication Failed", "Incorrect Admin PIN entered.");
+      showUiAlert("🔐", "Incorrect PIN", "Please enter the valid 4-digit Admin PIN.");
     }
   }
 
@@ -864,7 +839,7 @@
       document.getElementById('mechDashboard').style.display = "block";
       renderMechanicJobs();
     } else {
-      showCustomAlert("Authentication Failed", "Incorrect Mechanic PIN entered.");
+      showUiAlert("🔐", "Incorrect PIN", "Please enter the valid 4-digit Mechanic PIN.");
     }
   }
 
@@ -877,8 +852,7 @@
           <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Card</span></div>
           <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName}<br>Slot: ${item.slot || 'Standard'}<br>📍 ${item.address}</div>
           <div class="db-action">
-            <button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}')">View Job Card</button>
-            <button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">Download PDF</button>
+            <button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">📄 Download PDF</button>
             <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">Call Customer</a>
           </div>
         </div>`;
@@ -904,13 +878,11 @@
       let badge = isInv ? `<span class="badge b-ready">🟢 Paid Invoice</span>` : `<span class="badge b-booked">⏳ Job Card</span>`;
       
       let actions = !isInv
-        ? `<button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}')">View</button>
-           <button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">PDF</button>
-           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">WA</button>
-           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">Invoice</button>`
-        : `<button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}')">View</button>
-           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true)">PDF</button>
-           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">WA</button>`;
+        ? `<button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">📄 PDF</button>
+           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">💬 WA</button>
+           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">✅ Invoice</button>`
+        : `<button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true)">📄 PDF</button>
+           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">💬 WA</button>`;
 
       let card = `
         <div class="db-item">
@@ -925,12 +897,12 @@
       if (isInv) invHTML += card; else jcHTML += card;
     });
 
-    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Job Cards yet.</p>';
-    document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Invoices yet.</p>';
+    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No Job Cards yet.</p>';
+    document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No Invoices yet.</p>';
   }
 
   function promptConvertToInvoice(id) {
-    showCustomAlert("Payment UTR", "Payment received. Enter UTR/Transaction ID:", true, function(utr) {
+    showCustomAlert("Payment UTR", "Payment received. Enter UTR/Transaction ID (Optional):", true, function(utr) {
       if (utr !== null) {
         convertToInvoice(id, utr);
       }
@@ -1232,7 +1204,7 @@
   // ==========================================================
   function downloadInvoice(forcePaid = false) {
     try {
-      if (!window.jspdf) return showCustomAlert("Notice", "PDF library loading, please wait.");
+      if (!window.jspdf) return showUiAlert("Notice", "PDF library loading, please wait.");
       const doc = new window.jspdf.jsPDF();
 
       let userUtr = document.getElementById('customerUtr')?.value.trim() || globalBookingData.utr || "";
