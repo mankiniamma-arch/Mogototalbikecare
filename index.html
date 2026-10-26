@@ -60,15 +60,49 @@
 
     .input-error { border-color: var(--error) !important; background: #FEF2F2 !important; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12) !important; }
 
-    .services-list { display: flex; flex-direction: column; gap: 10px; }
-    .service-card { background: #FFFFFF; border: 2px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .services-stack { display: flex; flex-direction: column; gap: 12px; }
+    .service-accordion-item {
+      background: #FFFFFF; border: 2px solid var(--border); border-radius: 18px; overflow: hidden; transition: all 0.25s ease;
+    }
+    .service-accordion-item.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 8px 20px rgba(255,90,0,0.08); }
+    .service-accordion-item.disabled { background: #F8FAFC; opacity: 0.9; }
+    
+    .service-header-row { padding: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; }
     .service-info { flex: 1; min-width: 0; }
-    .service-card.active { border-color: var(--primary); background: #FFFBF9; box-shadow: 0 6px 16px rgba(255,90,0,0.06); }
-    .service-card.disabled { background: #F8FAFC; border: 1px solid #E2E8F0; opacity: 0.85; }
     .s-title { font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.3; }
     .s-desc { font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-top: 2px; }
     .s-price { font-size: 18px; font-weight: 900; color: var(--primary); flex-shrink: 0; }
     .s-badge { font-size: 9.5px; font-weight: 800; background: #E2E8F0; color: #475569; padding: 6px 9px; border-radius: 8px; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+
+    .embedded-slot-box {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0 16px;
+      border-top: 0px dashed var(--border);
+    }
+    .service-accordion-item.active .embedded-slot-box {
+      max-height: 380px;
+      padding: 0 16px 16px;
+      border-top: 1px dashed rgba(255, 90, 0, 0.25);
+    }
+
+    .slots-grid-inner {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+      padding-right: 2px;
+    }
+    .slot-card-inner {
+      background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 10px 8px; cursor: pointer; transition: all 0.2s; text-align: left;
+    }
+    .slot-card-inner.active { background: #FFFFFF; border-color: var(--primary); box-shadow: 0 4px 12px rgba(255,90,0,0.15); }
+    .slot-time { font-size: 11.5px; font-weight: 900; color: var(--text-main); }
+    .slot-team { font-size: 9.5px; font-weight: 800; color: var(--primary); margin-top: 2px; display: block; text-transform: uppercase; }
 
     .segmented-control { display: flex; background: var(--input-bg); padding: 5px; border-radius: 18px; border: 1px solid var(--border); gap: 4px; }
     .seg-btn { flex: 1; text-align: center; padding: 13px 8px; font-size: 14px; font-weight: 700; color: var(--text-muted); border-radius: 14px; cursor: pointer; transition: 0.2s; }
@@ -93,42 +127,45 @@
     .utr-box { margin-top: 15px; text-align: left; }
     .utr-box label { font-size: 11px; margin: 0 0 6px; }
 
-    .portal-links { display: flex; justify-content: center; margin-top: 25px; font-size: 12px; color: var(--text-muted); font-weight: 700; padding: 0 10px; }
-    .portal-link { cursor: pointer; transition: 0.2s; }
+    .portal-links { display: flex; justify-content: space-around; margin-top: 25px; font-size: 12px; font-weight: 800; padding: 0 10px; }
+    .portal-link { cursor: pointer; transition: 0.2s; color: var(--text-muted); }
     .portal-link:hover { color: var(--primary); }
 
     /* Modal Styles */
-    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.55); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.2s; }
+    .ui-modal-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.65); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.25s ease; }
     .ui-modal-overlay.show { opacity: 1; visibility: visible; }
-    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 24px; text-align: left; box-shadow: 0 25px 50px -12px rgba(11, 15, 25, 0.28); border: 1px solid rgba(255, 90, 0, 0.18); transform: scale(0.95); transition: all 0.2s; }
-    .ui-modal-overlay.show .ui-modal-box { transform: scale(1); }
-    .ui-modal-icon { width: 60px; height: 60px; border-radius: 18px; background: #FFF5F0; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 14px; border: 1.5px solid #FFE0D1; }
-    .ui-modal-title { font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 8px; }
-    .ui-modal-msg { font-size: 13.5px; font-weight: 600; color: var(--text-muted); line-height: 1.5; margin: 0 0 20px; }
+    .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto; border-radius: 28px; padding: 28px; text-align: left; box-shadow: 0 25px 60px -15px rgba(11, 15, 25, 0.3); border: 1px solid rgba(226, 232, 240, 0.8); }
 
-    .ui-modal-btn { width: 100%; padding: 15px; border-radius: 14px; border: none; background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%); color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 90, 0, 0.25); }
-    .ui-modal-btn-green { background: #16A34A; box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25); border: none; width: 100%; padding: 15px; border-radius: 14px; color: #FFFFFF; font-size: 15px; font-weight: 800; cursor: pointer; }
+    .portal-header-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin-bottom: 6px; letter-spacing: -0.5px; }
+    .portal-header-subtitle { font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 20px; }
 
-    input[type="file"]::file-selector-button { border: none; background: #E2E8F0; padding: 8px 12px; border-radius: 8px; color: #0B0F19; font-weight: 700; cursor: pointer; margin-right: 10px; }
-
-    /* Admin DB Styles */
-    .db-tab-bar { display: flex; gap: 8px; margin-bottom: 18px; }
-    .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 800; background: #F1F5F9; color: #64748B; padding: 11px 8px; border-radius: 12px; cursor: pointer; white-space: nowrap; }
-    .db-tab.active { background: #FF5A00; color: #FFF; }
+    .db-tab-bar { display: flex; background: var(--input-bg); padding: 4px; border-radius: 14px; margin-bottom: 18px; border: 1px solid var(--border); gap: 4px; }
+    .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 800; background: transparent; color: var(--text-muted); padding: 10px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+    .db-tab.active { background: #FFFFFF; color: var(--primary); box-shadow: 0 4px 12px rgba(11, 15, 25, 0.06); }
     
-    .db-list { display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; padding-right: 4px; }
-    .db-item { padding: 14px; border: 1.5px solid #E2E8F0; border-radius: 16px; background: #F8FAFC; }
-    .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .db-list { display: flex; flex-direction: column; gap: 12px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
+    .db-item { padding: 16px; border: 1.5px solid var(--border); border-radius: 18px; background: #FAFAFA; }
+    .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .db-id { font-weight: 900; font-size: 14px; color: var(--text-main); }
-    
-    .badge { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+    .badge { font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 8px; text-transform: uppercase; }
     .b-booked { background: #FEF3C7; color: #B45309; }
     .b-ready { background: #DCFCE7; color: #15803D; }
+    .db-info { font-size: 12.5px; color: #475569; font-weight: 600; line-height: 1.5; margin-bottom: 12px; }
+    .db-action { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-sm { flex: 1; padding: 9px 12px; font-size: 12px; font-weight: 800; border-radius: 10px; cursor: pointer; border: none; background: #E2E8F0; color: #0B0F19; text-align: center; }
+    .btn-del { flex: 0 0 38px; background: #FEE2E2; color: #B91C1C; border-radius: 10px; border: none; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    .db-info { font-size: 12px; color: #475569; font-weight: 600; line-height: 1.5; margin-bottom: 10px; }
-    .db-action { display: flex; gap: 6px; flex-wrap: wrap;}
-    .btn-sm { flex: 1; padding: 8px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; border: none; text-align: center; color: var(--text-main); background: #E2E8F0; }
-    .btn-del { flex: 0 0 34px; padding: 0; background: #FEE2E2; color: #B91C1C; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: 8px; cursor: pointer; border: none; }
+    /* VIEW CARD MODAL */
+    .view-card-modal { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999; opacity: 0; visibility: hidden; transition: 0.2s; }
+    .view-card-modal.show { opacity: 1; visibility: visible; }
+    .view-card-box { background: #FFFFFF; width: 100%; max-width: 380px; border-radius: 24px; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); text-align: left; }
+
+    /* CUSTOM DIALOG POPUPS */
+    .custom-alert-overlay { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 99999; opacity: 0; visibility: hidden; transition: 0.2s ease; }
+    .custom-alert-overlay.show { opacity: 1; visibility: visible; }
+    .custom-alert-box { background: #FFFFFF; width: 100%; max-width: 360px; border-radius: 24px; padding: 24px; text-align: center; box-shadow: 0 25px 50px rgba(11, 15, 25, 0.25); border: 1px solid var(--border); }
+    
+    input[type="file"]::file-selector-button { border: none; background: #E2E8F0; padding: 8px 12px; border-radius: 8px; color: #0B0F19; font-weight: 700; cursor: pointer; margin-right: 10px; }
   </style>
 </head>
 <body>
@@ -137,6 +174,7 @@
   
   <!-- CUSTOMER BOOKING FORM -->
   <div class="card" id="bookingForm">
+    <!-- SPINNING WHEELS BRAND HEADER -->
     <div class="brand-header">
       <div class="logo-container">
         <span class="logo-letter">M</span><span class="logo-symbol">+</span>
@@ -158,37 +196,77 @@
     <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
     <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
 
-    <label>Our Services</label>
-    <div class="services-list">
-      <div class="service-card active">
-        <div class="service-info"><div class="s-title">🫧 Premium Foam Wash</div><div class="s-desc">Complete exterior deep cleaning</div></div>
-        <div class="s-price">₹89</div>
-      </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">🛠️ General Servicing</div><div class="s-desc">Complete mechanical checkup</div></div>
-        <div class="s-badge">Coming Soon</div>
-      </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">🛡️ Bike Insurance</div><div class="s-desc">Instant renewal & claim support</div></div>
-        <div class="s-badge">Coming Soon</div>
-      </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">💨 Pollution Check (PUC)</div><div class="s-desc">Doorstep emission testing</div></div>
-        <div class="s-badge">Coming Soon</div>
-      </div>
-      <div class="service-card disabled">
-        <div class="service-info"><div class="s-title">🤝 Monthly Maintenance Contract (MMC)</div><div class="s-desc">Whole month maintenance</div></div>
-        <div class="s-badge">Coming Soon</div>
-      </div>
-    </div>
-
     <div class="loc-header">
       <label>Doorstep Address</label>
       <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate</button>
     </div>
     <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate' or type manually..." oninput="clearError('cAddr')"></textarea>
 
-    <label>Payment Method</label>
+    <label>Select Service & Book Time Slot</label>
+    <div class="services-stack">
+      
+      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE) -->
+      <div class="service-accordion-item" id="item-wash">
+        <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 89)">
+          <div class="service-info">
+            <div class="s-title">🫧 Premium Foam Wash</div>
+            <div class="s-desc">Complete exterior deep cleaning</div>
+          </div>
+          <div class="s-price">₹89</div>
+        </div>
+        <div class="embedded-slot-box">
+          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Select Foam Wash Time Window (08:00 AM - 08:00 PM):</label>
+          <div class="slots-grid-inner" id="slotsContainerWash"></div>
+        </div>
+      </div>
+
+      <!-- SERVICE 2: GENERAL SERVICING (LOCKED) -->
+      <div class="service-accordion-item disabled" id="item-general">
+        <div class="service-header-row" onclick="toggleService('general', 'General Servicing', 0)">
+          <div class="service-info">
+            <div class="s-title">🛠️ General Servicing</div>
+            <div class="s-desc">Complete mechanical checkup</div>
+          </div>
+          <div class="s-badge">Coming Soon</div>
+        </div>
+      </div>
+
+      <!-- SERVICE 3: BIKE INSURANCE (LOCKED) -->
+      <div class="service-accordion-item disabled" id="item-insurance">
+        <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 0)">
+          <div class="service-info">
+            <div class="s-title">🛡️ Bike Insurance Renewal</div>
+            <div class="s-desc">Instant quotes & doorstep policy delivery</div>
+          </div>
+          <div class="s-badge">Coming Soon</div>
+        </div>
+      </div>
+
+      <!-- SERVICE 4: POLLUTION CHECK (PUC) (LOCKED) -->
+      <div class="service-accordion-item disabled" id="item-puc">
+        <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 0)">
+          <div class="service-info">
+            <div class="s-title">💨 Pollution Check (PUC)</div>
+            <div class="s-desc">Doorstep emission testing & certification</div>
+          </div>
+          <div class="s-badge">Coming Soon</div>
+        </div>
+      </div>
+
+      <!-- SERVICE 5: MONTHLY MAINTENANCE (MMC) (LOCKED) -->
+      <div class="service-accordion-item disabled" id="item-mmc">
+        <div class="service-header-row" onclick="toggleService('mmc', 'Monthly Maintenance (MMC)', 0)">
+          <div class="service-info">
+            <div class="s-title">🤝 Monthly Maintenance (MMC)</div>
+            <div class="s-desc">Whole month maintenance contract</div>
+          </div>
+          <div class="s-badge">Coming Soon</div>
+        </div>
+      </div>
+
+    </div>
+
+    <label style="margin-top:20px;">Payment Method</label>
     <div class="segmented-control">
       <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">💳 Pay Now <span>Online / QR</span></div>
       <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
@@ -198,24 +276,25 @@
     
     <div class="portal-links">
       <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
+      <span class="portal-link" style="color:#0284C7;" onclick="openMechanicPortal()">🔧 Mechanic Portal</span>
     </div>
   </div>
 
   <!-- LOADING SCREEN -->
   <div class="card" id="loadingScreen">
     <div class="loader"></div>
-    <h3 style="margin:0 0 8px; font-size:20px;">Booking Your Slot...</h3>
-    <p style="color:var(--text-muted); font-size:14px; margin:0;">Generating your official service job card.</p>
+    <h3 style="margin:0 0 8px; font-size:20px;">Processing Booking...</h3>
+    <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating documents.</p>
   </div>
 
   <!-- SUCCESS SCREEN -->
   <div class="card" id="successScreen">
     <div style="font-size:56px; margin-bottom:12px;">✅</div>
-    <h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;">Booking Confirmed!</h2>
-    <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will arrive shortly.</p>
+    <h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;">Submitted Successfully!</h2>
+    <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will connect with you.</p>
     
     <div id="qrSection" class="official-qr-box" style="display:none;">
-      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;">Scan & Pay ₹89 Securely</p>
+      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;" id="qrPriceTitle">Scan & Pay Securely</p>
       <p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Pvt Ltd</p>
       <img src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=89.00%26cu=INR&margin=10';">
       <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
@@ -226,43 +305,59 @@
     </div>
 
     <button class="btn-main" id="pdfDownloadBtn" style="background:#0F172A;" onclick="downloadInvoice(false)">📄 Download Service Job Card (PDF)</button>
-    <a id="waBtn" href="#" target="_blank" class="btn-main" style="background:#25D366; text-decoration:none;">💬 Send Booking Details on WhatsApp</a>
+    <a id="waBtn" href="#" target="_blank" class="btn-main" style="background:#25D366; text-decoration:none;">💬 Send Details on WhatsApp</a>
     <button class="btn-outline" onclick="location.reload()">Book Another Service</button>
   </div>
 </div>
 
-<!-- UNIVERSAL ALERT / CONFIRM MODAL -->
-<div class="ui-modal-overlay" id="uiAlertModal" onclick="if(event.target === this) closeUiAlert()">
-  <div class="ui-modal-box" style="text-align: center; max-width: 340px;">
-    <div class="ui-modal-icon" id="uiAlertIcon">⚠️</div>
-    <h3 class="ui-modal-title" id="uiAlertTitle">Alert</h3>
-    <p class="ui-modal-msg" id="uiAlertMsg">Message</p>
-    
-    <div id="alertActionButtons" style="display: none; gap: 10px; margin-bottom: 10px;">
-      <button class="btn-sm" style="flex:1; padding:12px; background:#E2E8F0; color:#0B0F19;" onclick="closeUiAlert()">Cancel</button>
-      <button class="btn-sm" style="flex:1; padding:12px; background:#EF4444; color:#fff;" id="alertConfirmBtn">Delete</button>
+<!-- JOB CARD VIEW MODAL -->
+<div class="view-card-modal" id="viewCardModal" onclick="if(event.target === this) closeViewCard()">
+  <div class="view-card-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="margin:0; font-size:18px; font-weight:900;">Job Card Preview</h3>
+      <button onclick="closeViewCard()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer; color:#0B0F19;">✕</button>
     </div>
-    
-    <button class="ui-modal-btn" id="alertOkBtn" onclick="closeUiAlert()">Got It</button>
+    <div id="viewCardContent" style="font-size:13px; color:#475569; line-height:1.6; background:#F8FAFC; padding:16px; border-radius:14px; border:1px solid var(--border); margin-bottom:14px;"></div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-main" id="modalDownloadPdfBtn" style="margin-top:0;">Download PDF</button>
+      <button class="btn-outline" onclick="closeViewCard()" style="margin-top:0;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOM ALERT / PROMPT POPUPS -->
+<div class="custom-alert-overlay" id="customAlertModal">
+  <div class="custom-alert-box">
+    <h3 id="customAlertTitle" style="margin:0 0 8px; font-size:18px; font-weight:900; color:var(--text-main);">Notice</h3>
+    <p id="customAlertMsg" style="margin:0 0 18px; font-size:13.5px; color:var(--text-muted); line-height:1.4;">Message</p>
+    <div id="customAlertInputContainer" style="margin-bottom:16px; display:none;">
+      <input type="text" id="customAlertInput" placeholder="Enter details..." style="padding:12px; font-size:13.5px;">
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-main" id="customAlertBtnOk" style="margin-top:0; padding:12px;" onclick="closeCustomAlert(true)">Okay</button>
+      <button class="btn-outline" id="customAlertBtnCancel" style="margin-top:0; padding:12px; display:none;" onclick="closeCustomAlert(false)">Cancel</button>
+    </div>
   </div>
 </div>
 
 <!-- ========================================== -->
-<!-- 🔐 ADMIN PORTAL (PIN: 4882)                -->
+<!-- 🔐 ADMIN PORTAL                            -->
 <!-- ========================================== -->
 <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
   <div class="ui-modal-box">
     
     <div id="adminPinSection">
-      <h3 style="margin: 0 0 15px; font-size: 20px; font-weight: 900; text-align: center;">🔐 Admin Portal</h3>
+      <div class="portal-header-title">Admin Portal</div>
+      <div class="portal-header-subtitle">Secure Access Required</div>
       <label style="margin-top:0;">Enter Admin PIN:</label>
-      <input type="password" id="adminPinInput" placeholder="Enter 4-Digit PIN" maxlength="4" style="margin-bottom: 15px;">
-      <button class="ui-modal-btn" onclick="verifyAdminPin()">Unlock Portal</button>
+      <input type="password" id="adminPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
+      <button class="btn-main" onclick="verifyAdminPin()" style="margin-top:0;">Unlock Portal</button>
       <button class="btn-outline" onclick="closeAdminPortal()">Cancel</button>
     </div>
 
     <div id="adminDashboard" style="display: none;">
-      <h3 style="margin: 0 0 15px; font-size: 19px; font-weight: 900;">📊 Admin Portal</h3>
+      <div class="portal-header-title">Admin Portal</div>
+      <div class="portal-header-subtitle">Manage service records and invoices</div>
       
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards</div>
@@ -275,10 +370,10 @@
 
       <div id="view-gen" style="display: none;">
         <label style="margin-top:0;">Customer Name</label>
-        <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
-        <label style="margin-top:8px;">Mobile Number</label>
-        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        <div style="display:flex; gap:8px; margin-bottom:8px;">
+        <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:10px; padding:12px;">
+        <label style="margin-top:4px;">Mobile Number</label>
+        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:10px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
           <div style="flex:1;">
             <label style="margin-top:4px;">Vehicle</label>
             <select id="admVehicle" style="padding:12px;"><option value="Bike">Bike</option><option value="Scooty">Scooty</option></select>
@@ -289,35 +384,66 @@
           </div>
         </div>
         <label style="margin-top:4px;">Address</label>
-        <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:10px; padding:12px;">
+        <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:12px; padding:12px;">
         
-        <div style="background:#F8FAFC; padding:10px; border-radius:12px; border:1px dashed #16A34A; margin-bottom:12px;">
-          <label style="color:#16A34A; margin-top:0;">Payment Screenshot / UTR:</label>
-          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px;">
-          <input type="text" id="admUtr" placeholder="UTR / Ref Number (Optional if photo added)" style="padding:10px; font-size:13px;">
+        <div style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
+          <label style="color:var(--text-main); margin-top:0; font-size:11px;">Payment Proof / UTR:</label>
+          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;">
+          <input type="text" id="admUtr" placeholder="UTR / Ref Number" style="padding:10px; font-size:13px; background:#FFF;">
         </div>
-        <button class="ui-modal-btn-green" onclick="processAdminForm()">📄 Generate & Download PDF</button>
+        <button class="btn-main" onclick="processAdminForm()" style="margin-top:0; background:#16A34A; box-shadow:0 8px 20px rgba(22,163,74,0.25);">Generate & Download PDF</button>
       </div>
 
-      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 15px;">Close Portal</button>
+      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
 
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 🔧 MECHANIC PORTAL                         -->
+<!-- ========================================== -->
+<div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
+  <div class="ui-modal-box">
+    
+    <div id="mechPinSection">
+      <div class="portal-header-title" style="color:#0284C7;">Mechanic Portal</div>
+      <div class="portal-header-subtitle">Secure Access Required</div>
+      <label style="margin-top:0;">Enter Mechanic PIN:</label>
+      <input type="password" id="mechPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
+      <button class="btn-main" onclick="verifyMechPin()" style="margin-top:0; background:#0284C7; box-shadow:0 8px 20px rgba(2,132,199,0.25);">Unlock Mechanic Portal</button>
+      <button class="btn-outline" onclick="closeMechanicPortal()">Cancel</button>
+    </div>
+
+    <div id="mechDashboard" style="display: none;">
+      <div class="portal-header-title" style="color:#0284C7;">Assigned Jobs</div>
+      <div class="portal-header-subtitle">Active doorstep service requests & job cards</div>
+      <div id="mechJobList" class="db-list"></div>
+      <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Portal</button>
+    </div>
   </div>
 </div>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyp9jl7Uu5thiilCriCwi8yE7Sc0Z2cY4OUkCdx3WDp1MmvWgNgMyszl77eWxrPIH4u-Q/exec";
   const MY_WHATSAPP = "919954924948";
-  const TOTAL_PRICE = 89; // Updated price to ₹89
-  const COMPANY_GSTIN = "18AASCM6250H1Z1"; // Updated accurate GSTIN from certificate[cite: 3]
+  
+  const TOTAL_PRICE = 89; // Updated premium foam wash price
+  const COMPANY_GSTIN = "18AASCM6250H1Z1"; // Authentic GSTIN
 
   let paymentType = "Pay Now";
   let vehicleType = "Bike";
+  let selectedServiceKey = "";
+  let selectedServiceName = "";
+  let currentServicePrice = 0;
+  let selectedSlot = "";
   let globalBookingData = {};
   let customerCoords = null;
   let fieldToFocus = null;
+  let alertCallback = null;
 
   window.addEventListener('load', () => {
+    buildSlotsForContainer('slotsContainerWash', 'Foam Wash Team');
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => { customerCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude }; },
@@ -326,6 +452,88 @@
       );
     }
   });
+
+  // --- DYNAMIC 30-MIN SLOTS GENERATOR (8:00 AM to 8:00 PM) ---
+  function buildSlotsForContainer(containerId, teamTitle) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = "";
+
+    let startHour = 8;
+    let endHour = 20;
+
+    let slotsArr = [];
+    for (let h = startHour; h < endHour; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        let startH = h;
+        let startM = m;
+        let endH = h;
+        let endM = m + 30;
+        if (endM >= 60) { endH += 1; endM -= 60; }
+        
+        let fmtStart = formatTime(startH, startM);
+        let fmtEnd = formatTime(endH, endM);
+        slotsArr.push(`${fmtStart} - ${fmtEnd}`);
+      }
+    }
+
+    slotsArr.forEach((slotStr) => {
+      let div = document.createElement('div');
+      div.className = "slot-card-inner";
+      div.onclick = function(e) {
+        e.stopPropagation();
+        let parentBox = container.closest('.service-accordion-item');
+        parentBox.querySelectorAll('.slot-card-inner').forEach(c => c.classList.remove('active'));
+        div.classList.add('active');
+        selectedSlot = slotStr;
+      };
+      div.innerHTML = `<div class="slot-time">${slotStr}</div><span class="slot-team">${teamTitle}</span>`;
+      container.appendChild(div);
+    });
+  }
+
+  function formatTime(h, m) {
+    let period = h >= 12 ? "PM" : "AM";
+    let hour12 = h % 12 === 0 ? 12 : h % 12;
+    let minStr = m === 0 ? "00" : "30";
+    return `${hour12}:${minStr} ${period}`;
+  }
+
+  // --- TOGGLE ACCORDION ---
+  function toggleService(key, name, price) {
+    if (key !== 'wash') {
+      showCustomAlert("Coming Soon", `${name} feature is currently under development and will be available soon.`);
+      return;
+    }
+
+    let itemWash = document.getElementById('item-wash');
+    let targetItem = document.getElementById('item-' + key);
+    let isOpen = targetItem.classList.contains('active');
+
+    itemWash.classList.remove('active');
+
+    if (!isOpen) {
+      targetItem.classList.add('active');
+      selectedServiceKey = key;
+      selectedServiceName = name;
+      currentServicePrice = price;
+
+      let activeContainer = targetItem.querySelector('.slots-grid-inner');
+      if (activeContainer) {
+        let firstSlot = activeContainer.querySelector('.slot-card-inner');
+        if (firstSlot) {
+          activeContainer.querySelectorAll('.slot-card-inner').forEach(c => c.classList.remove('active'));
+          firstSlot.classList.add('active');
+          selectedSlot = firstSlot.querySelector('.slot-time').innerText;
+        }
+      }
+    } else {
+      selectedServiceKey = "";
+      selectedServiceName = "";
+      currentServicePrice = 0;
+      selectedSlot = "";
+    }
+  }
 
   // --- LOCAL STORAGE DB ---
   function getDB() {
@@ -362,6 +570,43 @@
   // --- UI ALERTS ---
   function clearError(id) { document.getElementById(id)?.classList.remove('input-error'); }
 
+  function showCustomAlert(title, message, isPrompt = false, callback = null) {
+    document.getElementById('customAlertTitle').innerText = title;
+    document.getElementById('customAlertMsg').innerText = message;
+    alertCallback = callback;
+
+    let inputContainer = document.getElementById('customAlertInputContainer');
+    let inputField = document.getElementById('customAlertInput');
+    let cancelBtn = document.getElementById('customAlertBtnCancel');
+
+    if (isPrompt) {
+      inputContainer.style.display = 'block';
+      inputField.value = '';
+      cancelBtn.style.display = 'block';
+    } else {
+      inputContainer.style.display = 'none';
+      cancelBtn.style.display = 'none';
+    }
+
+    document.getElementById('customAlertModal').classList.add('show');
+    if (isPrompt) setTimeout(() => inputField.focus(), 100);
+  }
+
+  function closeCustomAlert(isOk) {
+    document.getElementById('customAlertModal').classList.remove('show');
+    let inputField = document.getElementById('customAlertInput');
+    let val = inputField.value.trim();
+
+    if (alertCallback) {
+      if (inputField.parentElement.style.display === 'block') {
+        alertCallback(isOk ? val : null);
+      } else {
+        alertCallback(isOk);
+      }
+      alertCallback = null;
+    }
+  }
+
   function showUiAlert(icon, title, message, inputId = null) {
     document.getElementById('uiAlertIcon').innerHTML = icon;
     document.getElementById('uiAlertTitle').innerText = title;
@@ -394,6 +639,29 @@
       fieldToFocus = null;
     }
   }
+
+  // --- VIEW CARD MODAL WITH STAMP PREVIEW ---
+  function viewJobCardModal(id) {
+    let rec = getRecord(id);
+    if (!rec) return;
+    let isPaid = rec.forceType === 'TAX_INVOICE' || rec.paymentType === 'Pay Now';
+    let stampHtml = isPaid 
+      ? `<div style="display:inline-block; border:4px solid #16A34A; color:#16A34A; font-weight:900; padding:6px 16px; border-radius:12px; font-size:18px; transform:rotate(-8deg); margin-top:10px;">PAID</div>`
+      : `<div style="display:inline-block; border:4px solid #DC2626; color:#DC2626; font-weight:900; padding:6px 16px; border-radius:12px; font-size:18px; transform:rotate(-8deg); margin-top:10px;">UNPAID</div>`;
+
+    let html = `<strong>Booking ID:</strong> ${rec.id}<br>
+                <strong>Date:</strong> ${rec.date}<br>
+                <strong>Customer:</strong> ${rec.name} (${rec.phone})<br>
+                <strong>Vehicle:</strong> ${rec.vehicle}<br>
+                <strong>Service:</strong> ${rec.serviceName} (₹${rec.grandTotal})<br>
+                <strong>Time Slot:</strong> ${rec.slot}<br>
+                <strong>Address:</strong> ${rec.address}<br>
+                <div style="text-align:center; margin-top:12px;">${stampHtml}</div>`;
+    document.getElementById('viewCardContent').innerHTML = html;
+    document.getElementById('modalDownloadPdfBtn').onclick = function() { generatePDFFromDB(id, isPaid); };
+    document.getElementById('viewCardModal').classList.add('show');
+  }
+  function closeViewCard() { document.getElementById('viewCardModal').classList.remove('show'); }
 
   function selectVehicle(t) {
     vehicleType = t;
@@ -500,6 +768,7 @@
     if (!name) return showUiAlert("👤", "Full Name Required", "Please enter your full name.", "cName");
     if (!/^[0-9]{10}$/.test(phone)) return showUiAlert("📱", "Invalid Mobile Number", "Please enter a valid 10-digit mobile number.", "cPhone");
     if (!addr) return showUiAlert("📍", "Address Missing", "Please tap 'Auto Locate' or type your doorstep address.", "cAddr");
+    if (!selectedServiceKey) return showUiAlert("📋", "Service Required", "Please tap on Premium Foam Wash to select a time slot.");
 
     document.getElementById('bookingForm').style.display = "none";
     document.getElementById('loadingScreen').style.display = "block";
@@ -507,12 +776,11 @@
     let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
     let maps = customerCoords ? `https://www.google.com/maps?q=${customerCoords.lat},${customerCoords.lon}` : "";
     
-    // Calculations for ₹89 Inclusive of CGST 9% and SGST 9%
-    let grandTotal = TOTAL_PRICE; // ₹89.00
+    // Total Price = ₹89. Calculation for 18% GST (9% CGST + 9% SGST)
+    let grandTotal = TOTAL_PRICE; 
     let subtotal = grandTotal / 1.18; 
-    let totalTax = grandTotal - subtotal;
-    let cgst = totalTax / 2;
-    let sgst = totalTax / 2;
+    let cgst = subtotal * 0.09;
+    let sgst = subtotal * 0.09;
 
     globalBookingData = {
       id: id,
@@ -520,7 +788,8 @@
       name: name,
       phone: phone,
       vehicle: vehicleType,
-      serviceName: "Premium Foam Wash",
+      serviceName: selectedServiceName,
+      slot: selectedSlot,
       total: subtotal,
       cgst: cgst,
       sgst: sgst,
@@ -560,7 +829,7 @@
     }, 250);
   }
 
-  // --- ADMIN PORTAL (PIN: 4882) ---
+  // --- ADMIN PORTAL ---
   function openAdminPortal() {
     document.getElementById('adminPinInput').value = "";
     document.getElementById('adminPinSection').style.display = "block";
@@ -576,8 +845,45 @@
       renderAdminDB();
       switchAdminTab('jc');
     } else {
-      showUiAlert("🔐", "Incorrect PIN", "Please enter the valid 4-digit Admin PIN.");
+      showCustomAlert("Authentication Failed", "Incorrect Admin PIN entered.");
     }
+  }
+
+  // --- MECHANIC PORTAL ---
+  function openMechanicPortal() {
+    document.getElementById('mechPinInput').value = "";
+    document.getElementById('mechPinSection').style.display = "block";
+    document.getElementById('mechDashboard').style.display = "none";
+    document.getElementById('mechanicModal').classList.add('show');
+  }
+  function closeMechanicPortal() { document.getElementById('mechanicModal').classList.remove('show'); }
+
+  function verifyMechPin() {
+    if (document.getElementById('mechPinInput').value.trim() === "7788") {
+      document.getElementById('mechPinSection').style.display = "none";
+      document.getElementById('mechDashboard').style.display = "block";
+      renderMechanicJobs();
+    } else {
+      showCustomAlert("Authentication Failed", "Incorrect Mechanic PIN entered.");
+    }
+  }
+
+  function renderMechanicJobs() {
+    let db = getDB();
+    let html = "";
+    db.forEach(item => {
+      html += `
+        <div class="db-item">
+          <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Card</span></div>
+          <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName}<br>Slot: ${item.slot || 'Standard'}<br>📍 ${item.address}</div>
+          <div class="db-action">
+            <button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}')">View Job Card</button>
+            <button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">Download PDF</button>
+            <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">Call Customer</a>
+          </div>
+        </div>`;
+    });
+    document.getElementById('mechJobList').innerHTML = html || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No assigned jobs yet.</p>';
   }
 
   function switchAdminTab(tab) {
@@ -598,11 +904,13 @@
       let badge = isInv ? `<span class="badge b-ready">🟢 Paid Invoice</span>` : `<span class="badge b-booked">⏳ Job Card</span>`;
       
       let actions = !isInv
-        ? `<button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">📄 Job Card</button>
-           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">💬 WhatsApp</button>
-           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">✅ Make Invoice</button>`
-        : `<button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true)">📄 Invoice PDF</button>
-           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">💬 WhatsApp</button>`;
+        ? `<button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}')">View</button>
+           <button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false)">PDF</button>
+           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">WA</button>
+           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">Invoice</button>`
+        : `<button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}')">View</button>
+           <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true)">PDF</button>
+           <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">WA</button>`;
 
       let card = `
         <div class="db-item">
@@ -617,16 +925,16 @@
       if (isInv) invHTML += card; else jcHTML += card;
     });
 
-    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No Job Cards yet.</p>';
-    document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8;">No Invoices yet.</p>';
+    document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Job Cards yet.</p>';
+    document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Invoices yet.</p>';
   }
 
-  // --- INVOICE CONVERSION WITH UTR PROMPT ---
   function promptConvertToInvoice(id) {
-      let utr = prompt("Payment received. Enter UTR/Transaction ID (Optional):", "");
-      if (utr !== null) { 
-          convertToInvoice(id, utr);
+    showCustomAlert("Payment UTR", "Payment received. Enter UTR/Transaction ID:", true, function(utr) {
+      if (utr !== null) {
+        convertToInvoice(id, utr);
       }
+    });
   }
 
   function convertToInvoice(id, utr) {
@@ -635,7 +943,6 @@
     generatePDFFromDB(id, true);
   }
 
-  // --- WHATSAPP SHARING FROM ADMIN ---
   function shareDirectWA(id, isInvoice) {
     let rec = getRecord(id);
     if (!rec) return;
@@ -658,16 +965,15 @@
     let fileInput = document.getElementById('admGpsImg');
 
     if (docType === 'TAX_INVOICE' && !utr && (!fileInput.files || fileInput.files.length === 0)) {
-      return showUiAlert("🧾", "Payment Proof Needed", "Please upload a payment screenshot or enter UTR / CASH.");
+      return showCustomAlert("Notice", "Please upload a payment screenshot or enter UTR.");
     }
 
     let recId = "MOGO" + Math.floor(1000 + Math.random() * 9000);
     
     let grandTotal = TOTAL_PRICE;
     let subtotal = grandTotal / 1.18;
-    let totalTax = grandTotal - subtotal;
-    let cgst = totalTax / 2;
-    let sgst = totalTax / 2;
+    let cgst = subtotal * 0.09;
+    let sgst = subtotal * 0.09;
 
     let newRec = {
       id: recId,
@@ -676,6 +982,7 @@
       phone: phone,
       vehicle: vehicle,
       serviceName: "Premium Foam Wash",
+      slot: "Admin Generated",
       total: subtotal,
       cgst: cgst,
       sgst: sgst,
@@ -836,13 +1143,13 @@
     ctx.strokeStyle = col;
     ctx.fillStyle = col;
 
-    // 1. Outer & Inner Rings
+    // Outer & Inner Rings
     ctx.lineWidth = 16; ctx.beginPath(); ctx.arc(0, 0, 230, 0, Math.PI * 2); ctx.stroke();
     ctx.lineWidth = 4;  ctx.beginPath(); ctx.arc(0, 0, 208, 0, Math.PI * 2); ctx.stroke();
     ctx.lineWidth = 6;  ctx.beginPath(); ctx.arc(0, 0, 136, 0, Math.PI * 2); ctx.stroke();
     ctx.lineWidth = 2.5;ctx.beginPath(); ctx.arc(0, 0, 124, 0, Math.PI * 2); ctx.stroke();
 
-    // 2. Top Curved Text: "MTPL"
+    // Top Curved Text: "MTPL"
     ctx.fillStyle = col;
     ctx.font = 'bold 48px Arial, Helvetica, sans-serif';
     ctx.textAlign = 'center';
@@ -857,7 +1164,7 @@
       ctx.restore();
     }
 
-    // 3. Bottom Curved Text: "MOGO BIKES CARE"
+    // Bottom Curved Text: "MOGO BIKES CARE"
     ctx.fillStyle = col;
     ctx.font = 'bold 26px Arial, Helvetica, sans-serif';
     let botText = "MOGO BIKES CARE", botAngle = 1.95, startB = Math.PI / 2 + botAngle / 2;
@@ -870,7 +1177,7 @@
       ctx.restore();
     }
 
-    // 4. Inner Stars
+    // Inner Stars
     ctx.fillStyle = col;
     ctx.font = 'bold 24px Arial, sans-serif';
     ctx.fillText('★', -54, -80); ctx.fillText('★', 54, -80);
@@ -881,7 +1188,7 @@
     ctx.font = 'bold 36px Arial, sans-serif';
     ctx.fillText('★', 0, 84);
 
-    // 5. Center Banner Box
+    // Center Banner Box
     const bw = 540, bh = 106;
     ctx.fillStyle = bgFill;
     ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
@@ -889,7 +1196,7 @@
     ctx.lineWidth = 12; ctx.strokeRect(-bw / 2, -bh / 2, bw, bh);
     ctx.lineWidth = 3;  ctx.strokeRect(-bw / 2 + 10, -bh / 2 + 10, bw - 20, bh - 20);
 
-    // 6. Center PAID / UNPAID Text
+    // Center PAID / UNPAID Text
     ctx.fillStyle = col;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -897,7 +1204,7 @@
     ctx.fillText(isGreen ? "PAID" : "UNPAID", 0, 4);
     ctx.restore();
 
-    // 7. Authentic Rubber Stamp Grunge Texture
+    // Authentic Rubber Stamp Grunge Texture
     ctx.save();
     ctx.globalCompositeOperation = 'destination-out';
     let seed = isGreen ? 101 : 202;
@@ -921,11 +1228,11 @@
   }
 
   // ==========================================================
-  // PDF GENERATOR (INVOICE WITH CGST/SGST, GSTIN & LEGAL TERMS)
+  // PDF GENERATOR (INVOICE WITH GST 18%, GSTIN & LEGAL TERMS)
   // ==========================================================
   function downloadInvoice(forcePaid = false) {
     try {
-      if (!window.jspdf) return showUiAlert("⏳", "Loading PDF", "Please wait a second and tap again.");
+      if (!window.jspdf) return showCustomAlert("Notice", "PDF library loading, please wait.");
       const doc = new window.jspdf.jsPDF();
 
       let userUtr = document.getElementById('customerUtr')?.value.trim() || globalBookingData.utr || "";
@@ -944,7 +1251,7 @@
       doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.setTextColor(100, 100, 100);
       doc.text("Mankiniamma Technologies Pvt Ltd | Guwahati, Assam", 105, 51, null, null, "center");
       
-      // Display Company GSTIN in Invoice header area
+      // Display Company GSTIN
       doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(15, 23, 42);
       doc.text("Company GSTIN: " + COMPANY_GSTIN, 105, 57, null, null, "center");
 
@@ -964,10 +1271,10 @@
       doc.line(20, 124, 190, 124);
       doc.setFont("helvetica", "bold"); doc.text("Service Description", 20, 133); doc.text("Amount (INR)", 155, 133);
       
-      let subtotal = globalBookingData.total || (TOTAL_PRICE / 1.18);
-      let cgst = globalBookingData.cgst || ((TOTAL_PRICE - subtotal) / 2);
-      let sgst = globalBookingData.sgst || ((TOTAL_PRICE - subtotal) / 2);
       let grandTotal = globalBookingData.grandTotal || TOTAL_PRICE;
+      let subtotal = globalBookingData.total || (grandTotal / 1.18);
+      let cgst = globalBookingData.cgst || (subtotal * 0.09);
+      let sgst = globalBookingData.sgst || (subtotal * 0.09);
 
       doc.setFont("helvetica", "normal"); 
       doc.text("1. " + (globalBookingData.serviceName || "Premium Foam Wash"), 20, 143); 
@@ -979,12 +1286,12 @@
         doc.line(20, 152, 190, 152);
         doc.setFontSize(9.5);
         doc.text(`Taxable Amount (Subtotal):`, 110, 161); doc.text("Rs. " + subtotal.toFixed(2), 155, 161);
-        doc.text(`CGST @ 9% (State & Central):`, 110, 168); doc.text("Rs. " + cgst.toFixed(2), 155, 168);
-        doc.text(`SGST @ 9% (State & Central):`, 110, 175); doc.text("Rs. " + sgst.toFixed(2), 155, 175);
+        doc.text(`CGST @ 9% (Central Tax):`, 110, 168); doc.text("Rs. " + cgst.toFixed(2), 155, 168);
+        doc.text(`SGST @ 9% (State Tax):`, 110, 175); doc.text("Rs. " + sgst.toFixed(2), 155, 175);
         
         doc.line(20, 180, 190, 180);
         doc.setFontSize(12); doc.setFont("helvetica", "bold");
-        doc.text("Grand Total (Incl. GST):", 45, 189);
+        doc.text("Grand Total (Incl. 18% GST):", 45, 189);
         doc.setTextColor(255, 90, 0); doc.text("Rs. " + grandTotal.toFixed(2), 155, 189);
 
         // Paid Stamp
@@ -1010,7 +1317,7 @@
         });
 
       } else {
-        // JOB CARD: NO GST, ONLY ESTIMATE AMOUNT
+        // JOB CARD: NO GST BREAKDOWN, ONLY ESTIMATE AMOUNT
         doc.text("Rs. " + grandTotal.toFixed(2), 155, 143);
 
         doc.line(20, 154, 190, 154);
@@ -1047,7 +1354,7 @@
 
       doc.save(isPaidVerified ? `MoGo_Tax_Invoice_${globalBookingData.id}.pdf` : `MoGo_Job_Card_${globalBookingData.id}.pdf`);
     } catch (e) {
-      showUiAlert("⚠️", "PDF Error", "Could not generate PDF. Please try again.");
+      showCustomAlert("Notice", "Could not generate PDF. Please try again.");
     }
   }
 </script>
