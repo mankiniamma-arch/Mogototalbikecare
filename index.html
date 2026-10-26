@@ -56,21 +56,22 @@
     .btn-outline { width: 100%; padding: 16px; border-radius: 16px; background: #F1F5F9; color: var(--text-main); border: 1px solid var(--border); margin-top: 12px; font-weight: 800; font-size: 15px; cursor: pointer; }
     #loadingScreen, #successScreen { display: none; text-align: center; padding: 40px 10px; }
     .loader { width: 50px; height: 50px; border: 4px solid #E2E8F0; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
     .official-qr-box { background: #FFF9F5; padding: 22px; border-radius: 20px; margin: 20px 0; border: 2px solid #FF5A00; text-align: center; box-shadow: 0 10px 25px rgba(255,90,0,0.08); }
     .official-qr-box img { width: 220px; height: 220px; border-radius: 14px; border: 3px solid #FFFFFF; box-shadow: 0 6px 16px rgba(0,0,0,0.1); margin-bottom: 12px; object-fit: contain; }
+    .utr-box { margin-top: 15px; text-align: left; }
+    .utr-box label { font-size: 11px; margin: 0 0 6px; }
     .portal-links { display: flex; justify-content: center; margin-top: 25px; font-size: 12px; color: var(--text-muted); font-weight: 700; padding: 0 10px; gap: 20px; }
     .portal-link { cursor: pointer; transition: 0.2s; }
-    
+    .portal-link:hover { color: var(--primary); }
+
     .ui-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.65); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 99999; opacity: 0; visibility: hidden; transition: all 0.2s; }
     .ui-modal-overlay.show { opacity: 1; visibility: visible; }
     .ui-modal-box { background: #FFFFFF; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; border-radius: 24px; padding: 24px; text-align: left; box-shadow: 0 25px 50px -12px rgba(11, 15, 25, 0.28); border: 1px solid rgba(255, 90, 0, 0.18); transform: scale(0.95); transition: all 0.2s; margin: auto; position: relative; }
     .ui-modal-overlay.show .ui-modal-box { transform: scale(1); }
-    
     .portal-header-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin-bottom: 6px; letter-spacing: -0.5px; }
     .portal-header-subtitle { font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 20px; }
-
     #uiAlertModal, #customAlertModal, #viewCardModal { z-index: 9999999 !important; }
-
     .db-tab-bar { display: flex; gap: 8px; margin-bottom: 18px; }
     .db-tab { flex: 1; text-align: center; font-size: 12px; font-weight: 800; background: #F1F5F9; color: #64748B; padding: 11px 8px; border-radius: 12px; cursor: pointer; white-space: nowrap; }
     .db-tab.active { background: #FF5A00; color: #FFF; }
@@ -116,7 +117,6 @@
     <label>Select Service & Book Time Slot</label>
     <div class="services-stack">
       
-      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE - ₹89) -->
       <div class="service-accordion-item" id="item-wash">
         <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 89)">
           <div class="service-info">
@@ -131,7 +131,6 @@
         </div>
       </div>
 
-      <!-- SERVICE 2: GENERAL SERVICING (LOCKED) -->
       <div class="service-accordion-item disabled" id="item-general">
         <div class="service-header-row" onclick="toggleService('general', 'General Servicing', 0)">
           <div class="service-info"><div class="s-title">🛠️ General Servicing</div><div class="s-desc">Complete mechanical checkup</div></div>
@@ -139,7 +138,6 @@
         </div>
       </div>
 
-      <!-- SERVICE 3: BIKE INSURANCE (LOCKED) -->
       <div class="service-accordion-item disabled" id="item-insurance">
         <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 0)">
           <div class="service-info"><div class="s-title">🛡️ Bike Insurance Renewal</div><div class="s-desc">Instant quotes & delivery</div></div>
@@ -147,7 +145,6 @@
         </div>
       </div>
 
-      <!-- SERVICE 4: POLLUTION CHECK (LOCKED) -->
       <div class="service-accordion-item disabled" id="item-puc">
         <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 0)">
           <div class="service-info"><div class="s-title">💨 Pollution Check (PUC)</div><div class="s-desc">Doorstep emission testing</div></div>
@@ -201,10 +198,6 @@
   </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MODALS                                     -->
-<!-- ========================================== -->
-
 <!-- ADMIN PORTAL -->
 <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
   <div class="ui-modal-box">
@@ -219,7 +212,6 @@
     <div id="adminDashboard" style="display: none;">
       <div class="portal-header-title">Admin Portal</div>
       <div class="portal-header-subtitle">Manage service records and invoices</div>
-      
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards</div>
         <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Invoices</div>
@@ -231,7 +223,7 @@
   </div>
 </div>
 
-<!-- MECHANIC PORTAL (JOB CARDS ONLY) -->
+<!-- MECHANIC PORTAL (STRICTLY JOB CARDS ONLY) -->
 <div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
   <div class="ui-modal-box">
     <div id="mechPinSection">
@@ -272,8 +264,8 @@
     <h3 id="uiAlertTitle" style="margin:0 0 8px; font-size:18px; font-weight:900;">Alert</h3>
     <p id="uiAlertMsg" style="margin:0 0 20px; font-size:13.5px;">Message</p>
     <div id="alertActionButtons" style="display: none; gap: 10px; margin-bottom: 10px;">
-      <button class="btn-outline" style="margin-top:0; padding:12px;" onclick="closeUiAlert()">Cancel</button>
-      <button class="btn-main" style="margin-top:0; padding:12px; background:#EF4444;" id="alertConfirmBtn">Delete</button>
+      <button class="btn-sm" style="flex:1; padding:12px; background:#E2E8F0; color:#0B0F19;" onclick="closeUiAlert()">Cancel</button>
+      <button class="btn-sm" style="flex:1; padding:12px; background:#EF4444; color:#fff;" id="alertConfirmBtn">Delete</button>
     </div>
     <button class="btn-main" id="alertOkBtn" style="margin-top:0;" onclick="closeUiAlert()">Got It</button>
   </div>
@@ -284,12 +276,10 @@
   const MY_WHATSAPP = "919954924948";
   const TOTAL_PRICE = 89; 
   const COMPANY_GSTIN = "18AASCM6250H1Z1"; 
-  
-  // Official Registered Address from GST Certificate
-  const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035";
+  const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035";[cite: 3]
 
   let paymentType = "Pay Now", vehicleType = "Bike", selectedServiceKey = "", selectedServiceName = "", selectedSlot = "";
-  let globalBookingData = {}, customerCoords = null, alertCallback = null;
+  let globalBookingData = {}, customerCoords = null;
 
   function upgradeOldRecordsTo89() {
     try {
@@ -322,48 +312,52 @@
     }
   });
 
-  // --- 100% RELIABLE EXACT SIGNATURE GENERATOR (KODA RAJESH) ---
+  // --- 100% BULLETPROOF EXACT SIGNATURE GENERATOR (KODA RAJESH) ---
   function getSignatureImageForPDF() {
-    const cvs = document.createElement('canvas');
-    cvs.width = 650; cvs.height = 380;
-    const ctx = cvs.getContext('2d');
-    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    try {
+      const cvs = document.createElement('canvas');
+      cvs.width = 650; cvs.height = 380;
+      const ctx = cvs.getContext('2d');
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-    ctx.strokeStyle = '#1E2B58'; ctx.fillStyle = '#1E2B58';
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#1E2B58'; ctx.fillStyle = '#1E2B58';
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
 
-    // 1. Encircled Hindi "कोड़ा"
-    ctx.lineWidth = 3.5;
-    ctx.beginPath(); ctx.moveTo(85, 222); ctx.lineTo(255, 217); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(138, 220); ctx.lineTo(132, 292); ctx.moveTo(135, 252);
-    ctx.bezierCurveTo(95, 232, 90, 282, 134, 265); ctx.bezierCurveTo(162, 248, 165, 285, 138, 280); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(175, 219); ctx.lineTo(166, 290); ctx.moveTo(175, 219);
-    ctx.bezierCurveTo(172, 182, 128, 178, 118, 196); ctx.bezierCurveTo(114, 202, 134, 204, 148, 196); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(216, 218); ctx.lineTo(214, 232); ctx.bezierCurveTo(185, 234, 185, 258, 216, 260);
-    ctx.bezierCurveTo(242, 262, 238, 292, 195, 288); ctx.stroke();
-    ctx.beginPath(); ctx.arc(210, 300, 2.5, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(242, 217); ctx.lineTo(234, 288); ctx.stroke();
+      // Encircled Hindi "कोड़ा"
+      ctx.lineWidth = 3.5;
+      ctx.beginPath(); ctx.moveTo(85, 222); ctx.lineTo(255, 217); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(138, 220); ctx.lineTo(132, 292); ctx.moveTo(135, 252);
+      ctx.bezierCurveTo(95, 232, 90, 282, 134, 265); ctx.bezierCurveTo(162, 248, 165, 285, 138, 280); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(175, 219); ctx.lineTo(166, 290); ctx.moveTo(175, 219);
+      ctx.bezierCurveTo(172, 182, 128, 178, 118, 196); ctx.bezierCurveTo(114, 202, 134, 204, 148, 196); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(216, 218); ctx.lineTo(214, 232); ctx.bezierCurveTo(185, 234, 185, 258, 216, 260);
+      ctx.bezierCurveTo(242, 262, 238, 292, 195, 288); ctx.stroke();
+      ctx.beginPath(); ctx.arc(210, 300, 2.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(242, 217); ctx.lineTo(234, 288); ctx.stroke();
 
-    ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(252, 232);
-    ctx.bezierCurveTo(235, 175, 95, 170, 78, 245); ctx.bezierCurveTo(65, 315, 175, 325, 245, 275);
-    ctx.bezierCurveTo(278, 252, 298, 222, 312, 198); ctx.stroke();
+      ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(252, 232);
+      ctx.bezierCurveTo(235, 175, 95, 170, 78, 245); ctx.bezierCurveTo(65, 315, 175, 325, 245, 275);
+      ctx.bezierCurveTo(278, 252, 298, 222, 312, 198); ctx.stroke();
 
-    // 2. Tall Signature Loop & English "Rajesh"
-    ctx.lineWidth = 4.0; ctx.beginPath(); ctx.moveTo(218, 200); ctx.quadraticCurveTo(270, 150, 312, 110); ctx.stroke();
-    ctx.lineWidth = 4.2; ctx.beginPath(); ctx.moveTo(272, 292);
-    ctx.bezierCurveTo(286, 190, 306, 45, 318, 18); ctx.bezierCurveTo(334, 40, 332, 120, 304, 185);
-    ctx.bezierCurveTo(288, 222, 278, 268, 272, 292); ctx.stroke();
+      // Tall Signature Loop & English "Rajesh"
+      ctx.lineWidth = 4.0; ctx.beginPath(); ctx.moveTo(218, 200); ctx.quadraticCurveTo(270, 150, 312, 110); ctx.stroke();
+      ctx.lineWidth = 4.2; ctx.beginPath(); ctx.moveTo(272, 292);
+      ctx.bezierCurveTo(286, 190, 306, 45, 318, 18); ctx.bezierCurveTo(334, 40, 332, 120, 304, 185);
+      ctx.bezierCurveTo(288, 222, 278, 268, 272, 292); ctx.stroke();
 
-    ctx.lineWidth = 3.8; ctx.beginPath(); ctx.moveTo(286, 252);
-    ctx.bezierCurveTo(304, 236, 318, 222, 326, 210); ctx.bezierCurveTo(316, 265, 300, 328, 292, 355);
-    ctx.bezierCurveTo(306, 320, 328, 265, 344, 228); ctx.bezierCurveTo(356, 208, 366, 196, 356, 194);
-    ctx.bezierCurveTo(344, 194, 340, 218, 356, 220); ctx.bezierCurveTo(372, 222, 382, 205, 388, 190);
-    ctx.bezierCurveTo(398, 155, 406, 130, 412, 135); ctx.bezierCurveTo(420, 142, 412, 188, 396, 214);
-    ctx.bezierCurveTo(435, 210, 520, 202, 610, 195); ctx.stroke();
+      ctx.lineWidth = 3.8; ctx.beginPath(); ctx.moveTo(286, 252);
+      ctx.bezierCurveTo(304, 236, 318, 222, 326, 210); ctx.bezierCurveTo(316, 265, 300, 328, 292, 355);
+      ctx.bezierCurveTo(306, 320, 328, 265, 344, 228); ctx.bezierCurveTo(356, 208, 366, 196, 356, 194);
+      ctx.bezierCurveTo(344, 194, 340, 218, 356, 220); ctx.bezierCurveTo(372, 222, 382, 205, 388, 190);
+      ctx.bezierCurveTo(398, 155, 406, 130, 412, 135); ctx.bezierCurveTo(420, 142, 412, 188, 396, 214);
+      ctx.bezierCurveTo(435, 210, 520, 202, 610, 195); ctx.stroke();
 
-    ctx.beginPath(); ctx.arc(328, 182, 3.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(328, 182, 3.5, 0, Math.PI * 2); ctx.fill();
 
-    return { data: cvs.toDataURL('image/png'), format: 'PNG' };
+      return { data: cvs.toDataURL('image/png'), format: 'PNG' };
+    } catch (e) {
+      return null;
+    }
   }
 
   function buildSlotsForContainer(containerId, teamTitle) {
@@ -388,7 +382,7 @@
   }
 
   function toggleService(key, name, price) {
-    if (key !== 'wash') { showUiAlert("Locked", `${name} is Coming Soon.`); return; }
+    if (key !== 'wash') { showUiAlert("🔔", "Coming Soon", `${name} is currently under development.`); return; }
     let itemWash = document.getElementById('item-wash'), targetItem = document.getElementById('item-' + key);
     let isOpen = targetItem.classList.contains('active'); itemWash.classList.remove('active');
     if (!isOpen) {
@@ -405,6 +399,30 @@
   function updateRecord(id, updates) { let db = getDB(); for(let i=0; i<db.length; i++) { if(db[i].id === id) { db[i] = { ...db[i], ...updates }; break; } } saveDB(db); }
   function deleteRecord(id) { document.getElementById('alertActionButtons').style.display='none'; document.getElementById('alertOkBtn').style.display='block'; let db = getDB().filter(item => item.id !== id); saveDB(db); renderAdminDB(); closeUiAlert(); }
   function clearError(id) { document.getElementById(id)?.classList.remove('input-error'); }
+
+  function showUiAlert(icon, title, message, inputId = null) {
+    document.getElementById('uiAlertIcon').innerHTML = icon; document.getElementById('uiAlertTitle').innerText = title; document.getElementById('uiAlertMsg').innerText = message;
+    if (inputId) document.getElementById(inputId)?.classList.add('input-error');
+    document.getElementById('alertActionButtons').style.display = 'none'; document.getElementById('alertOkBtn').style.display = 'block';
+    document.getElementById('uiAlertModal').classList.add('show');
+  }
+  function showConfirmAlert(icon, title, message, confirmCallback) {
+    document.getElementById('uiAlertIcon').innerHTML = icon; document.getElementById('uiAlertTitle').innerText = title; document.getElementById('uiAlertMsg').innerText = message;
+    document.getElementById('alertOkBtn').style.display = 'none'; document.getElementById('alertActionButtons').style.display = 'flex';
+    document.getElementById('alertConfirmBtn').onclick = confirmCallback; document.getElementById('uiAlertModal').classList.add('show');
+  }
+  function closeUiAlert() { document.getElementById('uiAlertModal').classList.remove('show'); }
+
+  function viewJobCardModal(id, forceJobCard = false) {
+    let rec = getRecord(id); if (!rec) return;
+    let isPaid = forceJobCard ? false : (rec.forceType === 'TAX_INVOICE');
+    let stampHtml = isPaid ? `<div style="display:inline-block; border:4px solid #16A34A; color:#16A34A; font-weight:900; padding:6px 16px; border-radius:12px; font-size:18px; transform:rotate(-8deg); margin-top:10px;">PAID</div>` : `<div style="display:inline-block; border:4px solid #DC2626; color:#DC2626; font-weight:900; padding:6px 16px; border-radius:12px; font-size:18px; transform:rotate(-8deg); margin-top:10px;">UNPAID</div>`;
+    let html = `<strong>ID:</strong> ${rec.id}<br><strong>Date:</strong> ${rec.date}<br><strong>Customer:</strong> ${rec.name}<br><strong>Service:</strong> ${rec.serviceName} (₹89)<br><div style="text-align:center; margin-top:12px;">${stampHtml}</div>`;
+    document.getElementById('viewCardContent').innerHTML = html; 
+    document.getElementById('modalDownloadPdfBtn').onclick = function() { generatePDFFromDB(id, isPaid, forceJobCard); }; 
+    document.getElementById('viewCardModal').classList.add('show');
+  }
+  function closeViewCard() { document.getElementById('viewCardModal').classList.remove('show'); }
 
   function selectVehicle(t) { vehicleType = t; document.getElementById('v-bike').classList.toggle('active', t === 'Bike'); document.getElementById('v-scooty').classList.toggle('active', t === 'Scooty'); }
   function selectPayType(t) { paymentType = t; document.getElementById('opt-now').classList.toggle('active', t === 'Pay Now'); document.getElementById('opt-after').classList.toggle('active', t !== 'Pay Now'); updatePdfButtonText(); }
@@ -423,12 +441,11 @@
   function getLocation() {
     let btn = document.getElementById('locBtn'); clearError('cAddr');
     if (customerCoords && customerCoords.lat) { fillAddressFromCoords(customerCoords.lat, customerCoords.lon); return; }
-    btn.disabled = true; btn.innerHTML = "⏳ Locating..."; let done = false;
-    let safetyTimer = setTimeout(() => { if (done) return; done = true; btn.disabled = false; btn.innerHTML = "📍 Auto Locate"; }, 3500);
+    btn.disabled = true; btn.innerHTML = "⏳ Locating...";
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        pos => { if (done) return; done = true; clearTimeout(safetyTimer); fillAddressFromCoords(pos.coords.latitude, pos.coords.longitude); },
-        () => { if (done) return; done = true; clearTimeout(safetyTimer); btn.disabled = false; btn.innerHTML = "📍 Auto Locate"; },
+        pos => { fillAddressFromCoords(pos.coords.latitude, pos.coords.longitude); },
+        () => { btn.disabled = false; btn.innerHTML = "📍 Auto Locate"; showUiAlert("📍", "Location Permission", "Please allow GPS permission or type your address manually.", "cAddr"); },
         { enableHighAccuracy: true, timeout: 3000, maximumAge: 10000 }
       );
     }
@@ -436,8 +453,8 @@
 
   function submitBooking() {
     let name = document.getElementById('cName').value.trim(), phone = document.getElementById('cPhone').value.trim(), addr = document.getElementById('cAddr').value.trim();
-    if (!name || !/^[0-9]{10}$/.test(phone) || !addr) return showUiAlert("Error", "Please fill all customer details correctly.");
-    if (!selectedServiceKey) return showUiAlert("Error", "Please select Premium Foam Wash and a time slot.");
+    if (!name || !/^[0-9]{10}$/.test(phone) || !addr) return showUiAlert("⚠️", "Error", "Please fill all customer details correctly.");
+    if (!selectedServiceKey) return showUiAlert("⚠️", "Service Required", "Please select Premium Foam Wash and a time slot.");
 
     document.getElementById('bookingForm').style.display = "none"; document.getElementById('loadingScreen').style.display = "block";
     let id = "MOGO" + Math.floor(1000 + Math.random() * 9000), maps = customerCoords ? `https://www.google.com/maps?q=${customerCoords.lat},${customerCoords.lon}` : "";
@@ -454,18 +471,18 @@
 
   function openAdminPortal() { document.getElementById('adminPinInput').value = ""; document.getElementById('adminPinSection').style.display = "block"; document.getElementById('adminDashboard').style.display = "none"; document.getElementById('adminModal').classList.add('show'); }
   function closeAdminPortal() { document.getElementById('adminModal').classList.remove('show'); }
-  function verifyAdminPin() { if (document.getElementById('adminPinInput').value.trim() === "4882") { document.getElementById('adminPinSection').style.display = "none"; document.getElementById('adminDashboard').style.display = "block"; renderAdminDB(); switchAdminTab('jc'); } else { showUiAlert("Error", "Incorrect PIN."); } }
+  function verifyAdminPin() { if (document.getElementById('adminPinInput').value.trim() === "4882") { document.getElementById('adminPinSection').style.display = "none"; document.getElementById('adminDashboard').style.display = "block"; renderAdminDB(); switchAdminTab('jc'); } else { showUiAlert("🔐", "Error", "Incorrect PIN."); } }
 
   function openMechanicPortal() { document.getElementById('mechPinInput').value = ""; document.getElementById('mechPinSection').style.display = "block"; document.getElementById('mechDashboard').style.display = "none"; document.getElementById('mechanicModal').classList.add('show'); }
   function closeMechanicPortal() { document.getElementById('mechanicModal').classList.remove('show'); }
-  function verifyMechPin() { if (document.getElementById('mechPinInput').value.trim() === "7788") { document.getElementById('mechPinSection').style.display = "none"; document.getElementById('mechDashboard').style.display = "block"; renderMechanicJobs(); } else { showUiAlert("Error", "Incorrect PIN."); } }
+  function verifyMechPin() { if (document.getElementById('mechPinInput').value.trim() === "7788") { document.getElementById('mechPinSection').style.display = "none"; document.getElementById('mechDashboard').style.display = "block"; renderMechanicJobs(); } else { showUiAlert("🔐", "Error", "Incorrect PIN."); } }
 
   // --- MECHANIC PORTAL (STRICTLY JOB CARDS ONLY) ---
   function renderMechanicJobs() {
     upgradeOldRecordsTo89();
     let db = getDB(), html = "";
     db.forEach(item => { 
-      html += `<div class="db-item"><div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Card</span></div><div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName} (₹89)<br>Slot: ${item.slot || 'Standard'}<br>📍 ${item.address}</div><div class="db-action"><button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">View Job Card</button><button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false, true)">Download PDF</button></div></div>`; 
+      html += `<div class="db-item"><div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Card</span></div><div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName} (₹89)<br>Slot: ${item.slot || 'Standard'}<br>📍 ${item.address}</div><div class="db-action"><button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">View Job Card</button><button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false, true)">Download PDF</button><a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">Call</a></div></div>`; 
     });
     document.getElementById('mechJobList').innerHTML = html || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No assigned jobs yet.</p>';
   }
@@ -478,7 +495,7 @@
     db.forEach(item => {
       let isInv = item.forceType === 'TAX_INVOICE', badge = isInv ? `<span class="badge b-ready">🟢 Paid Invoice</span>` : `<span class="badge b-booked">⏳ Job Card</span>`;
       let actions = !isInv ? `<button class="btn-sm" onclick="generatePDFFromDB('${item.id}', false, false)">PDF</button><button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="convertToInvoice('${item.id}')">Make Invoice</button>` : `<button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="generatePDFFromDB('${item.id}', true, false)">Invoice PDF</button>`;
-      let card = `<div class="db-item"><div class="db-header"><span class="db-id">${item.id}</span> ${badge}</div><div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹89) | ${item.date}</div><div class="db-action">${actions}<button class="btn-del" onclick="showConfirmAlert('Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button></div></div>`;
+      let card = `<div class="db-item"><div class="db-header"><span class="db-id">${item.id}</span> ${badge}</div><div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹89) | ${item.date}</div><div class="db-action">${actions}<button class="btn-del" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button></div></div>`;
       if (isInv) invHTML += card; else jcHTML += card;
     });
     document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Job Cards yet.</p>'; document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Invoices yet.</p>';
@@ -508,10 +525,10 @@
     ctx.save(); ctx.globalCompositeOperation = 'destination-out'; let seed = isGreen ? 101 : 202; function pseudoRand() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; } for (let i = 0; i < 340; i++) { ctx.beginPath(); ctx.arc(pseudoRand() * 600, pseudoRand() * 600, pseudoRand() * 2.8 + 0.5, 0, Math.PI * 2); ctx.fill(); } ctx.lineWidth = 1.5; for (let i = 0; i < 25; i++) { let rx = pseudoRand() * 600, ry = pseudoRand() * 600, a = pseudoRand() * Math.PI * 2, l = pseudoRand() * 20 + 6; ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(rx + Math.cos(a) * l, ry + Math.sin(a) * l); ctx.stroke(); } ctx.restore(); return canvas.toDataURL('image/png');
   }
 
-  // --- UNIFIED PDF GENERATOR (WITH OFFICIAL GST ADDRESS & EXACT SIGNATURE) ---
+  // --- DEFENSIVE SAFE PDF GENERATOR (GUARANTEED NO CRASH) ---
   function downloadInvoice(forcePaid = false, forceJobCard = false) {
     try {
-      if (!window.jspdf) return showUiAlert("Notice", "PDF library loading.");
+      if (!window.jspdf) { alert("PDF library loading."); return; }
       const doc = new window.jspdf.jsPDF();
       let userUtr = document.getElementById('customerUtr')?.value.trim() || globalBookingData.utr || "";
       let isPaidVerified = forceJobCard ? false : (forcePaid || (globalBookingData.forceType === 'TAX_INVOICE') || (globalBookingData.paymentType === 'Pay Now' && userUtr.length >= 4));
@@ -521,13 +538,16 @@
       if (isPaidVerified) { doc.setFillColor(255, 255, 255); doc.rect(0, 0, 210, 297, "F"); } 
       else { doc.setFillColor(254, 252, 232); doc.rect(0, 0, 210, 297, "F"); }
 
-      doc.addImage(createExactLogoImage(), 'PNG', 45, 10, 120, 38);
+      // Safe Logo Insertion
+      try {
+        doc.addImage(createExactLogoImage(), 'PNG', 45, 10, 120, 38);
+      } catch (err) {}
+
       doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 100, 100);
       doc.text("Mankiniamma Technologies Private Limited", 105, 51, null, null, "center");
       
-      // Official Address from GST Certificate
       doc.setFontSize(7.5);
-      doc.text(OFFICIAL_ADDRESS, 105, 56, { maxWidth: 170, align: "center" });
+      doc.text(OFFICIAL_ADDRESS, 105, 56, { maxWidth: 170, align: "center" });[cite: 3]
 
       doc.setFont("helvetica", "bold"); doc.setFontSize(8.5); doc.setTextColor(15, 23, 42);
       doc.text("GSTIN: " + COMPANY_GSTIN, 105, 63, null, null, "center");
@@ -560,10 +580,13 @@
         doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("Grand Total (Incl. 18% GST):", 45, currentY); doc.setTextColor(255, 90, 0); doc.text("Rs. " + grandTotal.toFixed(2), 155, currentY);
 
         let layoutY = currentY + 10;
-        doc.addImage(createRubberStampImage(true), 'PNG', 140, layoutY, 45, 45);
+        try { doc.addImage(createRubberStampImage(true), 'PNG', 140, layoutY, 45, 45); } catch (e) {}
 
-        let customSig = getSignatureImageForPDF();
-        if (customSig) doc.addImage(customSig.data, customSig.format, 145, layoutY + 43, 38, 26);
+        try {
+          let customSig = getSignatureImageForPDF();
+          if (customSig) doc.addImage(customSig.data, customSig.format, 145, layoutY + 43, 38, 26);
+        } catch (e) {}
+
         doc.setLineWidth(0.3); doc.setDrawColor(15, 23, 42); doc.line(142, layoutY + 70, 190, layoutY + 70); 
         doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Authorized Signatory", 166, layoutY + 75, null, null, "center");
 
@@ -583,11 +606,14 @@
       } else {
         doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("Estimated Amount:", 65, currentY); doc.setTextColor(255, 90, 0); doc.text("Rs. " + grandTotal.toFixed(2), 155, currentY);
         
-        let layoutY = currentY + 12;
-        doc.addImage(createRubberStampImage(false), 'PNG', 140, layoutY, 45, 45);
+        let layoutY = currentY + 14;
+        try { doc.addImage(createRubberStampImage(false), 'PNG', 140, layoutY, 45, 45); } catch (e) {}
 
-        let customSig = getSignatureImageForPDF();
-        if (customSig) doc.addImage(customSig.data, customSig.format, 145, layoutY + 43, 38, 26);
+        try {
+          let customSig = getSignatureImageForPDF();
+          if (customSig) doc.addImage(customSig.data, customSig.format, 145, layoutY + 43, 38, 26);
+        } catch (e) {}
+
         doc.setLineWidth(0.3); doc.setDrawColor(15, 23, 42); doc.line(142, layoutY + 70, 190, layoutY + 70); 
         doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text("Authorized Signatory", 166, layoutY + 75, null, null, "center");
 
@@ -599,7 +625,17 @@
       doc.text("Thank you for choosing MoGo Total Bike Care!", 105, 288, null, null, "center");
 
       doc.save(isPaidVerified ? `MoGo_Tax_Invoice_${globalBookingData.id}.pdf` : `MoGo_Job_Card_${globalBookingData.id}.pdf`);
-    } catch (e) { showUiAlert("Notice", "Could not generate PDF."); }
+    } catch (e) {
+      alert("PDF generation error handled safely. Please try again.");
+    }
+  }
+
+  function generatePDFFromDB(id, isPaidOverride, forceJobCard = false) { 
+    let record = getRecord(id); 
+    if (record) { 
+      globalBookingData = { ...record }; 
+      downloadInvoice(isPaidOverride, forceJobCard); 
+    } 
   }
 </script>
 
