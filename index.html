@@ -930,7 +930,7 @@
           </div>
         </div>
         <label style="margin-top:4px;">Address</label>
-        <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:10px; padding:12px;">
+        <input type="text" id="admAddr" placeholder="Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon" value="Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon" style="margin-bottom:10px; padding:12px;">
         
         <div id="admUtrBox" style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
           <label style="color:var(--text-main); margin-top:0; font-size:11px;" id="admUtrLabel">UTR / Payment Proof (Optional for Job Card):</label>
@@ -1019,7 +1019,7 @@
   const MY_WHATSAPP = "919954924948";
   const TOTAL_PRICE = 89; 
   const COMPANY_GSTIN = "18AASCM6250H1Z1"; 
-  const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035";
+  const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon";
 
   // Live Razorpay Key ID (Add your key here when ready)
   const RAZORPAY_KEY_ID = ""; 
@@ -1034,6 +1034,15 @@
   let customerCoords = null;
   let fieldToFocus = null;
   let alertCallback = null;
+
+  // Helper to replace old unwanted addresses with the new official address
+  function normalizeServiceAddress(addr) {
+    let raw = String(addr || "").trim();
+    if (!raw || /312|central|gotanagar|water\s*nagar|maligaon|railway\s*colony|^guwahati,\s*assam$/i.test(raw)) {
+      return OFFICIAL_ADDRESS;
+    }
+    return raw;
+  }
 
   // ==========================================================
   // 1. AUTO-BUG CLEANER & SELF-HEALING DATABASE ENGINE
@@ -1068,7 +1077,7 @@
             cgst: sub * 0.09,
             sgst: sub * 0.09,
             grandTotal: TOTAL_PRICE,
-            address: String(item.address || "Guwahati, Assam"),
+            address: normalizeServiceAddress(item.address),
             paymentType: String(item.paymentType || "Pay Now"),
             mapsLink: String(item.mapsLink || ""),
             status: String(item.status || "BOOKED"),
@@ -1296,7 +1305,6 @@
         selectedSlot = "Coming Soon";
       }
     } else {
-      // Keep Foam Wash selected by default if user collapses it
       selectedServiceKey = "";
       selectedServiceName = "";
       currentServicePrice = 0;
@@ -1424,6 +1432,7 @@
       return;
     }
 
+    let cleanAddr = normalizeServiceAddress(rec.address);
     let hasValidUtr = rec.utr && rec.utr.trim().length >= 4;
     let isPaidInvoice = forceJobCard ? false : (rec.forceType === 'TAX_INVOICE' && (hasValidUtr || rec.gpsImage));
 
@@ -1481,7 +1490,7 @@
         <div><strong>Customer Name:</strong> ${rec.name}</div>
         <div><strong>Contact Number:</strong> ${rec.phone}</div>
         <div><strong>Vehicle Type:</strong> ${rec.vehicle} &nbsp;|&nbsp; <strong>Slot:</strong> ${rec.slot || 'Standard'}</div>
-        <div><strong>Service Address:</strong> ${rec.address}</div>
+        <div><strong>Service Address:</strong> ${cleanAddr}</div>
       </div>
       <div style="border-top:1px solid #CBD5E1; margin-top:8px; padding-top:6px; font-size:11.5px;">
         <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:4px;">
@@ -1626,10 +1635,10 @@
     fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lon + "&zoom=18&addressdetails=1")
       .then(function(res) { return res.json(); })
       .then(function(data) {
-        addrInput.value = (data && data.display_name) ? data.display_name.replace(/, India$/, '') : "Guwahati, Assam (" + lat.toFixed(5) + ", " + lon.toFixed(5) + ")";
+        addrInput.value = (data && data.display_name) ? data.display_name.replace(/, India$/, '') : OFFICIAL_ADDRESS;
       })
       .catch(function() {
-        addrInput.value = "Guwahati, Assam (" + lat.toFixed(5) + ", " + lon.toFixed(5) + ")";
+        addrInput.value = OFFICIAL_ADDRESS;
       });
   }
 
@@ -1680,10 +1689,10 @@
   function submitBooking() {
     let name = document.getElementById('cName').value.trim();
     let phone = document.getElementById('cPhone').value.trim();
-    let addr = document.getElementById('cAddr').value.trim();
+    let addr = normalizeServiceAddress(document.getElementById('cAddr').value.trim());
     if (!name) return showUiAlert("👤", "Full Name Required", "Please enter your full name.", "cName");
     if (!/^[0-9]{10}$/.test(phone)) return showUiAlert("📱", "Invalid Mobile Number", "Please enter a valid 10-digit mobile number.", "cPhone");
-    if (!addr) return showUiAlert("📍", "Address Missing", "Please tap 'Auto Locate' or type your doorstep address.", "cAddr");
+    if (!document.getElementById('cAddr').value.trim()) return showUiAlert("📍", "Address Missing", "Please tap 'Auto Locate' or type your doorstep address.", "cAddr");
     if (!selectedServiceKey) return showUiAlert("📋", "Service Required", "Please tap on Premium Foam Wash to select a time slot.");
     if (selectedServiceKey !== 'wash') return showUiAlert("🔒", "Coming Soon", "This feature is currently locked. Please select Premium Foam Wash.");
 
@@ -1891,7 +1900,7 @@
     let name = document.getElementById('admName').value.trim();
     let phone = document.getElementById('admPhone').value.trim();
     let vehicle = document.getElementById('admVehicle').value || "Bike";
-    let addr = document.getElementById('admAddr').value.trim() || "Guwahati, Assam";
+    let addr = normalizeServiceAddress(document.getElementById('admAddr').value.trim());
     let docType = document.getElementById('admDocType').value;
     let utr = document.getElementById('admUtr').value.trim();
     let fileInput = document.getElementById('admGpsImg');
@@ -2163,6 +2172,8 @@
       doc.setDrawColor(226, 232, 240);
       doc.line(20, 77, 190, 77);
 
+      let cleanServiceAddress = normalizeServiceAddress(globalBookingData.address);
+
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(50, 50, 50);
@@ -2171,7 +2182,7 @@
       doc.text("Customer Name: " + (globalBookingData.name || "Valued Customer"), 20, 93);
       doc.text("Contact Number: " + (globalBookingData.phone || ""), 20, 101);
       doc.text("Vehicle Type: " + (globalBookingData.vehicle || "Bike") + "   |   Slot: " + (globalBookingData.slot || "Standard"), 20, 109);
-      let custAddrLines = doc.splitTextToSize("Service Address: " + (globalBookingData.address || "Guwahati, Assam"), 170);
+      let custAddrLines = doc.splitTextToSize("Service Address: " + cleanServiceAddress, 170);
       doc.text(custAddrLines, 20, 117);
       
       doc.line(20, 127, 190, 127);
