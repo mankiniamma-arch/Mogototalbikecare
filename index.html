@@ -1481,7 +1481,7 @@
         <div><strong>Customer Name:</strong> ${rec.name}</div>
         <div><strong>Contact Number:</strong> ${rec.phone}</div>
         <div><strong>Vehicle Type:</strong> ${rec.vehicle} &nbsp;|&nbsp; <strong>Slot:</strong> ${rec.slot || 'Standard'}</div>
-        <div><strong>Service Address:</strong> ${rec.address}</div>
+        <div><strong>Service Address:</strong> Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon</div>
       </div>
       <div style="border-top:1px solid #CBD5E1; margin-top:8px; padding-top:6px; font-size:11.5px;">
         <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:4px;">
@@ -2171,7 +2171,7 @@
       doc.text("Customer Name: " + (globalBookingData.name || "Valued Customer"), 20, 93);
       doc.text("Contact Number: " + (globalBookingData.phone || ""), 20, 101);
       doc.text("Vehicle Type: " + (globalBookingData.vehicle || "Bike") + "   |   Slot: " + (globalBookingData.slot || "Standard"), 20, 109);
-      let custAddrLines = doc.splitTextToSize("Service Address: " + (globalBookingData.address || "Guwahati, Assam"), 170);
+      let custAddrLines = doc.splitTextToSize("Service Address: Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon", 170);
       doc.text(custAddrLines, 20, 117);
       
       doc.line(20, 127, 190, 127);
