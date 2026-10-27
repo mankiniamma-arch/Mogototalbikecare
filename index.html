@@ -1022,8 +1022,12 @@
   const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035";
   const FIXED_SERVICE_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon";
 
-  // Live Razorpay Key ID (Add your key here when ready)
-  const RAZORPAY_KEY_ID = ""; 
+  // Live Razorpay Key ID (Integrated from rzp-key.csv)
+  const RAZORPAY_KEY_ID = "rzp_live_TsqVswCcOu6NQS"; 
+
+  // WhatsApp API Configuration (Paste your WhatsApp API Endpoint & Key here when ready)
+  const WHATSAPP_API_URL = ""; 
+  const WHATSAPP_API_KEY = "";
 
   let paymentType = "Pay Now";
   let vehicleType = "Bike";
@@ -1035,6 +1039,82 @@
   let customerCoords = null;
   let fieldToFocus = null;
   let alertCallback = null;
+
+  // ==========================================================
+  // WHATSAPP API AUTO-DISPATCH FUNCTION (READY FOR YOUR API)
+  // Automatically sends Invoice & Unique Transaction ID to Customer
+  // ==========================================================
+  function sendWhatsAppInvoiceViaAPI(bookingRecord, uniqueTxnId) {
+    if (!bookingRecord || !bookingRecord.phone) return;
+
+    let cleanPhone = String(bookingRecord.phone).replace(/[^0-9]/g, '');
+    if (cleanPhone.length === 10) cleanPhone = "91" + cleanPhone;
+
+    let sub = (TOTAL_PRICE / 1.18).toFixed(2);
+    let cgst = ((TOTAL_PRICE / 1.18) * 0.09).toFixed(2);
+    let sgst = ((TOTAL_PRICE / 1.18) * 0.09).toFixed(2);
+
+    let invoiceMessage =
+      "✅ *MoGo Total Bike Care - Paid Tax Invoice*\n" +
+      "Mankiniamma Technologies Private Limited\n" +
+      "GSTIN: " + COMPANY_GSTIN + "\n\n" +
+      "📋 *Booking ID:* " + bookingRecord.id + "\n" +
+      "📅 *Date:* " + bookingRecord.date + "\n" +
+      "👤 *Customer:* " + bookingRecord.name + "\n" +
+      "🏍️ *Vehicle:* " + bookingRecord.vehicle + " (" + bookingRecord.serviceName + ")\n" +
+      "📍 *Service Address:* " + FIXED_SERVICE_ADDRESS + "\n\n" +
+      "💰 *Taxable Subtotal:* ₹" + sub + "\n" +
+      "🏛️ *CGST (9%):* ₹" + cgst + " | *SGST (9%):* ₹" + sgst + "\n" +
+      "💵 *Grand Total (Incl. 18% GST):* ₹" + TOTAL_PRICE.toFixed(2) + "\n" +
+      "🔐 *Payment Status:* PAID & VERIFIED\n" +
+      "🆔 *UTR / Unique Transaction ID:* " + uniqueTxnId + "\n\n" +
+      "Thank you for choosing MoGo Total Bike Care!";
+
+    // 1. Update Customer WhatsApp button link on screen with verified Invoice details
+    let waBtnEl = document.getElementById('waBtn');
+    if (waBtnEl) {
+      waBtnEl.href = "https://wa.me/" + cleanPhone + "?text=" + encodeURIComponent(invoiceMessage);
+      waBtnEl.innerHTML = "💬 Send Paid Tax Invoice on WhatsApp";
+    }
+
+    // 2. If WhatsApp Cloud / Gateway API URL is provided, auto-send in background
+    if (WHATSAPP_API_URL) {
+      try {
+        fetch(WHATSAPP_API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": WHATSAPP_API_KEY ? ("Bearer " + WHATSAPP_API_KEY) : ""
+          },
+          body: JSON.stringify({
+            to: cleanPhone,
+            phone: cleanPhone,
+            bookingId: bookingRecord.id,
+            customerName: bookingRecord.name,
+            utr: uniqueTxnId,
+            amount: TOTAL_PRICE,
+            documentType: "TAX_INVOICE",
+            message: invoiceMessage
+          })
+        }).catch(function() {});
+      } catch (e) {}
+    }
+
+    // 3. Also sync verified UTR & Paid status to Google Sheets backend
+    try {
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(Object.assign({}, bookingRecord, {
+          utr: uniqueTxnId,
+          status: "INVOICE_GENERATED",
+          forceType: "TAX_INVOICE",
+          whatsappMessage: invoiceMessage
+        }))
+      }).catch(function() {});
+    } catch (e) {}
+  }
 
   // ==========================================================
   // 1. AUTO-BUG CLEANER & SELF-HEALING DATABASE ENGINE
@@ -1574,9 +1654,15 @@
         amount: TOTAL_PRICE * 100,
         currency: "INR",
         name: "Mankiniamma Technologies Private Limited",
-        description: "MoGo Premium Foam Wash (₹89)",
+        description: "MoGo Premium Foam Wash (₹89) - " + globalBookingData.id,
+        notes: {
+          booking_id: globalBookingData.id,
+          customer_name: globalBookingData.name,
+          customer_phone: globalBookingData.phone
+        },
         handler: function (response) {
-          handleRazorpayPaymentSuccess(response.razorpay_payment_id);
+          let uniqueTxnId = response.razorpay_payment_id || ("RZP" + Date.now());
+          handleRazorpayPaymentSuccess(uniqueTxnId);
         },
         prefill: {
           name: globalBookingData.name,
@@ -1612,7 +1698,16 @@
     }
     handleCustomerUtrInput();
     document.getElementById('successHeading').innerText = "Payment Verified! Invoice Ready ✅";
+    document.getElementById('successSubtitle').innerText = "Unique Transaction ID: " + paymentId;
+
+    // 1. Open A4 Paid Tax Invoice View immediately
     viewJobCardModal(globalBookingData.id, false);
+
+    // 2. Automatically download the Paid Tax Invoice PDF with Unique Transaction ID
+    generatePDFFromDB(globalBookingData.id, true, false);
+
+    // 3. Automatically trigger WhatsApp API / Customer Invoice Dispatch
+    sendWhatsAppInvoiceViaAPI(globalBookingData, paymentId);
   }
 
   function fillAddressFromCoords(lat, lon) {
@@ -1736,6 +1831,13 @@
       if (maps) msg += "🗺️ *Google Maps Pin:* " + maps + "\n";
       msg += "*Payment Mode:* " + paymentType;
       document.getElementById('waBtn').href = "https://wa.me/" + MY_WHATSAPP + "?text=" + encodeURIComponent(msg);
+
+      // If customer selected Pay Now, automatically open Live Razorpay Checkout
+      if (paymentType === "Pay Now") {
+        setTimeout(function() {
+          triggerRazorpayPayment();
+        }, 400);
+      }
     }, 250);
   }
 
@@ -1873,6 +1975,8 @@
 
   function convertToInvoice(id, utr) {
     updateRecord(id, { forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED', utr: utr });
+    let rec = getRecord(id);
+    if (rec) sendWhatsAppInvoiceViaAPI(rec, utr);
     renderAdminDB();
     renderMechanicJobs();
     switchAdminTab('inv');
@@ -1947,6 +2051,7 @@
           newRec.imgH = cvs.height;
           globalBookingData = newRec;
           insertRecord(newRec);
+          if (docType === 'TAX_INVOICE') sendWhatsAppInvoiceViaAPI(newRec, newRec.utr);
           renderAdminDB();
           renderMechanicJobs();
           switchAdminTab(docType === 'TAX_INVOICE' ? 'inv' : 'jc');
@@ -1958,6 +2063,7 @@
     } else {
       globalBookingData = newRec;
       insertRecord(newRec);
+      if (docType === 'TAX_INVOICE') sendWhatsAppInvoiceViaAPI(newRec, newRec.utr);
       renderAdminDB();
       renderMechanicJobs();
       switchAdminTab(docType === 'TAX_INVOICE' ? 'inv' : 'jc');
