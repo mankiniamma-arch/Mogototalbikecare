@@ -8,7 +8,7 @@
   <!-- FAVICON -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%23FF5A00' stroke-width='14'/><circle cx='50' cy='50' r='36' fill='none' stroke='%23CBD5E1' stroke-width='2' stroke-dasharray='4 4'/><path d='M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19' stroke='%230B0F19' stroke-width='5'/><circle cx='50' cy='50' r='9' fill='%23FF5A00'/><circle cx='50' cy='50' r='3.5' fill='%23FFFFFF'/></svg>">
   
-  <!-- jsPDF & Razorpay Checkout SDK Ready -->
+  <!-- External Libraries (Loaded Safely) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -196,6 +196,7 @@
       align-items: center; 
       gap: 12px; 
       cursor: pointer; 
+      user-select: none;
     }
     
     .service-info { 
@@ -268,10 +269,11 @@
       cursor: pointer; 
       transition: all 0.2s; 
       text-align: left;
+      user-select: none;
     }
     
     .slot-card-inner.active { 
-      background: #FFFFFF; 
+      background: #FFF7F2; 
       border-color: var(--primary); 
       box-shadow: 0 4px 12px rgba(255,90,0,0.15); 
     }
@@ -310,6 +312,7 @@
       border-radius: 14px; 
       cursor: pointer; 
       transition: 0.2s; 
+      user-select: none;
     }
     
     .seg-btn.active { 
@@ -450,20 +453,24 @@
       display: flex; 
       justify-content: center; 
       margin-top: 25px; 
-      font-size: 12px; 
+      font-size: 12.5px; 
       color: var(--text-muted); 
-      font-weight: 700; 
+      font-weight: 800; 
       padding: 0 10px; 
-      gap: 20px; 
+      gap: 24px; 
     }
     
     .portal-link { 
       cursor: pointer; 
       transition: 0.2s; 
+      padding: 6px 10px;
+      border-radius: 8px;
+      user-select: none;
     }
     
     .portal-link:hover { 
       color: var(--primary); 
+      background: #FFF5F0;
     }
 
     /* Modals & High Z-Index Layering */
@@ -602,6 +609,7 @@
       border-radius: 12px; 
       cursor: pointer; 
       white-space: nowrap; 
+      user-select: none;
     }
     
     .db-tab.active { 
@@ -742,7 +750,7 @@
     <div class="services-stack">
       
       <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE - ₹89) -->
-      <div class="service-accordion-item" id="item-wash">
+      <div class="service-accordion-item active" id="item-wash">
         <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 89)">
           <div class="service-info">
             <div class="s-title">🫧 Premium Foam Wash</div>
@@ -830,7 +838,7 @@
       <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
     </div>
 
-    <button class="btn-main" onclick="submitBooking()">Confirm Booking & Slot 🚀</button>
+    <button class="btn-main" type="button" onclick="submitBooking()">Confirm Booking & Slot 🚀</button>
     
     <div class="portal-links">
       <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
@@ -866,9 +874,9 @@
       </div>
     </div>
 
-    <button class="btn-main" id="pdfDownloadBtn" style="background:#0F172A;" onclick="previewCurrentBookingDoc()">👁️ View & Download Document (A4 PDF)</button>
+    <button class="btn-main" type="button" id="pdfDownloadBtn" style="background:#0F172A;" onclick="previewCurrentBookingDoc()">👁️ View & Download Document (A4 PDF)</button>
     <a id="waBtn" href="#" target="_blank" class="btn-main" style="background:#25D366; text-decoration:none;">💬 Send Details on WhatsApp</a>
-    <button class="btn-outline" onclick="location.reload()">Book Another Service</button>
+    <button class="btn-outline" type="button" onclick="location.reload()">Book Another Service</button>
   </div>
 </div>
 
@@ -884,8 +892,8 @@
       <div class="portal-header-subtitle">Secure Access Required</div>
       <label style="margin-top:0;">Enter Admin PIN:</label>
       <input type="password" id="adminPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
-      <button class="btn-main" onclick="verifyAdminPin()" style="margin-top:0;">Unlock Portal</button>
-      <button class="btn-outline" onclick="closeAdminPortal()">Cancel</button>
+      <button class="btn-main" type="button" onclick="verifyAdminPin()" style="margin-top:0;">Unlock Portal</button>
+      <button class="btn-outline" type="button" onclick="closeAdminPortal()">Cancel</button>
     </div>
     <div id="adminDashboard" style="display: none;">
       <div class="portal-header-title">Admin Portal</div>
@@ -925,14 +933,14 @@
         <input type="text" id="admAddr" placeholder="Customer Address, Guwahati" style="margin-bottom:10px; padding:12px;">
         
         <div id="admUtrBox" style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
-          <label style="color:var(--text-main); margin-top:0; font-size:11px;" id="admUtrLabel">UTR / Payment Proof (Required for Tax Invoice):</label>
+          <label style="color:var(--text-main); margin-top:0; font-size:11px;" id="admUtrLabel">UTR / Payment Proof (Optional for Job Card):</label>
           <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;">
           <input type="text" id="admUtr" placeholder="Enter UPI UTR / Transaction Ref" style="padding:10px; font-size:13px; background:#FFF;">
         </div>
-        <button class="btn-main" onclick="processAdminForm()" style="margin-top:0; background:#16A34A; box-shadow:0 8px 20px rgba(22,163,74,0.25);">Generate & View A4 Sheet</button>
+        <button class="btn-main" type="button" onclick="processAdminForm()" style="margin-top:0; background:#16A34A; box-shadow:0 8px 20px rgba(22,163,74,0.25);">Generate & View A4 Sheet</button>
       </div>
 
-      <button class="btn-outline" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Portal</button>
+      <button class="btn-outline" type="button" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
   </div>
 </div>
@@ -945,14 +953,14 @@
       <div class="portal-header-subtitle">Secure Access Required</div>
       <label style="margin-top:0;">Enter Mechanic PIN:</label>
       <input type="password" id="mechPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
-      <button class="btn-main" style="background:#0284C7;" onclick="verifyMechPin()">Unlock Portal</button>
-      <button class="btn-outline" onclick="closeMechanicPortal()">Cancel</button>
+      <button class="btn-main" type="button" style="background:#0284C7;" onclick="verifyMechPin()">Unlock Portal</button>
+      <button class="btn-outline" type="button" onclick="closeMechanicPortal()">Cancel</button>
     </div>
     <div id="mechDashboard" style="display: none;">
       <div class="portal-header-title" style="color:#0284C7;">Assigned Job Cards</div>
-      <div class="portal-header-subtitle">Tap 'View Job Card' to open full A4 Sheet & Download PDF</div>
+      <div class="portal-header-subtitle">Tap 'View Job Sheet' to open full A4 Sheet & Download PDF</div>
       <div id="mechJobList" class="db-list"></div>
-      <button class="btn-outline" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Portal</button>
+      <button class="btn-outline" type="button" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
   </div>
 </div>
@@ -962,15 +970,15 @@
   <div class="ui-modal-box" style="max-width: 450px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3 style="margin:0; font-size:17px; font-weight:900;" id="previewModalTitle">A4 Document Preview</h3>
-      <button onclick="closeViewCard()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer; color:#0B0F19;">✕</button>
+      <button type="button" onclick="closeViewCard()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer; color:#0B0F19;">✕</button>
     </div>
     
     <!-- Full A4 Sheet Container -->
     <div id="viewCardContent" class="a4-sheet-preview"></div>
     
     <!-- Single Download Option Below the A4 Preview -->
-    <button class="btn-main" id="modalDownloadPdfBtn" style="margin-top:0; background:#16A34A;">📥 Download Official A4 PDF</button>
-    <button class="btn-outline" onclick="closeViewCard()" style="margin-top:10px;">Close Preview</button>
+    <button class="btn-main" type="button" id="modalDownloadPdfBtn" style="margin-top:0; background:#16A34A;">📥 Download Official A4 PDF</button>
+    <button class="btn-outline" type="button" onclick="closeViewCard()" style="margin-top:10px;">Close Preview</button>
   </div>
 </div>
 
@@ -981,10 +989,10 @@
     <h3 class="ui-modal-title" id="uiAlertTitle">Alert</h3>
     <p class="ui-modal-msg" id="uiAlertMsg">Message</p>
     <div id="alertActionButtons" style="display: none; gap: 10px; margin-bottom: 10px;">
-      <button class="btn-sm" style="flex:1; padding:12px; background:#E2E8F0; color:#0B0F19;" onclick="closeUiAlert()">Cancel</button>
-      <button class="btn-sm" style="flex:1; padding:12px; background:#EF4444; color:#fff;" id="alertConfirmBtn">Delete</button>
+      <button class="btn-sm" type="button" style="flex:1; padding:12px; background:#E2E8F0; color:#0B0F19;" onclick="closeUiAlert()">Cancel</button>
+      <button class="btn-sm" type="button" style="flex:1; padding:12px; background:#EF4444; color:#fff;" id="alertConfirmBtn">Delete</button>
     </div>
-    <button class="ui-modal-btn" id="alertOkBtn" onclick="closeUiAlert()">Got It</button>
+    <button class="ui-modal-btn" type="button" id="alertOkBtn" onclick="closeUiAlert()">Got It</button>
   </div>
 </div>
 
@@ -997,13 +1005,15 @@
       <input type="text" id="customAlertInput" placeholder="Enter UPI UTR / Ref No." style="padding:12px; font-size:14px;">
     </div>
     <div style="display:flex; gap:8px;">
-      <button class="btn-sm" id="customAlertBtnCancel" style="margin-top:0; padding:12px; background:#E2E8F0; display:none;" onclick="closeCustomAlert(false)">Cancel</button>
-      <button class="btn-main" id="customAlertBtnOk" style="margin-top:0; padding:12px;" onclick="closeCustomAlert(true)">Verify & Generate Invoice</button>
+      <button class="btn-sm" type="button" id="customAlertBtnCancel" style="margin-top:0; padding:12px; background:#E2E8F0; display:none;" onclick="closeCustomAlert(false)">Cancel</button>
+      <button class="btn-main" type="button" id="customAlertBtnOk" style="margin-top:0; padding:12px;" onclick="closeCustomAlert(true)">Verify & Generate Invoice</button>
     </div>
   </div>
 </div>
 
-<!-- SCRIPT BLOCK -->
+<!-- ========================================== -->
+<!-- AUTO-BUG CLEANER & MAIN APPLICATION SCRIPT -->
+<!-- ========================================== -->
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyp9jl7Uu5thiilCriCwi8yE7Sc0Z2cY4OUkCdx3WDp1MmvWgNgMyszl77eWxrPIH4u-Q/exec";
   const MY_WHATSAPP = "919954924948";
@@ -1011,56 +1021,110 @@
   const COMPANY_GSTIN = "18AASCM6250H1Z1"; 
   const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035";
 
-  // Put your live Razorpay Key ID here when ready
+  // Live Razorpay Key ID (Add your key here when ready)
   const RAZORPAY_KEY_ID = ""; 
 
   let paymentType = "Pay Now";
   let vehicleType = "Bike";
-  let selectedServiceKey = "";
-  let selectedServiceName = "";
+  let selectedServiceKey = "wash";
+  let selectedServiceName = "Premium Foam Wash";
   let currentServicePrice = 89;
-  let selectedSlot = "";
+  let selectedSlot = "8:00 AM - 8:30 AM";
   let globalBookingData = {};
   let customerCoords = null;
   let fieldToFocus = null;
   let alertCallback = null;
 
-  // --- AUTO-UPGRADE ALL OLD RECORDS TO ₹89 ---
-  function upgradeOldRecordsTo89() {
+  // ==========================================================
+  // 1. AUTO-BUG CLEANER & SELF-HEALING DATABASE ENGINE
+  // Automatically cleans corrupted localStorage & upgrades ₹89
+  // ==========================================================
+  function runAutoBugCleaner() {
     try {
-      let db = localStorage.getItem('mogo_local_db');
-      if (!db) return;
-      let parsed = JSON.parse(db);
-      let updated = false;
-      parsed.forEach(item => {
-        if (item.grandTotal !== TOTAL_PRICE) {
-          item.grandTotal = TOTAL_PRICE;
-          item.total = TOTAL_PRICE / 1.18;
-          item.cgst = item.total * 0.09;
-          item.sgst = item.total * 0.09;
-          updated = true;
-        }
-      });
-      if (updated) {
-        localStorage.setItem('mogo_local_db', JSON.stringify(parsed));
+      let raw = localStorage.getItem('mogo_local_db');
+      if (!raw) {
+        localStorage.setItem('mogo_local_db', JSON.stringify([]));
+        return;
       }
-    } catch (e) {}
+      let parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) {
+        localStorage.setItem('mogo_local_db', JSON.stringify([]));
+        return;
+      }
+      let cleaned = [];
+      for (let i = 0; i < parsed.length; i++) {
+        let item = parsed[i];
+        if (item && typeof item === 'object' && item.id) {
+          let sub = TOTAL_PRICE / 1.18;
+          cleaned.push({
+            id: String(item.id),
+            date: String(item.date || new Date().toLocaleDateString('en-IN')),
+            name: String(item.name || "Valued Customer"),
+            phone: String(item.phone || ""),
+            vehicle: String(item.vehicle || "Bike"),
+            serviceName: "Premium Foam Wash",
+            slot: String(item.slot || "8:00 AM - 8:30 AM"),
+            total: sub,
+            cgst: sub * 0.09,
+            sgst: sub * 0.09,
+            grandTotal: TOTAL_PRICE,
+            address: String(item.address || "Guwahati, Assam"),
+            paymentType: String(item.paymentType || "Pay Now"),
+            mapsLink: String(item.mapsLink || ""),
+            status: String(item.status || "BOOKED"),
+            utr: String(item.utr || ""),
+            forceType: item.forceType === 'TAX_INVOICE' ? 'TAX_INVOICE' : 'JOB_CARD',
+            gpsImage: item.gpsImage || null,
+            imgW: item.imgW || 400,
+            imgH: item.imgH || 400
+          });
+        }
+      }
+      localStorage.setItem('mogo_local_db', JSON.stringify(cleaned));
+    } catch (e) {
+      // Self-heal if JSON was corrupted
+      try { localStorage.setItem('mogo_local_db', JSON.stringify([])); } catch (err) {}
+    }
   }
 
-  window.addEventListener('load', () => {
-    upgradeOldRecordsTo89();
+  // Initialize immediately as soon as DOM is ready
+  function initMoGoApp() {
+    runAutoBugCleaner();
     buildSlotsForContainer('slotsContainerWash', 'Foam Wash Team');
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => { customerCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude }; },
-        () => {},
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 30000 }
-      );
+
+    // Enter key support for Admin & Mechanic PIN inputs
+    let admInput = document.getElementById('adminPinInput');
+    if (admInput) {
+      admInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') verifyAdminPin();
+      });
     }
-  });
+    let mechInput = document.getElementById('mechPinInput');
+    if (mechInput) {
+      mechInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') verifyMechPin();
+      });
+    }
+
+    if (navigator.geolocation) {
+      try {
+        navigator.geolocation.getCurrentPosition(
+          function(pos) { customerCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude }; },
+          function() {},
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 30000 }
+        );
+      } catch (e) {}
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMoGoApp);
+  } else {
+    initMoGoApp();
+  }
 
   // ==========================================================
-  // 100% EXACT TRANSPARENT SIGNATURE GENERATOR ("कोड़ा राजेश")
+  // 2. 100% AUTHENTIC TRANSPARENT SIGNATURE ("कोड़ा राजेश")
   // ==========================================================
   function getSignatureImageForPDF() {
     try {
@@ -1075,7 +1139,7 @@
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
 
-      // 1. Left Encircled Hindi "कोड़ा"
+      // Left Encircled Hindi "कोड़ा"
       ctx.lineWidth = 3.6;
       ctx.beginPath();
       ctx.moveTo(85, 222);
@@ -1126,7 +1190,7 @@
       ctx.bezierCurveTo(278, 252, 298, 222, 312, 198);
       ctx.stroke();
 
-      // 2. Center Tall Signature Loop
+      // Center Tall Signature Loop
       ctx.lineWidth = 4.0;
       ctx.beginPath();
       ctx.moveTo(218, 200);
@@ -1141,7 +1205,7 @@
       ctx.bezierCurveTo(288, 222, 278, 268, 272, 292);
       ctx.stroke();
 
-      // 3. Cursive 'jesh' with sweeping tail
+      // Cursive 'jesh' with sweeping tail
       ctx.lineWidth = 3.8;
       ctx.beginPath();
       ctx.moveTo(286, 252);
@@ -1166,6 +1230,7 @@
     }
   }
 
+  // --- DYNAMIC SLOTS BUILDER ---
   function buildSlotsForContainer(containerId, teamTitle) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -1175,19 +1240,20 @@
       for (let m = 0; m < 60; m += 30) {
         let endH = h, endM = m + 30;
         if (endM >= 60) { endH += 1; endM -= 60; }
-        slotsArr.push(`${formatTime(h, m)} - ${formatTime(endH, endM)}`);
+        slotsArr.push(formatTime(h, m) + " - " + formatTime(endH, endM));
       }
     }
-    slotsArr.forEach((slotStr) => {
+    slotsArr.forEach(function(slotStr, idx) {
       let div = document.createElement('div');
-      div.className = "slot-card-inner";
+      div.className = idx === 0 ? "slot-card-inner active" : "slot-card-inner";
+      if (idx === 0) selectedSlot = slotStr;
       div.onclick = function(e) {
         e.stopPropagation();
-        container.querySelectorAll('.slot-card-inner').forEach(c => c.classList.remove('active'));
+        container.querySelectorAll('.slot-card-inner').forEach(function(c) { c.classList.remove('active'); });
         div.classList.add('active');
         selectedSlot = slotStr;
       };
-      div.innerHTML = `<div class="slot-time">${slotStr}</div><span class="slot-team">${teamTitle}</span>`;
+      div.innerHTML = '<div class="slot-time">' + slotStr + '</div><span class="slot-team">' + teamTitle + '</span>';
       container.appendChild(div);
     });
   }
@@ -1196,31 +1262,30 @@
     let period = h >= 12 ? "PM" : "AM";
     let hour12 = h % 12 === 0 ? 12 : h % 12;
     let minStr = m === 0 ? "00" : "30";
-    return `${hour12}:${minStr} ${period}`;
+    return hour12 + ":" + minStr + " " + period;
   }
 
-  // --- TOGGLE ACCORDION ---
+  // --- ACCORDION SERVICE TOGGLE ---
   function toggleService(key, name, price) {
-    let itemWash = document.getElementById('item-wash');
-    let itemGeneral = document.getElementById('item-general');
-    let itemIns = document.getElementById('item-insurance');
-    let itemPuc = document.getElementById('item-puc');
-    let itemMmc = document.getElementById('item-mmc');
-
+    let ids = ['wash', 'general', 'insurance', 'puc', 'mmc'];
     let targetItem = document.getElementById('item-' + key);
+    if (!targetItem) return;
     let isOpen = targetItem.classList.contains('active');
 
-    [itemWash, itemGeneral, itemIns, itemPuc, itemMmc].forEach(el => el?.classList.remove('active'));
+    ids.forEach(function(k) {
+      let el = document.getElementById('item-' + k);
+      if (el) el.classList.remove('active');
+    });
 
     if (!isOpen) {
       targetItem.classList.add('active');
       if (key === 'wash') {
-        selectedServiceKey = key;
-        selectedServiceName = name;
+        selectedServiceKey = 'wash';
+        selectedServiceName = 'Premium Foam Wash';
         currentServicePrice = TOTAL_PRICE;
         let firstSlot = targetItem.querySelector('.slot-card-inner');
         if (firstSlot) {
-          targetItem.querySelectorAll('.slot-card-inner').forEach(c => c.classList.remove('active'));
+          targetItem.querySelectorAll('.slot-card-inner').forEach(function(c) { c.classList.remove('active'); });
           firstSlot.classList.add('active');
           selectedSlot = firstSlot.querySelector('.slot-time').innerText;
         }
@@ -1231,6 +1296,7 @@
         selectedSlot = "Coming Soon";
       }
     } else {
+      // Keep Foam Wash selected by default if user collapses it
       selectedServiceKey = "";
       selectedServiceName = "";
       currentServicePrice = 0;
@@ -1238,11 +1304,12 @@
     }
   }
 
-  // --- LOCAL STORAGE DB ---
+  // --- LOCAL STORAGE DB HELPERS ---
   function getDB() {
     try {
       let db = localStorage.getItem('mogo_local_db');
-      return db ? JSON.parse(db) : [];
+      let parsed = db ? JSON.parse(db) : [];
+      return Array.isArray(parsed) ? parsed : [];
     } catch(e) { return []; }
   }
   function saveDB(db) {
@@ -1254,13 +1321,13 @@
     saveDB(db);
   }
   function getRecord(id) {
-    return getDB().find(x => x.id === id);
+    return getDB().find(function(x) { return x.id === id; });
   }
   function updateRecord(id, updates) {
     let db = getDB();
     for (let i = 0; i < db.length; i++) {
       if (db[i].id === id) {
-        db[i] = { ...db[i], ...updates };
+        db[i] = Object.assign({}, db[i], updates);
         break;
       }
     }
@@ -1269,31 +1336,35 @@
   function deleteRecord(id) {
     document.getElementById('alertActionButtons').style.display = 'none';
     document.getElementById('alertOkBtn').style.display = 'block';
-    let db = getDB().filter(item => item.id !== id);
+    let db = getDB().filter(function(item) { return item.id !== id; });
     saveDB(db);
     renderAdminDB();
     renderMechanicJobs();
     closeUiAlert();
   }
   function clearError(id) {
-    document.getElementById(id)?.classList.remove('input-error');
+    let el = document.getElementById(id);
+    if (el) el.classList.remove('input-error');
   }
 
-  function showUiAlert(icon, title, message, inputId = null) {
-    document.getElementById('uiAlertIcon').innerHTML = icon;
-    document.getElementById('uiAlertTitle').innerText = title;
-    document.getElementById('uiAlertMsg').innerText = message;
-    fieldToFocus = inputId;
-    if (inputId) document.getElementById(inputId)?.classList.add('input-error');
+  function showUiAlert(icon, title, message, inputId) {
+    document.getElementById('uiAlertIcon').innerHTML = icon || "⚠️";
+    document.getElementById('uiAlertTitle').innerText = title || "Notice";
+    document.getElementById('uiAlertMsg').innerText = message || "";
+    fieldToFocus = inputId || null;
+    if (inputId) {
+      let el = document.getElementById(inputId);
+      if (el) el.classList.add('input-error');
+    }
     document.getElementById('alertActionButtons').style.display = 'none';
     document.getElementById('alertOkBtn').style.display = 'block';
     document.getElementById('uiAlertModal').classList.add('show');
   }
 
   function showConfirmAlert(icon, title, message, confirmCallback) {
-    document.getElementById('uiAlertIcon').innerHTML = icon;
-    document.getElementById('uiAlertTitle').innerText = title;
-    document.getElementById('uiAlertMsg').innerText = message;
+    document.getElementById('uiAlertIcon').innerHTML = icon || "🗑️";
+    document.getElementById('uiAlertTitle').innerText = title || "Confirm";
+    document.getElementById('uiAlertMsg').innerText = message || "";
     document.getElementById('alertOkBtn').style.display = 'none';
     document.getElementById('alertActionButtons').style.display = 'flex';
     document.getElementById('alertConfirmBtn').onclick = confirmCallback;
@@ -1304,15 +1375,15 @@
     document.getElementById('uiAlertModal').classList.remove('show');
     if (fieldToFocus) {
       let el = document.getElementById(fieldToFocus);
-      if (el) setTimeout(() => el.focus(), 150);
+      if (el) setTimeout(function() { el.focus(); }, 150);
       fieldToFocus = null;
     }
   }
 
-  function showCustomAlert(title, message, isPrompt = false, callback = null) {
+  function showCustomAlert(title, message, isPrompt, callback) {
     document.getElementById('customAlertTitle').innerText = title;
     document.getElementById('customAlertMsg').innerText = message;
-    alertCallback = callback;
+    alertCallback = callback || null;
     let inputContainer = document.getElementById('customAlertInputContainer');
     let inputField = document.getElementById('customAlertInput');
     let cancelBtn = document.getElementById('customAlertBtnCancel');
@@ -1325,28 +1396,34 @@
       cancelBtn.style.display = 'none';
     }
     document.getElementById('customAlertModal').classList.add('show');
-    if (isPrompt) setTimeout(() => inputField.focus(), 100);
+    if (isPrompt) setTimeout(function() { inputField.focus(); }, 100);
   }
 
   function closeCustomAlert(isOk) {
     document.getElementById('customAlertModal').classList.remove('show');
     let inputField = document.getElementById('customAlertInput');
-    let val = inputField.value.trim();
+    let val = inputField ? inputField.value.trim() : "";
     if (alertCallback) {
-      if (inputField.parentElement.style.display === 'block') alertCallback(isOk ? val : null);
-      else alertCallback(isOk);
+      let cb = alertCallback;
       alertCallback = null;
+      if (document.getElementById('customAlertInputContainer').style.display === 'block') {
+        cb(isOk ? val : null);
+      } else {
+        cb(isOk);
+      }
     }
   }
 
   // ==========================================================
-  // FULL A4 SHEET PREVIEW MODAL (WITH SINGLE DOWNLOAD BUTTON BELOW)
+  // 3. FULL A4 SHEET PREVIEW MODAL (SINGLE DOWNLOAD BUTTON BELOW)
   // ==========================================================
-  function viewJobCardModal(id, forceJobCard = false) {
+  function viewJobCardModal(id, forceJobCard) {
     let rec = getRecord(id);
-    if (!rec) return;
+    if (!rec) {
+      showUiAlert("⚠️", "Record Not Found", "Could not load this record. Please refresh.");
+      return;
+    }
 
-    // Strict check: Tax Invoice ONLY if UTR/Payment is verified and NOT forced as Job Card
     let hasValidUtr = rec.utr && rec.utr.trim().length >= 4;
     let isPaidInvoice = forceJobCard ? false : (rec.forceType === 'TAX_INVOICE' && (hasValidUtr || rec.gpsImage));
 
@@ -1460,8 +1537,11 @@
 
   // --- CUSTOMER UTR & RAZORPAY AUTO-INVOICE LOGIC ---
   function handleCustomerUtrInput() {
-    let utr = document.getElementById('customerUtr')?.value.trim() || "";
+    let utrEl = document.getElementById('customerUtr');
+    let utr = utrEl ? utrEl.value.trim() : "";
     let btn = document.getElementById('pdfDownloadBtn');
+    if (!btn) return;
+
     if (paymentType === 'Pay Now' && utr.length >= 4) {
       if (globalBookingData && globalBookingData.id) {
         globalBookingData.utr = utr;
@@ -1543,13 +1623,13 @@
     locBtn.style.background = "#DCFCE7";
     locBtn.style.color = "#15803D";
     if (!addrInput.value) addrInput.value = "Fetching street address in Guwahati...";
-    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`)
-      .then(res => res.json())
-      .then(data => {
-        addrInput.value = (data && data.display_name) ? data.display_name.replace(/, India$/, '') : `Guwahati, Assam (${lat.toFixed(5)}, ${lon.toFixed(5)})`;
+    fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lon + "&zoom=18&addressdetails=1")
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        addrInput.value = (data && data.display_name) ? data.display_name.replace(/, India$/, '') : "Guwahati, Assam (" + lat.toFixed(5) + ", " + lon.toFixed(5) + ")";
       })
-      .catch(() => {
-        addrInput.value = `Guwahati, Assam (${lat.toFixed(5)}, ${lon.toFixed(5)})`;
+      .catch(function() {
+        addrInput.value = "Guwahati, Assam (" + lat.toFixed(5) + ", " + lon.toFixed(5) + ")";
       });
   }
 
@@ -1563,7 +1643,7 @@
     btn.disabled = true;
     btn.innerHTML = "⏳ Locating...";
     let done = false;
-    let safetyTimer = setTimeout(() => {
+    let safetyTimer = setTimeout(function() {
       if (done) return;
       done = true;
       btn.disabled = false;
@@ -1572,13 +1652,13 @@
     }, 3500);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        pos => {
+        function(pos) {
           if (done) return;
           done = true;
           clearTimeout(safetyTimer);
           fillAddressFromCoords(pos.coords.latitude, pos.coords.longitude);
         },
-        () => {
+        function() {
           if (done) return;
           done = true;
           clearTimeout(safetyTimer);
@@ -1588,6 +1668,12 @@
         },
         { enableHighAccuracy: true, timeout: 3000, maximumAge: 10000 }
       );
+    } else {
+      done = true;
+      clearTimeout(safetyTimer);
+      btn.disabled = false;
+      btn.innerHTML = "📍 Auto Locate";
+      showUiAlert("📍", "Enter Address", "Please type your doorstep address below.", "cAddr");
     }
   }
 
@@ -1604,7 +1690,7 @@
     document.getElementById('bookingForm').style.display = "none";
     document.getElementById('loadingScreen').style.display = "block";
     let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
-    let maps = customerCoords ? `https://www.google.com/maps?q=${customerCoords.lat},${customerCoords.lon}` : "";
+    let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
     let grandTotal = TOTAL_PRICE;
     let subtotal = grandTotal / 1.18;
     let cgst = subtotal * 0.09;
@@ -1617,7 +1703,7 @@
       phone: phone,
       vehicle: vehicleType,
       serviceName: "Premium Foam Wash",
-      slot: selectedSlot,
+      slot: selectedSlot || "8:00 AM - 8:30 AM",
       total: subtotal,
       cgst: cgst,
       sgst: sgst,
@@ -1637,18 +1723,18 @@
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(globalBookingData)
-      }).catch(() => {});
+      }).catch(function() {});
     } catch (e) {}
 
-    setTimeout(() => {
+    setTimeout(function() {
       document.getElementById('loadingScreen').style.display = "none";
       document.getElementById('successScreen').style.display = "block";
       document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
       handleCustomerUtrInput();
-      let msg = `*New MoGo Service Booking!* 🚀\n\n*Booking ID:* ${id}\n*Customer Name:* ${name}\n*Phone:* ${phone}\n*Vehicle:* ${vehicleType}\n*Service:* Premium Foam Wash (₹89)\n*Slot:* ${selectedSlot}\n*Address:* ${addr}\n`;
-      if (maps) msg += `🗺️ *Google Maps Pin:* ${maps}\n`;
-      msg += `*Payment Mode:* ${paymentType}`;
-      document.getElementById('waBtn').href = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+      let msg = "*New MoGo Service Booking!* 🚀\n\n*Booking ID:* " + id + "\n*Customer Name:* " + name + "\n*Phone:* " + phone + "\n*Vehicle:* " + vehicleType + "\n*Service:* Premium Foam Wash (₹89)\n*Slot:* " + (selectedSlot || "Standard") + "\n*Address:* " + addr + "\n";
+      if (maps) msg += "🗺️ *Google Maps Pin:* " + maps + "\n";
+      msg += "*Payment Mode:* " + paymentType;
+      document.getElementById('waBtn').href = "https://wa.me/" + MY_WHATSAPP + "?text=" + encodeURIComponent(msg);
     }, 250);
   }
 
@@ -1658,6 +1744,7 @@
     document.getElementById('adminPinSection').style.display = "block";
     document.getElementById('adminDashboard').style.display = "none";
     document.getElementById('adminModal').classList.add('show');
+    setTimeout(function() { document.getElementById('adminPinInput').focus(); }, 100);
   }
   function closeAdminPortal() {
     document.getElementById('adminModal').classList.remove('show');
@@ -1673,12 +1760,13 @@
     }
   }
 
-  // --- MECHANIC PORTAL (STRICTLY JOB CARDS ONLY, VIEW OPENS A4 SHEET WITH DOWNLOAD BELOW) ---
+  // --- MECHANIC PORTAL ---
   function openMechanicPortal() {
     document.getElementById('mechPinInput').value = "";
     document.getElementById('mechPinSection').style.display = "block";
     document.getElementById('mechDashboard').style.display = "none";
     document.getElementById('mechanicModal').classList.add('show');
+    setTimeout(function() { document.getElementById('mechPinInput').focus(); }, 100);
   }
   function closeMechanicPortal() {
     document.getElementById('mechanicModal').classList.remove('show');
@@ -1694,15 +1782,15 @@
   }
 
   function renderMechanicJobs() {
-    upgradeOldRecordsTo89();
+    runAutoBugCleaner();
     let db = getDB(), html = "";
-    db.forEach(item => { 
+    db.forEach(function(item) { 
       html += `
         <div class="db-item">
           <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Sheet</span></div>
           <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName} (₹89)<br>Slot: ${item.slot || 'Standard'}<br>📍 ${item.address}</div>
           <div class="db-action">
-            <button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet (A4)</button>
+            <button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet (A4)</button>
             <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">📞 Call Customer</a>
           </div>
         </div>`; 
@@ -1711,7 +1799,10 @@
   }
 
   function switchAdminTab(tab) {
-    ['jc', 'inv', 'gen'].forEach(t => document.getElementById('tab-' + t).classList.toggle('active', t === tab));
+    ['jc', 'inv', 'gen'].forEach(function(t) {
+      let el = document.getElementById('tab-' + t);
+      if (el) el.classList.toggle('active', t === tab);
+    });
     document.getElementById('view-jc').style.display = tab === 'jc' ? 'flex' : 'none';
     document.getElementById('view-inv').style.display = tab === 'inv' ? 'flex' : 'none';
     document.getElementById('view-gen').style.display = tab === 'gen' ? 'block' : 'none';
@@ -1729,19 +1820,17 @@
     }
   }
 
-  // --- ADMIN RENDER: EVERY RECORD HAS A JOB SHEET IN 'JOB CARDS' TAB & PAID ONES IN 'INVOICES' TAB ---
   function renderAdminDB() {
-    upgradeOldRecordsTo89();
+    runAutoBugCleaner();
     let db = getDB(), jcHTML = "", invHTML = "";
-    db.forEach(item => {
+    db.forEach(function(item) {
       let isInv = item.forceType === 'TAX_INVOICE' && ((item.utr && item.utr.trim().length >= 4) || item.gpsImage);
-      let jcBadge = isInv ? `<span class="badge b-ready">✅ Job Sheet (Paid)</span>` : `<span class="badge b-booked">⏳ Job Sheet (Unpaid)</span>`;
+      let jcBadge = isInv ? '<span class="badge b-ready">✅ Job Sheet (Paid)</span>' : '<span class="badge b-booked">⏳ Job Sheet (Unpaid)</span>';
       
-      // Job Card Tab Item (Always available for all bookings & generated records, single View button opens A4 sheet with Download below)
       let jcActions = `
-        <button class="btn-sm" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet</button>
-        <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">💬 WA</button>
-        ${!isInv ? `<button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">✅ Enter UTR & Make Invoice</button>` : ''}`;
+        <button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet</button>
+        <button class="btn-sm" type="button" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">💬 WA</button>
+        ${!isInv ? `<button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">✅ Enter UTR & Make Invoice</button>` : ''}`;
 
       jcHTML += `
         <div class="db-item">
@@ -1749,20 +1838,19 @@
           <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹89) | ${item.date}<br>${item.address}</div>
           <div class="db-action">
             ${jcActions}
-            <button class="btn-del" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button>
+            <button class="btn-del" type="button" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button>
           </div>
         </div>`;
 
-      // Invoices Tab Item (Strictly only for UTR-verified Paid Tax Invoices)
       if (isInv) {
         invHTML += `
           <div class="db-item">
             <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-ready">🟢 Paid Tax Invoice</span></div>
             <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹89) | UTR: ${item.utr || 'Attached'}<br>${item.address}</div>
             <div class="db-action">
-              <button class="btn-sm" style="background:#16A34A; color:#fff;" onclick="viewJobCardModal('${item.id}', false)">👁️ View Tax Invoice</button>
-              <button class="btn-sm" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">💬 WA</button>
-              <button class="btn-del" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button>
+              <button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="viewJobCardModal('${item.id}', false)">👁️ View Tax Invoice</button>
+              <button class="btn-sm" type="button" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">💬 WA</button>
+              <button class="btn-del" type="button" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button>
             </div>
           </div>`;
       }
@@ -1771,7 +1859,6 @@
     document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Paid Invoices yet. Enter UTR on a Job Card to generate Invoice.</p>';
   }
 
-  // --- STRICT UTR VALIDATION BEFORE CONVERTING TO INVOICE ---
   function promptConvertToInvoice(id) {
     showCustomAlert("Enter Payment UTR", "Tax Invoice requires a valid UPI UTR / Transaction ID (minimum 4 characters):", true, function(utr) {
       if (utr === null) return;
@@ -1795,12 +1882,11 @@
     let rec = getRecord(id);
     if (!rec) return;
     let msg = isInvoice
-      ? `Hello ${rec.name},\n\nYour MoGo Total Bike Care *Paid Tax Invoice* (Booking ID: ${rec.id}, Amount: ₹89, UTR: ${rec.utr}) has been generated.\n\nThank you for choosing MoGo!`
-      : `Hello ${rec.name},\n\nYour MoGo Total Bike Care *Service Job Card* (Booking ID: ${rec.id}, Estimate: ₹89) has been created.\n\nOur expert will arrive shortly!`;
-    window.open(`https://wa.me/91${rec.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+      ? "Hello " + rec.name + ",\n\nYour MoGo Total Bike Care *Paid Tax Invoice* (Booking ID: " + rec.id + ", Amount: ₹89, UTR: " + rec.utr + ") has been generated.\n\nThank you for choosing MoGo!"
+      : "Hello " + rec.name + ",\n\nYour MoGo Total Bike Care *Service Job Card* (Booking ID: " + rec.id + ", Estimate: ₹89) has been created.\n\nOur expert will arrive shortly!";
+    window.open("https://wa.me/91" + rec.phone + "?text=" + encodeURIComponent(msg), '_blank');
   }
 
-  // --- ADMIN + GENERATE FORM (SYNCED TO MECHANIC & ADMIN PORTALS) ---
   function processAdminForm() {
     let name = document.getElementById('admName').value.trim();
     let phone = document.getElementById('admPhone').value.trim();
@@ -1985,13 +2071,13 @@
       ctx.fillText(botText[i], 0, 0);
       ctx.restore();
     }
-    ctx.font = 'bold 24px Arial, Helvetica, sans-serif';
+    ctx.font = 'bold 24px Arial, sans-serif';
     ctx.fillText('★', -54, -80); ctx.fillText('★', 54, -80);
-    ctx.font = 'bold 36px Arial, Helvetica, sans-serif';
+    ctx.font = 'bold 36px Arial, sans-serif';
     ctx.fillText('★', 0, -84);
-    ctx.font = 'bold 24px Arial, Helvetica, sans-serif';
+    ctx.font = 'bold 24px Arial, sans-serif';
     ctx.fillText('★', -54, 80); ctx.fillText('★', 54, 80);
-    ctx.font = 'bold 36px Arial, Helvetica, sans-serif';
+    ctx.font = 'bold 36px Arial, sans-serif';
     ctx.fillText('★', 0, 84);
     const bw = 540, bh = 106;
     ctx.fillStyle = bgFill;
@@ -2025,17 +2111,17 @@
   }
 
   // ==========================================================
-  // 100% CRASH-PROOF UNIFIED PDF GENERATOR (EXACT A4 LAYOUT)
+  // 4. 100% CRASH-PROOF UNIFIED PDF GENERATOR (EXACT A4 LAYOUT)
   // ==========================================================
-  function downloadInvoice(forcePaid = false, forceJobCard = false) {
+  function downloadInvoice(forcePaid, forceJobCard) {
     try {
-      if (!window.jspdf) {
-        showUiAlert("⏳", "Notice", "PDF library loading, please wait.");
+      let PDFConstructor = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : window.jsPDF;
+      if (!PDFConstructor) {
+        showUiAlert("⏳", "Notice", "PDF library is still loading. Please check your internet connection and tap again.");
         return;
       }
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      let userUtr = document.getElementById('customerUtr')?.value.trim() || globalBookingData.utr || "";
+      const doc = new PDFConstructor();
+      let userUtr = (document.getElementById('customerUtr') ? document.getElementById('customerUtr').value.trim() : "") || globalBookingData.utr || "";
       let isPaidVerified = forceJobCard ? false : (forcePaid || (globalBookingData.forceType === 'TAX_INVOICE' && (userUtr.length >= 4 || globalBookingData.gpsImage)));
 
       let grandTotal = TOTAL_PRICE;
@@ -2061,7 +2147,8 @@
       doc.setFont("helvetica", "normal");
       doc.setFontSize(7.5);
       doc.setTextColor(100, 116, 139);
-      doc.text(OFFICIAL_ADDRESS, 105, 56, { maxWidth: 170, align: "center" });
+      let splitOfficialAddr = doc.splitTextToSize(OFFICIAL_ADDRESS, 170);
+      doc.text(splitOfficialAddr, 105, 55.5, { align: "center" });
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8.5);
@@ -2084,7 +2171,8 @@
       doc.text("Customer Name: " + (globalBookingData.name || "Valued Customer"), 20, 93);
       doc.text("Contact Number: " + (globalBookingData.phone || ""), 20, 101);
       doc.text("Vehicle Type: " + (globalBookingData.vehicle || "Bike") + "   |   Slot: " + (globalBookingData.slot || "Standard"), 20, 109);
-      doc.text("Service Address: " + (globalBookingData.address || "Guwahati, Assam"), 20, 117, { maxWidth: 170 });
+      let custAddrLines = doc.splitTextToSize("Service Address: " + (globalBookingData.address || "Guwahati, Assam"), 170);
+      doc.text(custAddrLines, 20, 117);
       
       doc.line(20, 127, 190, 127);
       doc.setFont("helvetica", "bold");
@@ -2146,7 +2234,7 @@
           "3. This is an electronically generated tax invoice compliant with statutory laws."
         ]; 
         let termY = layoutY + 43.5;
-        terms.forEach(t => { doc.text(t, 20, termY); termY += 4.5; });
+        terms.forEach(function(t) { doc.text(t, 20, termY); termY += 4.5; });
 
       } else {
         doc.setFontSize(12);
@@ -2201,17 +2289,17 @@
         doc.addImage(globalBookingData.gpsImage, "JPEG", (210 - imgW * ratio) / 2, 58, imgW * ratio, imgH * ratio);
       }
 
-      doc.save(isPaidVerified ? `MoGo_Tax_Invoice_${globalBookingData.id}.pdf` : `MoGo_Job_Card_${globalBookingData.id}.pdf`);
+      doc.save(isPaidVerified ? "MoGo_Tax_Invoice_" + globalBookingData.id + ".pdf" : "MoGo_Job_Card_" + globalBookingData.id + ".pdf");
     } catch (e) {
       console.error("PDF generation error:", e);
       showUiAlert("⚠️", "Notice", "Could not generate PDF. Please try again.");
     }
   }
 
-  function generatePDFFromDB(id, isPaidOverride, forceJobCard = false) { 
+  function generatePDFFromDB(id, isPaidOverride, forceJobCard) { 
     let record = getRecord(id); 
     if (record) { 
-      globalBookingData = { ...record }; 
+      globalBookingData = Object.assign({}, record); 
       downloadInvoice(isPaidOverride, forceJobCard); 
     } 
   }
