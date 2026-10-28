@@ -418,6 +418,27 @@
       transform: scale(0.96); 
     }
 
+    .gps-live-badge {
+      display: none;
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      color: #047857;
+      font-size: 11.5px;
+      font-weight: 800;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .gps-live-badge a {
+      color: #0284C7;
+      text-decoration: underline;
+      font-weight: 900;
+    }
+
     .btn-main { 
       width: 100%; 
       padding: 18px; 
@@ -928,9 +949,13 @@
 
     <div class="loc-header">
       <label>Doorstep Address</label>
-      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate</button>
+      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">🛰️ Auto Locate (NavIC / GPS)</button>
     </div>
     <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate' or type manually..." oninput="clearError('cAddr')"></textarea>
+    <div id="gpsLiveBadge" class="gps-live-badge">
+      <span id="gpsCoordText">🛰️ NavIC/GPS Locked</span>
+      <a id="gpsPreviewLink" href="#" target="_blank">🗺️ View Map</a>
+    </div>
 
     <label>Payment Method</label>
     <div class="segmented-control">
@@ -1052,7 +1077,7 @@
   </div>
 </div>
 
-<!-- MECHANIC PORTAL (STRICTLY JOB CARDS ONLY) -->
+<!-- MECHANIC PORTAL (STRICTLY JOB CARDS ONLY + CUSTOMER LIVE GPS NAVIGATION) -->
 <div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
   <div class="ui-modal-box">
     <div id="mechPinSection">
@@ -1065,7 +1090,7 @@
     </div>
     <div id="mechDashboard" style="display: none;">
       <div class="portal-header-title" style="color:#0284C7;">Assigned Job Cards</div>
-      <div class="portal-header-subtitle">Tap 'View Job Sheet' to open full A4 Sheet & Download PDF</div>
+      <div class="portal-header-subtitle">Tap 'View Job Sheet' or 'Open GPS Map' for Customer Location</div>
 
       <div class="sync-status-bar">
         <span id="mechSyncStatus">🟢 Syncing Live Job Cards...</span>
@@ -1150,8 +1175,20 @@
   let selectedSlot = "Standard Doorstep Service";
   let globalBookingData = {};
   let customerCoords = null;
+  let gpsWatchId = null;
   let fieldToFocus = null;
   let alertCallback = null;
+
+  // Helper to generate a guaranteed Google Maps Navigation link for Mechanic & Admin
+  function getCustomerMapUrl(rec) {
+    if (!rec) return "https://www.google.com/maps/search/?api=1&query=Guwahati,Assam";
+    if (rec.mapsLink && rec.mapsLink.indexOf("http") === 0) return rec.mapsLink;
+    if (rec.lat && rec.lon) return "https://www.google.com/maps?q=" + rec.lat + "," + rec.lon;
+    let addrStr = String(rec.address || "Guwahati, Assam").trim();
+    let coordMatch = addrStr.match(/(\d{2}\.\d{4,})\s*,\s*(\d{2}\.\d{4,})/);
+    if (coordMatch) return "https://www.google.com/maps?q=" + coordMatch[1] + "," + coordMatch[2];
+    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addrStr);
+  }
 
   // ==========================================================
   // HISTORICAL & RECENT PAID BOOKINGS SEED (SO OLD DATA & SHANKAR BISWAS
@@ -1167,6 +1204,7 @@
       serviceName: "Premium Foam Wash",
       slot: "Standard Doorstep Service",
       address: "Guwahati, Assam",
+      mapsLink: "https://www.google.com/maps/search/?api=1&query=Guwahati,Assam",
       paymentType: "Pay Now",
       status: "INVOICE_GENERATED",
       utr: "pay_RZP_SHANKAR89",
@@ -1181,6 +1219,7 @@
       serviceName: "Premium Foam Wash",
       slot: "Standard Doorstep Service",
       address: "Central Gotanagar Railway Qtr No 312/B Maligaon Guwahati",
+      mapsLink: "https://www.google.com/maps/search/?api=1&query=Central+Gotanagar+Railway+Qtr+No+312/B+Maligaon+Guwahati",
       paymentType: "Pay Now",
       status: "INVOICE_GENERATED",
       utr: "HFIEHFIBSKBZ",
@@ -1195,6 +1234,7 @@
       serviceName: "Premium Foam Wash",
       slot: "Standard Doorstep Service",
       address: "Railway Colony, Maligaon, Guwahati, Kamrup Metropolitan, Assam, 781011",
+      mapsLink: "https://www.google.com/maps/search/?api=1&query=Railway+Colony+Maligaon+Guwahati+781011",
       paymentType: "Pay Now",
       status: "INVOICE_GENERATED",
       utr: "R57392694HDBSKSG",
@@ -1209,6 +1249,7 @@
       serviceName: "Premium Foam Wash",
       slot: "Standard Doorstep Service",
       address: "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon",
+      mapsLink: "https://www.google.com/maps/search/?api=1&query=Pub+Boragaon+Guwahati+Assam",
       paymentType: "Pay After Service",
       status: "BOOKED",
       utr: "",
@@ -1223,6 +1264,7 @@
       serviceName: "Premium Foam Wash",
       slot: "Standard Doorstep Service",
       address: "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon",
+      mapsLink: "https://www.google.com/maps/search/?api=1&query=Pub+Boragaon+Guwahati+Assam",
       paymentType: "Pay After Service",
       status: "BOOKED",
       utr: "",
@@ -1244,6 +1286,7 @@
     let cgst = ((TOTAL_PRICE / 1.18) * 0.09).toFixed(2);
     let sgst = ((TOTAL_PRICE / 1.18) * 0.09).toFixed(2);
     let customerServiceAddr = bookingRecord.address || "Guwahati, Assam";
+    let mapUrl = getCustomerMapUrl(bookingRecord);
 
     let invoiceMessage =
       "✅ *MoGo Total Bike Care - Paid Tax Invoice*\n" +
@@ -1254,7 +1297,8 @@
       "👤 *Customer:* " + bookingRecord.name + "\n" +
       "📱 *Mobile:* " + bookingRecord.phone + "\n" +
       "🏍️ *Vehicle:* " + bookingRecord.vehicle + " (" + bookingRecord.serviceName + ")\n" +
-      "📍 *Service Address:* " + customerServiceAddr + "\n\n" +
+      "📍 *Service Address:* " + customerServiceAddr + "\n" +
+      "🗺️ *Live GPS Pin:* " + mapUrl + "\n\n" +
       "💰 *Taxable Subtotal:* ₹" + sub + "\n" +
       "🏛️ *CGST (9%):* ₹" + cgst + " | *SGST (9%):* ₹" + sgst + "\n" +
       "💵 *Grand Total (Incl. 18% GST):* ₹" + TOTAL_PRICE.toFixed(2) + "\n" +
@@ -1285,6 +1329,7 @@
             bookingId: bookingRecord.id,
             customerName: bookingRecord.name,
             address: customerServiceAddr,
+            mapsLink: mapUrl,
             utr: uniqueTxnId,
             amount: TOTAL_PRICE,
             documentType: "TAX_INVOICE",
@@ -1305,6 +1350,7 @@
         body: JSON.stringify(Object.assign({}, bookingRecord, {
           action: "UPSERT_INVOICE",
           utr: uniqueTxnId,
+          mapsLink: mapUrl,
           status: "INVOICE_GENERATED",
           forceType: "TAX_INVOICE",
           whatsappMessage: invoiceMessage
@@ -1316,7 +1362,7 @@
   // ==========================================================
   // MULTI-CHANNEL LIVE SYNC ENGINE:
   // 1. Pulls Live Payments directly from Razorpay API (Shankar Biswas & all ₹89 payments)
-  // 2. Pulls Bookings from Google Apps Script Webhook
+  // 2. Pulls Bookings from Google Apps Script Webhook (including GPS Maps Link)
   // 3. Merges Historical Seed Data so no old payment is ever lost
   // ==========================================================
   function mergeIncomingRowsIntoDB(rows, ignoreDeleted) {
@@ -1345,10 +1391,12 @@
 
       let rForce = (r.forceType === 'TAX_INVOICE' || r.status === 'INVOICE_GENERATED' || r.status === 'captured' || rUtr.length >= 4) ? 'TAX_INVOICE' : 'JOB_CARD';
       let sub = TOTAL_PRICE / 1.18;
+      let rAddr = String(r.address || r.service_address || r.Address || "Guwahati, Assam");
+      let rMaps = String(r.mapsLink || r.gps_link || r['Maps Link'] || "");
 
       let existing = mapById[rId];
       if (!existing) {
-        mapById[rId] = {
+        let newEntry = {
           id: rId,
           date: String(r.date || r.Date || new Date().toLocaleDateString('en-IN')),
           name: rName,
@@ -1360,14 +1408,16 @@
           cgst: sub * 0.09,
           sgst: sub * 0.09,
           grandTotal: TOTAL_PRICE,
-          address: String(r.address || r.service_address || r.Address || "Guwahati, Assam"),
+          address: rAddr,
           paymentType: String(r.paymentType || (rForce === 'TAX_INVOICE' ? "Pay Now" : "Pay After Service")),
-          mapsLink: String(r.mapsLink || ""),
+          mapsLink: rMaps,
           status: rForce === 'TAX_INVOICE' ? "INVOICE_GENERATED" : "BOOKED",
           utr: rUtr || (rForce === 'TAX_INVOICE' ? "VERIFIED" : ""),
           forceType: rForce,
           gpsImage: null
         };
+        newEntry.mapsLink = getCustomerMapUrl(newEntry);
+        mapById[rId] = newEntry;
       } else {
         if (rForce === 'TAX_INVOICE') {
           existing.forceType = 'TAX_INVOICE';
@@ -1379,8 +1429,13 @@
         if (r.phone && (!existing.phone || existing.phone === "9864012345")) {
           existing.phone = String(r.phone).replace(/^\+91/, '');
         }
-        if (r.address && existing.address === "Guwahati, Assam") {
-          existing.address = String(r.address);
+        if (rAddr && existing.address === "Guwahati, Assam") {
+          existing.address = rAddr;
+        }
+        if (rMaps) {
+          existing.mapsLink = rMaps;
+        } else if (!existing.mapsLink) {
+          existing.mapsLink = getCustomerMapUrl(existing);
         }
       }
     });
@@ -1422,6 +1477,7 @@
                 let cName = notes.customer_name || notes.name || p.Card?.name || (p.email ? p.email.split('@')[0] : "Paid Customer");
                 let cPhone = String(notes.customer_phone || p.contact || "").replace(/[^0-9]/g, '').slice(-10);
                 let cAddr = notes.service_address || notes.address || "Guwahati, Assam";
+                let cMaps = notes.maps_link || notes.gps_link || "";
                 let pDate = p.created_at ? new Date(p.created_at * 1000).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN');
 
                 mapped.push({
@@ -1431,6 +1487,7 @@
                   phone: cPhone,
                   vehicle: notes.vehicle || "Bike",
                   address: cAddr,
+                  mapsLink: cMaps,
                   utr: p.id,
                   status: "INVOICE_GENERATED",
                   forceType: "TAX_INVOICE"
@@ -1523,7 +1580,7 @@
           let sub = TOTAL_PRICE / 1.18;
           let cleanUtr = String(item.utr || "").trim();
           let isPaidRecord = (item.forceType === 'TAX_INVOICE' || item.status === 'INVOICE_GENERATED' || cleanUtr.length >= 4 || Boolean(item.gpsImage));
-          cleaned.push({
+          let recObj = {
             id: String(item.id),
             date: String(item.date || new Date().toLocaleDateString('en-IN')),
             name: String(item.name || "Valued Customer"),
@@ -1538,13 +1595,17 @@
             address: String(item.address || "Guwahati, Assam"),
             paymentType: String(item.paymentType || (isPaidRecord ? "Pay Now" : "Pay After Service")),
             mapsLink: String(item.mapsLink || ""),
+            lat: item.lat || null,
+            lon: item.lon || null,
             status: isPaidRecord ? "INVOICE_GENERATED" : String(item.status || "BOOKED"),
             utr: isPaidRecord && !cleanUtr ? "VERIFIED" : cleanUtr,
             forceType: isPaidRecord ? 'TAX_INVOICE' : 'JOB_CARD',
             gpsImage: item.gpsImage || null,
             imgW: item.imgW || 400,
             imgH: item.imgH || 400
-          });
+          };
+          recObj.mapsLink = getCustomerMapUrl(recObj);
+          cleaned.push(recObj);
         }
       }
       localStorage.setItem('mogo_local_db', JSON.stringify(cleaned));
@@ -1586,12 +1647,24 @@
       });
     }
 
+    // Pre-warm NavIC / GPS receiver in background so location is ready immediately
     if (navigator.geolocation) {
       try {
         navigator.geolocation.getCurrentPosition(
-          function(pos) { customerCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude }; },
-          function() {},
-          { enableHighAccuracy: true, timeout: 5000, maximumAge: 30000 }
+          function(pos) {
+            customerCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy };
+          },
+          function() {
+            // Fallback warm-up with coarse network location
+            navigator.geolocation.getCurrentPosition(
+              function(pos2) {
+                customerCoords = { lat: pos2.coords.latitude, lon: pos2.coords.longitude, acc: pos2.coords.accuracy };
+              },
+              function() {},
+              { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+            );
+          },
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
         );
       } catch (e) {}
     }
@@ -1933,6 +2006,7 @@
     let logoDataUrl = createExactLogoImage();
     let stampDataUrl = createRubberStampImage(isPaidInvoice);
     let sigObj = getSignatureImageForPDF();
+    let mapUrl = getCustomerMapUrl(rec);
 
     let contentBox = document.getElementById('viewCardContent');
     contentBox.style.background = bgCol;
@@ -1981,6 +2055,7 @@
         <div><strong>Contact Number:</strong> ${rec.phone}</div>
         <div><strong>Vehicle Type:</strong> ${rec.vehicle}</div>
         <div><strong>Service Address:</strong> ${rec.address || 'Guwahati, Assam'}</div>
+        <div style="margin-top:3px;"><a href="${mapUrl}" target="_blank" style="color:#0284C7; font-weight:800; text-decoration:underline;">🛰️ Open Customer Live GPS Location in Google Maps</a></div>
       </div>
       <div style="border-top:1px solid #CBD5E1; margin-top:8px; padding-top:6px; font-size:11.5px;">
         <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:4px;">
@@ -2079,6 +2154,7 @@
           customer_name: globalBookingData.name,
           customer_phone: globalBookingData.phone,
           service_address: globalBookingData.address,
+          maps_link: getCustomerMapUrl(globalBookingData),
           vehicle: globalBookingData.vehicle
         },
         handler: function (response) {
@@ -2129,67 +2205,143 @@
     sendWhatsAppInvoiceViaAPI(globalBookingData, paymentId);
   }
 
-  function fillAddressFromCoords(lat, lon) {
+  // ==========================================================
+  // MULTI-SATELLITE NavIC / GAGAN / GPS ENGINE + 3-LAYER REVERSE GEOCODER
+  // Guarantees fast coordinate lock & exact street address in Guwahati
+  // ==========================================================
+  async function fillAddressFromCoords(lat, lon) {
     const addrInput = document.getElementById('cAddr');
     const locBtn = document.getElementById('locBtn');
+    const liveBadge = document.getElementById('gpsLiveBadge');
+    const coordText = document.getElementById('gpsCoordText');
+    const previewLink = document.getElementById('gpsPreviewLink');
+
     customerCoords = { lat: lat, lon: lon };
+    let directMapUrl = "https://www.google.com/maps?q=" + lat.toFixed(6) + "," + lon.toFixed(6);
+
     locBtn.disabled = false;
-    locBtn.innerHTML = "✅ GPS Locked";
+    locBtn.innerHTML = "✅ NavIC / GPS Locked";
     locBtn.style.background = "#DCFCE7";
     locBtn.style.color = "#15803D";
-    if (!addrInput.value) addrInput.value = "Fetching street address in Guwahati...";
-    fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lon + "&zoom=18&addressdetails=1")
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
-        addrInput.value = (data && data.display_name) ? data.display_name.replace(/, India$/, '') : "Guwahati, Assam (" + lat.toFixed(5) + ", " + lon.toFixed(5) + ")";
-      })
-      .catch(function() {
-        addrInput.value = "Guwahati, Assam (" + lat.toFixed(5) + ", " + lon.toFixed(5) + ")";
-      });
+
+    if (liveBadge && coordText && previewLink) {
+      liveBadge.style.display = "flex";
+      coordText.innerText = "🛰️ GPS Pin: " + lat.toFixed(5) + ", " + lon.toFixed(5);
+      previewLink.href = directMapUrl;
+    }
+
+    if (!addrInput.value || addrInput.value.indexOf("Fetching") !== -1) {
+      addrInput.value = "Fetching exact street address via NavIC / GPS...";
+    }
+
+    // Layer 1: BigDataCloud Fast Client Reverse Geocoder (No CORS limits, instant response)
+    try {
+      let res1 = await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" + lat + "&longitude=" + lon + "&localityLanguage=en");
+      if (res1.ok) {
+        let d1 = await res1.json();
+        let parts = [];
+        if (d1.locality && parts.indexOf(d1.locality) === -1) parts.push(d1.locality);
+        if (d1.city && parts.indexOf(d1.city) === -1) parts.push(d1.city);
+        if (d1.principalSubdivision && parts.indexOf(d1.principalSubdivision) === -1) parts.push(d1.principalSubdivision);
+        if (d1.postcode) parts.push(d1.postcode);
+        if (parts.length > 0) {
+          addrInput.value = parts.join(", ") + " [GPS: " + lat.toFixed(5) + ", " + lon.toFixed(5) + "]";
+        }
+      }
+    } catch (e) {}
+
+    // Layer 2: OpenStreetMap Nominatim (Detailed street/building level refinement)
+    try {
+      let res2 = await fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lon + "&zoom=18&addressdetails=1");
+      if (res2.ok) {
+        let d2 = await res2.json();
+        if (d2 && d2.display_name) {
+          let cleanDisp = d2.display_name.replace(/, India$/i, '');
+          addrInput.value = cleanDisp + " [GPS: " + lat.toFixed(5) + ", " + lon.toFixed(5) + "]";
+          return;
+        }
+      }
+    } catch (e) {}
+
+    // Layer 3: Fallback if both geocoders are blocked by mobile network
+    if (!addrInput.value || addrInput.value.indexOf("Fetching") !== -1) {
+      addrInput.value = "Guwahati, Assam [GPS: " + lat.toFixed(5) + ", " + lon.toFixed(5) + "]";
+    }
   }
 
   function getLocation() {
     let btn = document.getElementById('locBtn');
     clearError('cAddr');
-    if (customerCoords && customerCoords.lat) {
+
+    if (customerCoords && customerCoords.lat && customerCoords.lon) {
       fillAddressFromCoords(customerCoords.lat, customerCoords.lon);
       return;
     }
-    btn.disabled = true;
-    btn.innerHTML = "⏳ Locating...";
-    let done = false;
-    let safetyTimer = setTimeout(function() {
-      if (done) return;
-      done = true;
-      btn.disabled = false;
-      btn.innerHTML = "📍 Auto Locate";
-      showUiAlert("📍", "Enter Address", "GPS signal is taking time indoors. Please type your doorstep address below.", "cAddr");
-    }, 3500);
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        function(pos) {
-          if (done) return;
-          done = true;
-          clearTimeout(safetyTimer);
-          fillAddressFromCoords(pos.coords.latitude, pos.coords.longitude);
-        },
-        function() {
-          if (done) return;
-          done = true;
-          clearTimeout(safetyTimer);
-          btn.disabled = false;
-          btn.innerHTML = "📍 Auto Locate";
-          showUiAlert("📍", "Location Permission", "Please allow GPS permission or type your address manually.", "cAddr");
-        },
-        { enableHighAccuracy: true, timeout: 3000, maximumAge: 10000 }
-      );
-    } else {
-      done = true;
-      clearTimeout(safetyTimer);
-      btn.disabled = false;
-      btn.innerHTML = "📍 Auto Locate";
-      showUiAlert("📍", "Enter Address", "Please type your doorstep address below.", "cAddr");
+
+    if (!navigator.geolocation) {
+      showUiAlert("📍", "Enter Address", "GPS is not supported on this browser. Please type your doorstep address below.", "cAddr");
+      return;
     }
+
+    btn.disabled = true;
+    btn.innerHTML = "🛰️ Locking NavIC/GPS...";
+    let resolved = false;
+
+    function onGpsSuccess(pos) {
+      if (resolved) return;
+      resolved = true;
+      if (gpsWatchId !== null) {
+        try { navigator.geolocation.clearWatch(gpsWatchId); } catch (e) {}
+        gpsWatchId = null;
+      }
+      fillAddressFromCoords(pos.coords.latitude, pos.coords.longitude);
+    }
+
+    // Stage 1: High-Accuracy Satellite Lock (NavIC / GPS L1/L5)
+    navigator.geolocation.getCurrentPosition(
+      onGpsSuccess,
+      function() {
+        // Stage 2: Immediate Cellular / Wi-Fi / Coarse Location Fallback
+        navigator.geolocation.getCurrentPosition(
+          onGpsSuccess,
+          function(err) {
+            if (resolved) return;
+            resolved = true;
+            btn.disabled = false;
+            btn.innerHTML = "🛰️ Auto Locate (NavIC / GPS)";
+            showUiAlert("📍", "Allow Location Permission", "Please turn ON phone Location (GPS) and allow browser permission, or type your address manually.", "cAddr");
+          },
+          { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+        );
+      },
+      { enableHighAccuracy: true, timeout: 7000, maximumAge: 60000 }
+    );
+
+    // Parallel continuous watchPosition so the first satellite fix locks immediately
+    try {
+      gpsWatchId = navigator.geolocation.watchPosition(
+        function(pos) {
+          if (pos && pos.coords && pos.coords.latitude) {
+            onGpsSuccess(pos);
+          }
+        },
+        function() {},
+        { enableHighAccuracy: true, maximumAge: 30000 }
+      );
+    } catch (e) {}
+
+    // Safety release after 11 seconds
+    setTimeout(function() {
+      if (!resolved) {
+        resolved = true;
+        if (gpsWatchId !== null) {
+          try { navigator.geolocation.clearWatch(gpsWatchId); } catch (e) {}
+          gpsWatchId = null;
+        }
+        btn.disabled = false;
+        btn.innerHTML = "🛰️ Auto Locate (NavIC / GPS)";
+      }
+    }, 11000);
   }
 
   function submitBooking() {
@@ -2205,7 +2357,9 @@
     document.getElementById('bookingForm').style.display = "none";
     document.getElementById('loadingScreen').style.display = "block";
     let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
-    let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
+    let maps = customerCoords
+      ? ("https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon)
+      : ("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr));
     let grandTotal = TOTAL_PRICE;
     let subtotal = grandTotal / 1.18;
     let cgst = subtotal * 0.09;
@@ -2226,6 +2380,8 @@
       address: addr,
       paymentType: paymentType,
       mapsLink: maps,
+      lat: customerCoords ? customerCoords.lat : null,
+      lon: customerCoords ? customerCoords.lon : null,
       status: "BOOKED",
       utr: "",
       forceType: "JOB_CARD",
@@ -2246,9 +2402,7 @@
       document.getElementById('successScreen').style.display = "block";
       document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
       handleCustomerUtrInput();
-      let msg = "*New MoGo Service Booking!* 🚀\n\n*Booking ID:* " + id + "\n*Customer Name:* " + name + "\n*Phone:* " + phone + "\n*Vehicle:* " + vehicleType + "\n*Service:* Premium Foam Wash (₹89)\n*Address:* " + addr + "\n";
-      if (maps) msg += "🗺️ *Google Maps Pin:* " + maps + "\n";
-      msg += "*Payment Mode:* " + paymentType;
+      let msg = "*New MoGo Service Booking!* 🚀\n\n*Booking ID:* " + id + "\n*Customer Name:* " + name + "\n*Phone:* " + phone + "\n*Vehicle:* " + vehicleType + "\n*Service:* Premium Foam Wash (₹89)\n*Address:* " + addr + "\n🗺️ *Live GPS Map:* " + maps + "\n*Payment Mode:* " + paymentType;
       document.getElementById('waBtn').href = "https://wa.me/" + MY_WHATSAPP + "?text=" + encodeURIComponent(msg);
 
       // If customer selected Pay Now, automatically open Live Razorpay Checkout
@@ -2305,18 +2459,20 @@
     }
   }
 
-  // --- MECHANIC PORTAL: SHOWS ALL JOB CARDS (BOTH PAID & UNPAID BOOKINGS AS JOB SHEETS) ---
+  // --- MECHANIC PORTAL: SHOWS ALL JOB CARDS + DIRECT LIVE GPS NAVIGATION BUTTON ---
   function renderMechanicJobs() {
     runAutoBugCleaner();
     let db = getDB(), html = "";
-    db.forEach(function(item) { 
+    db.forEach(function(item) {
+      let mapUrl = getCustomerMapUrl(item);
       html += `
         <div class="db-item">
           <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Sheet</span></div>
           <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName} (₹89)<br>📍 ${item.address}</div>
           <div class="db-action">
             <button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet (A4)</button>
-            <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">📞 Call Customer</a>
+            <a href="${mapUrl}" target="_blank" class="btn-sm" style="background:#FF5A00; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">🗺️ Open GPS Map</a>
+            <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">📞 Call</a>
           </div>
         </div>`; 
     });
@@ -2355,10 +2511,12 @@
       let hasValidUtr = item.utr && item.utr.trim().length >= 4;
       let isInv = (item.forceType === 'TAX_INVOICE' || item.status === 'INVOICE_GENERATED' || hasValidUtr || Boolean(item.gpsImage));
       let jcBadge = isInv ? '<span class="badge b-ready">✅ Job Sheet (Paid)</span>' : '<span class="badge b-booked">⏳ Job Sheet (Unpaid)</span>';
+      let mapUrl = getCustomerMapUrl(item);
       
       jcCount++;
       let jcActions = `
         <button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet</button>
+        <a href="${mapUrl}" target="_blank" class="btn-sm" style="background:#FF5A00; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">🗺️ GPS Map</a>
         <button class="btn-sm" type="button" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', false)">💬 WA</button>
         ${!isInv ? `<button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">✅ Enter UTR & Make Invoice</button>` : `<button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="viewJobCardModal('${item.id}', false)">🧾 View Invoice</button>`}`;
 
@@ -2381,6 +2539,7 @@
             <div class="db-action">
               <button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="viewJobCardModal('${item.id}', false)">👁️ View Tax Invoice</button>
               <button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">📋 Job Sheet</button>
+              <a href="${mapUrl}" target="_blank" class="btn-sm" style="background:#FF5A00; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">🗺️ GPS</a>
               <button class="btn-sm" type="button" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">💬 WA</button>
               <button class="btn-del" type="button" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button>
             </div>
@@ -2423,9 +2582,10 @@
     if (!rec) return;
     let cleanPhone = String(rec.phone).replace(/[^0-9]/g, '');
     if (cleanPhone.length === 10) cleanPhone = "91" + cleanPhone;
+    let mapUrl = getCustomerMapUrl(rec);
     let msg = isInvoice
-      ? "Hello " + rec.name + ",\n\nYour MoGo Total Bike Care *Paid Tax Invoice* (Booking ID: " + rec.id + ", Amount: ₹89, UTR: " + (rec.utr || 'VERIFIED') + ") has been generated.\nService Address: " + rec.address + "\n\nThank you for choosing MoGo!"
-      : "Hello " + rec.name + ",\n\nYour MoGo Total Bike Care *Service Job Card* (Booking ID: " + rec.id + ", Estimate: ₹89) has been created.\nService Address: " + rec.address + "\n\nOur expert will arrive shortly!";
+      ? "Hello " + rec.name + ",\n\nYour MoGo Total Bike Care *Paid Tax Invoice* (Booking ID: " + rec.id + ", Amount: ₹89, UTR: " + (rec.utr || 'VERIFIED') + ") has been generated.\nService Address: " + rec.address + "\nLive GPS Map: " + mapUrl + "\n\nThank you for choosing MoGo!"
+      : "Hello " + rec.name + ",\n\nYour MoGo Total Bike Care *Service Job Card* (Booking ID: " + rec.id + ", Estimate: ₹89) has been created.\nService Address: " + rec.address + "\nLive GPS Map: " + mapUrl + "\n\nOur expert will arrive shortly!";
     window.open("https://wa.me/" + cleanPhone + "?text=" + encodeURIComponent(msg), '_blank');
   }
 
@@ -2463,6 +2623,7 @@
       sgst: sgst,
       grandTotal: TOTAL_PRICE,
       address: addr,
+      mapsLink: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(addr),
       paymentType: docType === 'TAX_INVOICE' ? 'Pay Now' : 'Pay After Service',
       utr: docType === 'TAX_INVOICE' ? (utr || "PROOF-ATTACHED") : "",
       forceType: docType,
