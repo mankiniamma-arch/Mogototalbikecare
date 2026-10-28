@@ -251,6 +251,14 @@
       border-top: 1px dashed rgba(255, 90, 0, 0.25);
     }
 
+    /* Temporarily disable/hide the Foam Wash time slot box so it never opens on click */
+    #item-wash .embedded-slot-box {
+      display: none !important;
+      max-height: 0 !important;
+      padding: 0 !important;
+      border-top: none !important;
+    }
+
     .slots-grid-inner {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -746,10 +754,10 @@
     <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
     <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
 
-    <label>Select Service & Book Time Slot</label>
+    <label>Select Service</label>
     <div class="services-stack">
       
-      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE - ₹89) -->
+      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE - ₹89, TIME SLOT DISABLED FOR NOW) -->
       <div class="service-accordion-item active" id="item-wash">
         <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 89)">
           <div class="service-info">
@@ -838,7 +846,7 @@
       <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
     </div>
 
-    <button class="btn-main" type="button" onclick="submitBooking()">Confirm Booking & Slot 🚀</button>
+    <button class="btn-main" type="button" onclick="submitBooking()">Confirm Booking 🚀</button>
     
     <div class="portal-links">
       <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
@@ -930,7 +938,7 @@
           </div>
         </div>
         <label style="margin-top:4px;">Address</label>
-        <input type="text" id="admAddr" placeholder="Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon" value="Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon" style="margin-bottom:10px; padding:12px;">
+        <input type="text" id="admAddr" placeholder="Customer Doorstep / GPS Address, Guwahati" style="margin-bottom:10px; padding:12px;">
         
         <div id="admUtrBox" style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
           <label style="color:var(--text-main); margin-top:0; font-size:11px;" id="admUtrLabel">UTR / Payment Proof (Optional for Job Card):</label>
@@ -1020,7 +1028,6 @@
   const TOTAL_PRICE = 89; 
   const COMPANY_GSTIN = "18AASCM6250H1Z1"; 
   const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035";
-  const FIXED_SERVICE_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon";
 
   // Live Razorpay Key ID (Integrated from rzp-key.csv)
   const RAZORPAY_KEY_ID = "rzp_live_TsqVswCcOu6NQS"; 
@@ -1034,7 +1041,7 @@
   let selectedServiceKey = "wash";
   let selectedServiceName = "Premium Foam Wash";
   let currentServicePrice = 89;
-  let selectedSlot = "8:00 AM - 8:30 AM";
+  let selectedSlot = "Standard Doorstep Service";
   let globalBookingData = {};
   let customerCoords = null;
   let fieldToFocus = null;
@@ -1053,6 +1060,7 @@
     let sub = (TOTAL_PRICE / 1.18).toFixed(2);
     let cgst = ((TOTAL_PRICE / 1.18) * 0.09).toFixed(2);
     let sgst = ((TOTAL_PRICE / 1.18) * 0.09).toFixed(2);
+    let customerServiceAddr = bookingRecord.address || "Guwahati, Assam";
 
     let invoiceMessage =
       "✅ *MoGo Total Bike Care - Paid Tax Invoice*\n" +
@@ -1062,7 +1070,7 @@
       "📅 *Date:* " + bookingRecord.date + "\n" +
       "👤 *Customer:* " + bookingRecord.name + "\n" +
       "🏍️ *Vehicle:* " + bookingRecord.vehicle + " (" + bookingRecord.serviceName + ")\n" +
-      "📍 *Service Address:* " + FIXED_SERVICE_ADDRESS + "\n\n" +
+      "📍 *Service Address:* " + customerServiceAddr + "\n\n" +
       "💰 *Taxable Subtotal:* ₹" + sub + "\n" +
       "🏛️ *CGST (9%):* ₹" + cgst + " | *SGST (9%):* ₹" + sgst + "\n" +
       "💵 *Grand Total (Incl. 18% GST):* ₹" + TOTAL_PRICE.toFixed(2) + "\n" +
@@ -1091,6 +1099,7 @@
             phone: cleanPhone,
             bookingId: bookingRecord.id,
             customerName: bookingRecord.name,
+            address: customerServiceAddr,
             utr: uniqueTxnId,
             amount: TOTAL_PRICE,
             documentType: "TAX_INVOICE",
@@ -1118,7 +1127,7 @@
 
   // ==========================================================
   // 1. AUTO-BUG CLEANER & SELF-HEALING DATABASE ENGINE
-  // Automatically cleans corrupted localStorage, upgrades ₹89 & updates Service Address
+  // Automatically cleans corrupted localStorage & preserves Customer GPS Address
   // ==========================================================
   function runAutoBugCleaner() {
     try {
@@ -1144,12 +1153,12 @@
             phone: String(item.phone || ""),
             vehicle: String(item.vehicle || "Bike"),
             serviceName: "Premium Foam Wash",
-            slot: String(item.slot || "8:00 AM - 8:30 AM"),
+            slot: String(item.slot || "Standard Doorstep Service"),
             total: sub,
             cgst: sub * 0.09,
             sgst: sub * 0.09,
             grandTotal: TOTAL_PRICE,
-            address: FIXED_SERVICE_ADDRESS,
+            address: String(item.address || "Guwahati, Assam"),
             paymentType: String(item.paymentType || "Pay Now"),
             mapsLink: String(item.mapsLink || ""),
             status: String(item.status || "BOOKED"),
@@ -1311,7 +1320,7 @@
     }
   }
 
-  // --- DYNAMIC SLOTS BUILDER ---
+  // --- DYNAMIC SLOTS BUILDER (KEPT FOR FUTURE ADD-ON, HIDDEN ON UI) ---
   function buildSlotsForContainer(containerId, teamTitle) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -1327,7 +1336,6 @@
     slotsArr.forEach(function(slotStr, idx) {
       let div = document.createElement('div');
       div.className = idx === 0 ? "slot-card-inner active" : "slot-card-inner";
-      if (idx === 0) selectedSlot = slotStr;
       div.onclick = function(e) {
         e.stopPropagation();
         container.querySelectorAll('.slot-card-inner').forEach(function(c) { c.classList.remove('active'); });
@@ -1346,13 +1354,27 @@
     return hour12 + ":" + minStr + " " + period;
   }
 
-  // --- ACCORDION SERVICE TOGGLE ---
+  // --- ACCORDION SERVICE TOGGLE (TIME SLOT DISABLED FOR FOAM WASH) ---
   function toggleService(key, name, price) {
     let ids = ['wash', 'general', 'insurance', 'puc', 'mmc'];
     let targetItem = document.getElementById('item-' + key);
     if (!targetItem) return;
-    let isOpen = targetItem.classList.contains('active');
 
+    if (key === 'wash') {
+      // Keep Foam Wash selected without opening any time slot dropdown
+      ids.forEach(function(k) {
+        let el = document.getElementById('item-' + k);
+        if (el) el.classList.remove('active');
+      });
+      targetItem.classList.add('active');
+      selectedServiceKey = 'wash';
+      selectedServiceName = 'Premium Foam Wash';
+      currentServicePrice = TOTAL_PRICE;
+      selectedSlot = "Standard Doorstep Service";
+      return;
+    }
+
+    let isOpen = targetItem.classList.contains('active');
     ids.forEach(function(k) {
       let el = document.getElementById('item-' + k);
       if (el) el.classList.remove('active');
@@ -1360,28 +1382,17 @@
 
     if (!isOpen) {
       targetItem.classList.add('active');
-      if (key === 'wash') {
-        selectedServiceKey = 'wash';
-        selectedServiceName = 'Premium Foam Wash';
-        currentServicePrice = TOTAL_PRICE;
-        let firstSlot = targetItem.querySelector('.slot-card-inner');
-        if (firstSlot) {
-          targetItem.querySelectorAll('.slot-card-inner').forEach(function(c) { c.classList.remove('active'); });
-          firstSlot.classList.add('active');
-          selectedSlot = firstSlot.querySelector('.slot-time').innerText;
-        }
-      } else {
-        selectedServiceKey = key;
-        selectedServiceName = name;
-        currentServicePrice = 0;
-        selectedSlot = "Coming Soon";
-      }
-    } else {
-      // Keep Foam Wash selected by default if user collapses it
-      selectedServiceKey = "";
-      selectedServiceName = "";
+      selectedServiceKey = key;
+      selectedServiceName = name;
       currentServicePrice = 0;
-      selectedSlot = "";
+      selectedSlot = "Coming Soon";
+    } else {
+      let washEl = document.getElementById('item-wash');
+      if (washEl) washEl.classList.add('active');
+      selectedServiceKey = 'wash';
+      selectedServiceName = 'Premium Foam Wash';
+      currentServicePrice = TOTAL_PRICE;
+      selectedSlot = "Standard Doorstep Service";
     }
   }
 
@@ -1561,8 +1572,8 @@
         <div style="display:flex; justify-content:space-between;"><span><strong>Booking ID:</strong> ${rec.id}</span><span><strong>Date:</strong> ${rec.date}</span></div>
         <div><strong>Customer Name:</strong> ${rec.name}</div>
         <div><strong>Contact Number:</strong> ${rec.phone}</div>
-        <div><strong>Vehicle Type:</strong> ${rec.vehicle} &nbsp;|&nbsp; <strong>Slot:</strong> ${rec.slot || 'Standard'}</div>
-        <div><strong>Service Address:</strong> ${FIXED_SERVICE_ADDRESS}</div>
+        <div><strong>Vehicle Type:</strong> ${rec.vehicle}</div>
+        <div><strong>Service Address:</strong> ${rec.address || 'Guwahati, Assam'}</div>
       </div>
       <div style="border-top:1px solid #CBD5E1; margin-top:8px; padding-top:6px; font-size:11.5px;">
         <div style="display:flex; justify-content:space-between; font-weight:800; margin-bottom:4px;">
@@ -1658,7 +1669,8 @@
         notes: {
           booking_id: globalBookingData.id,
           customer_name: globalBookingData.name,
-          customer_phone: globalBookingData.phone
+          customer_phone: globalBookingData.phone,
+          service_address: globalBookingData.address
         },
         handler: function (response) {
           let uniqueTxnId = response.razorpay_payment_id || ("RZP" + Date.now());
@@ -1722,10 +1734,10 @@
     fetch("https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lon + "&zoom=18&addressdetails=1")
       .then(function(res) { return res.json(); })
       .then(function(data) {
-        addrInput.value = (data && data.display_name) ? data.display_name.replace(/, India$/, '') : FIXED_SERVICE_ADDRESS;
+        addrInput.value = (data && data.display_name) ? data.display_name.replace(/, India$/, '') : "Guwahati, Assam (" + lat.toFixed(5) + ", " + lon.toFixed(5) + ")";
       })
       .catch(function() {
-        addrInput.value = FIXED_SERVICE_ADDRESS;
+        addrInput.value = "Guwahati, Assam (" + lat.toFixed(5) + ", " + lon.toFixed(5) + ")";
       });
   }
 
@@ -1776,11 +1788,11 @@
   function submitBooking() {
     let name = document.getElementById('cName').value.trim();
     let phone = document.getElementById('cPhone').value.trim();
-    let addr = FIXED_SERVICE_ADDRESS;
+    let addr = document.getElementById('cAddr').value.trim();
     if (!name) return showUiAlert("👤", "Full Name Required", "Please enter your full name.", "cName");
     if (!/^[0-9]{10}$/.test(phone)) return showUiAlert("📱", "Invalid Mobile Number", "Please enter a valid 10-digit mobile number.", "cPhone");
-    if (!document.getElementById('cAddr').value.trim()) return showUiAlert("📍", "Address Missing", "Please tap 'Auto Locate' or type your doorstep address.", "cAddr");
-    if (!selectedServiceKey) return showUiAlert("📋", "Service Required", "Please tap on Premium Foam Wash to select a time slot.");
+    if (!addr) return showUiAlert("📍", "Address Missing", "Please tap 'Auto Locate' or type your doorstep address.", "cAddr");
+    if (!selectedServiceKey) return showUiAlert("📋", "Service Required", "Please select Premium Foam Wash.");
     if (selectedServiceKey !== 'wash') return showUiAlert("🔒", "Coming Soon", "This feature is currently locked. Please select Premium Foam Wash.");
 
     document.getElementById('bookingForm').style.display = "none";
@@ -1799,7 +1811,7 @@
       phone: phone,
       vehicle: vehicleType,
       serviceName: "Premium Foam Wash",
-      slot: selectedSlot || "8:00 AM - 8:30 AM",
+      slot: "Standard Doorstep Service",
       total: subtotal,
       cgst: cgst,
       sgst: sgst,
@@ -1827,7 +1839,7 @@
       document.getElementById('successScreen').style.display = "block";
       document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
       handleCustomerUtrInput();
-      let msg = "*New MoGo Service Booking!* 🚀\n\n*Booking ID:* " + id + "\n*Customer Name:* " + name + "\n*Phone:* " + phone + "\n*Vehicle:* " + vehicleType + "\n*Service:* Premium Foam Wash (₹89)\n*Slot:* " + (selectedSlot || "Standard") + "\n*Address:* " + addr + "\n";
+      let msg = "*New MoGo Service Booking!* 🚀\n\n*Booking ID:* " + id + "\n*Customer Name:* " + name + "\n*Phone:* " + phone + "\n*Vehicle:* " + vehicleType + "\n*Service:* Premium Foam Wash (₹89)\n*Address:* " + addr + "\n";
       if (maps) msg += "🗺️ *Google Maps Pin:* " + maps + "\n";
       msg += "*Payment Mode:* " + paymentType;
       document.getElementById('waBtn').href = "https://wa.me/" + MY_WHATSAPP + "?text=" + encodeURIComponent(msg);
@@ -1891,7 +1903,7 @@
       html += `
         <div class="db-item">
           <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Sheet</span></div>
-          <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName} (₹89)<br>Slot: ${item.slot || 'Standard'}<br>📍 ${FIXED_SERVICE_ADDRESS}</div>
+          <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName} (₹89)<br>📍 ${item.address}</div>
           <div class="db-action">
             <button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet (A4)</button>
             <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">📞 Call Customer</a>
@@ -1938,7 +1950,7 @@
       jcHTML += `
         <div class="db-item">
           <div class="db-header"><span class="db-id">${item.id}</span> ${jcBadge}</div>
-          <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹89) | ${item.date}<br>${FIXED_SERVICE_ADDRESS}</div>
+          <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹89) | ${item.date}<br>${item.address}</div>
           <div class="db-action">
             ${jcActions}
             <button class="btn-del" type="button" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button>
@@ -1949,7 +1961,7 @@
         invHTML += `
           <div class="db-item">
             <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-ready">🟢 Paid Tax Invoice</span></div>
-            <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹89) | UTR: ${item.utr || 'Attached'}<br>${FIXED_SERVICE_ADDRESS}</div>
+            <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹89) | UTR: ${item.utr || 'Attached'}<br>${item.address}</div>
             <div class="db-action">
               <button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="viewJobCardModal('${item.id}', false)">👁️ View Tax Invoice</button>
               <button class="btn-sm" type="button" style="background:#25D366; color:#fff;" onclick="shareDirectWA('${item.id}', true)">💬 WA</button>
@@ -1996,7 +2008,7 @@
     let name = document.getElementById('admName').value.trim();
     let phone = document.getElementById('admPhone').value.trim();
     let vehicle = document.getElementById('admVehicle').value || "Bike";
-    let addr = FIXED_SERVICE_ADDRESS;
+    let addr = document.getElementById('admAddr').value.trim() || "Guwahati, Assam";
     let docType = document.getElementById('admDocType').value;
     let utr = document.getElementById('admUtr').value.trim();
     let fileInput = document.getElementById('admGpsImg');
@@ -2020,7 +2032,7 @@
       phone: phone,
       vehicle: vehicle,
       serviceName: "Premium Foam Wash",
-      slot: "Admin Assigned",
+      slot: "Standard Doorstep Service",
       total: subtotal,
       cgst: cgst,
       sgst: sgst,
@@ -2277,8 +2289,8 @@
       doc.text("Date: " + (globalBookingData.date || new Date().toLocaleDateString('en-IN')), 145, 85);
       doc.text("Customer Name: " + (globalBookingData.name || "Valued Customer"), 20, 93);
       doc.text("Contact Number: " + (globalBookingData.phone || ""), 20, 101);
-      doc.text("Vehicle Type: " + (globalBookingData.vehicle || "Bike") + "   |   Slot: " + (globalBookingData.slot || "Standard"), 20, 109);
-      let custAddrLines = doc.splitTextToSize("Service Address: " + FIXED_SERVICE_ADDRESS, 170);
+      doc.text("Vehicle Type: " + (globalBookingData.vehicle || "Bike"), 20, 109);
+      let custAddrLines = doc.splitTextToSize("Service Address: " + (globalBookingData.address || "Guwahati, Assam"), 170);
       doc.text(custAddrLines, 20, 117);
       
       doc.line(20, 127, 190, 127);
