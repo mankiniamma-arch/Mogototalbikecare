@@ -224,17 +224,68 @@
       color: var(--primary); 
       flex-shrink: 0; 
     }
+
+    /* Special Limited Time Deal Styling (Exact Match to Screenshot) */
+    .deal-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #DC2626;
+      color: #FFFFFF;
+      font-size: 9.5px;
+      font-weight: 900;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .special-price-box {
+      border: 1.5px solid #FDBA74;
+      background: #FFF7ED;
+      border-radius: 12px;
+      padding: 6px 12px;
+      text-align: center;
+      flex-shrink: 0;
+      min-width: 84px;
+    }
+
+    .old-price-strike {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94A3B8;
+      text-decoration: line-through;
+      line-height: 1.1;
+    }
+
+    .new-offer-price {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.15;
+      margin: 1px 0;
+    }
+
+    .special-price-label {
+      font-size: 8px;
+      font-weight: 900;
+      color: #0B0F19;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
     
     .s-badge { 
       font-size: 9.5px; 
       font-weight: 800; 
-      background: #E2E8F0; 
-      color: #475569; 
+      background: #FFF1F2; 
+      color: #E11D48; 
       padding: 6px 9px; 
       border-radius: 8px; 
       text-transform: uppercase; 
       white-space: nowrap; 
       flex-shrink: 0; 
+      border: 1px solid #FFE4E6;
     }
 
     .embedded-slot-box {
@@ -782,14 +833,19 @@
     <label>Select Service</label>
     <div class="services-stack">
       
-      <!-- SERVICE 1: PREMIUM FOAM WASH (ACTIVE - ₹89, TIME SLOT DISABLED FOR NOW) -->
+      <!-- SERVICE 1: PREMIUM FOAM WASH (LIMITED TIME DEAL ₹149 -> ₹89) -->
       <div class="service-accordion-item active" id="item-wash">
         <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 89)">
           <div class="service-info">
+            <div class="deal-badge-pill">⚡ LIMITED TIME DEAL • SAVE 40%</div>
             <div class="s-title">🫧 Premium Foam Wash</div>
-            <div class="s-desc">Complete exterior deep cleaning</div>
+            <div class="s-desc">🌐 mogototalbikecare.in (Book Online)</div>
           </div>
-          <div class="s-price">₹89</div>
+          <div class="special-price-box">
+            <div class="old-price-strike">₹149</div>
+            <div class="new-offer-price">₹89</div>
+            <div class="special-price-label">SPECIAL PRICE</div>
+          </div>
         </div>
         <div class="embedded-slot-box">
           <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Select Foam Wash Time Window (08:00 AM - 08:00 PM):</label>
@@ -797,14 +853,14 @@
         </div>
       </div>
 
-      <!-- SERVICE 2: GENERAL SERVICING (LOCKED / COMING SOON) -->
+      <!-- SERVICE 2: FULL GENERAL SERVICING (LOCKED / COMING SOON) -->
       <div class="service-accordion-item disabled" id="item-general">
-        <div class="service-header-row" onclick="toggleService('general', 'General Servicing', 0)">
+        <div class="service-header-row" onclick="toggleService('general', 'Full General Servicing', 0)">
           <div class="service-info">
-            <div class="s-title">🛠️ General Servicing</div>
-            <div class="s-desc">Complete mechanical checkup</div>
+            <div class="s-title">🛠️ Full General Servicing</div>
+            <div class="s-desc">Expert Care & Assistance</div>
           </div>
-          <div class="s-badge">Coming Soon</div>
+          <div class="s-badge">⏳ Coming Soon</div>
         </div>
         <div class="embedded-slot-box">
           <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
@@ -812,29 +868,14 @@
         </div>
       </div>
 
-      <!-- SERVICE 3: BIKE INSURANCE (LOCKED / COMING SOON) -->
-      <div class="service-accordion-item disabled" id="item-insurance">
-        <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 0)">
-          <div class="service-info">
-            <div class="s-title">🛡️ Bike Insurance Renewal</div>
-            <div class="s-desc">Instant quotes & doorstep policy delivery</div>
-          </div>
-          <div class="s-badge">Coming Soon</div>
-        </div>
-        <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
-          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
-        </div>
-      </div>
-
-      <!-- SERVICE 4: POLLUTION CHECK (LOCKED / COMING SOON) -->
+      <!-- SERVICE 3: POLLUTION CHECK (PUC) (LOCKED / COMING SOON) -->
       <div class="service-accordion-item disabled" id="item-puc">
         <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 0)">
           <div class="service-info">
             <div class="s-title">💨 Pollution Check (PUC)</div>
-            <div class="s-desc">Doorstep emission testing & certification</div>
+            <div class="s-desc">Expert Care & Assistance</div>
           </div>
-          <div class="s-badge">Coming Soon</div>
+          <div class="s-badge">⏳ Coming Soon</div>
         </div>
         <div class="embedded-slot-box">
           <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
@@ -842,14 +883,44 @@
         </div>
       </div>
 
-      <!-- SERVICE 5: MONTHLY MAINTENANCE (LOCKED / COMING SOON) -->
+      <!-- SERVICE 4: INSTANT BIKE INSURANCE (LOCKED / COMING SOON) -->
+      <div class="service-accordion-item disabled" id="item-insurance">
+        <div class="service-header-row" onclick="toggleService('insurance', 'Instant Bike Insurance', 0)">
+          <div class="service-info">
+            <div class="s-title">🛡️ Instant Bike Insurance</div>
+            <div class="s-desc">Expert Care & Assistance</div>
+          </div>
+          <div class="s-badge">⏳ Coming Soon</div>
+        </div>
+        <div class="embedded-slot-box">
+          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
+          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
+        </div>
+      </div>
+
+      <!-- SERVICE 5: PUNCTURE & EMERGENCY SERVICES (LOCKED / COMING SOON) -->
+      <div class="service-accordion-item disabled" id="item-emergency">
+        <div class="service-header-row" onclick="toggleService('emergency', 'Puncture & Emergency Services', 0)">
+          <div class="service-info">
+            <div class="s-title">🚨 Puncture & Emergency Services</div>
+            <div class="s-desc">Expert Care & Assistance</div>
+          </div>
+          <div class="s-badge">⏳ Coming Soon</div>
+        </div>
+        <div class="embedded-slot-box">
+          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
+          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
+        </div>
+      </div>
+
+      <!-- SERVICE 6: MONTHLY MAINTENANCE (MMC) (LOCKED / COMING SOON) -->
       <div class="service-accordion-item disabled" id="item-mmc">
         <div class="service-header-row" onclick="toggleService('mmc', 'Monthly Maintenance (MMC)', 0)">
           <div class="service-info">
             <div class="s-title">🤝 Monthly Maintenance (MMC)</div>
-            <div class="s-desc">Whole month maintenance contract</div>
+            <div class="s-desc">Expert Care & Assistance</div>
           </div>
-          <div class="s-badge">Coming Soon</div>
+          <div class="s-badge">⏳ Coming Soon</div>
         </div>
         <div class="embedded-slot-box">
           <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
@@ -1271,7 +1342,6 @@
       }
       if (!rId || deletedIds.indexOf(rId) !== -1) return;
 
-      // Also match by UTR or Customer Name if Shankar Biswas placeholder exists
       let rName = String(r.name || r.customerName || r.customer_name || r.Name || "Valued Customer").trim();
       if (/shankar\s*biswas/i.test(rName) && mapById["MOGO8841"] && rId !== "MOGO8841") {
         delete mapById["MOGO8841"];
@@ -1680,7 +1750,7 @@
 
   // --- ACCORDION SERVICE TOGGLE (TIME SLOT DISABLED FOR FOAM WASH) ---
   function toggleService(key, name, price) {
-    let ids = ['wash', 'general', 'insurance', 'puc', 'mmc'];
+    let ids = ['wash', 'general', 'insurance', 'puc', 'emergency', 'mmc'];
     let targetItem = document.getElementById('item-' + key);
     if (!targetItem) return;
 
@@ -2046,7 +2116,6 @@
       globalBookingData.utr = paymentId;
       globalBookingData.forceType = 'TAX_INVOICE';
       globalBookingData.status = 'INVOICE_GENERATED';
-      // Upsert into DB so BOTH Job Card (Admin & Mechanic) and Paid Tax Invoice (Admin) are immediately saved & visible
       insertRecord(globalBookingData);
     }
 
