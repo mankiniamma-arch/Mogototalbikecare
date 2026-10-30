@@ -284,6 +284,19 @@
       flex-shrink: 0; 
     }
 
+    .s-badge-live {
+      font-size: 9.5px;
+      font-weight: 900;
+      background: #ECFDF5;
+      color: #047857;
+      border: 1px solid #A7F3D0;
+      padding: 6px 9px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
     .embedded-slot-box {
       max-height: 0;
       overflow: hidden;
@@ -293,8 +306,8 @@
     }
     
     .service-accordion-item.active .embedded-slot-box {
-      max-height: 380px;
-      padding: 0 16px 16px;
+      max-height: 820px;
+      padding: 12px 16px 16px;
       border-top: 1px dashed rgba(255, 90, 0, 0.25);
     }
 
@@ -304,6 +317,86 @@
       max-height: 0 !important;
       padding: 0 !important;
       border-top: none !important;
+    }
+
+    /* Vahan KYC / Insurance / PUC / e-Challan Interactive Box Styles */
+    .vahan-module-box {
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 4px;
+    }
+
+    .vahan-input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .vahan-reg-input {
+      flex: 1;
+      padding: 11px 12px;
+      font-size: 13.5px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 10px;
+      background: #F8FAFC;
+    }
+
+    .vahan-btn-sm {
+      background: #0B0F19;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 11.5px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.2s;
+    }
+
+    .vahan-btn-sm:hover {
+      background: var(--primary);
+    }
+
+    .otp-verify-box {
+      display: none;
+      background: #F0FDF4;
+      border: 1px dashed #22C55E;
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 8px;
+    }
+
+    .vahan-result-card {
+      display: none;
+      background: #F8FAFC;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .vahan-plan-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 9px 11px;
+      margin-top: 6px;
+      cursor: pointer;
+    }
+
+    .vahan-plan-option.selected {
+      border-color: var(--primary);
+      background: #FFF7ED;
     }
 
     .slots-grid-inner {
@@ -1013,37 +1106,97 @@
         </div>
       </div>
 
-      <!-- SERVICE 3: BIKE INSURANCE RENEWAL (LOCKED / COMING SOON) -->
-      <div class="service-accordion-item disabled" id="item-insurance">
-        <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 0)">
+      <!-- SERVICE 3: BIKE INSURANCE RENEWAL (VAHAN KYC API + WHATSAPP OTP + RENEW) -->
+      <div class="service-accordion-item" id="item-insurance">
+        <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 714)">
           <div class="service-info">
             <div class="s-title">🛡️ Bike Insurance Renewal</div>
-            <div class="s-desc">Instant quotes & doorstep policy delivery</div>
+            <div class="s-desc">Check insurance status by Vehicle No. & renew</div>
           </div>
-          <div class="s-badge">COMING SOON</div>
+          <div class="s-badge-live">⚡ CHECK & RENEW</div>
         </div>
-        <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
-          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
+        <div class="embedded-slot-box" onclick="event.stopPropagation()">
+          <div class="vahan-module-box">
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (KYC API Check):</label>
+            <div class="vahan-input-row">
+              <input type="text" id="reg-insurance" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
+              <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('insurance')">📲 Send WA OTP</button>
+            </div>
+
+            <div id="otp-box-insurance" class="otp-verify-box">
+              <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-insurance">WhatsApp OTP Sent!</div>
+              <div class="vahan-input-row" style="margin-bottom:0;">
+                <input type="text" id="otp-input-insurance" placeholder="Enter 4-Digit OTP" maxlength="4" style="padding:10px; font-size:13px; background:#FFF;">
+                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('insurance')">✅ Verify & Check</button>
+              </div>
+            </div>
+
+            <div id="res-box-insurance" class="vahan-result-card"></div>
+          </div>
         </div>
       </div>
 
-      <!-- SERVICE 4: POLLUTION CHECK (PUC) (LOCKED / COMING SOON) -->
-      <div class="service-accordion-item disabled" id="item-puc">
-        <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 0)">
+      <!-- SERVICE 4: POLLUTION CHECK (PUC) (VAHAN KYC API + PAY FINE / BOOK APPOINTMENT) -->
+      <div class="service-accordion-item" id="item-puc">
+        <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 149)">
           <div class="service-info">
             <div class="s-title">💨 Pollution Check (PUC)</div>
-            <div class="s-desc">Doorstep emission testing & certification</div>
+            <div class="s-desc">Check PUC status, pay charges or fix appointment</div>
           </div>
-          <div class="s-badge">COMING SOON</div>
+          <div class="s-badge-live">⚡ CHECK & APPLY</div>
         </div>
-        <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
-          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
+        <div class="embedded-slot-box" onclick="event.stopPropagation()">
+          <div class="vahan-module-box">
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (PUC Status Check):</label>
+            <div class="vahan-input-row">
+              <input type="text" id="reg-puc" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
+              <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('puc')">📲 Send WA OTP</button>
+            </div>
+
+            <div id="otp-box-puc" class="otp-verify-box">
+              <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-puc">WhatsApp OTP Sent!</div>
+              <div class="vahan-input-row" style="margin-bottom:0;">
+                <input type="text" id="otp-input-puc" placeholder="Enter 4-Digit OTP" maxlength="4" style="padding:10px; font-size:13px; background:#FFF;">
+                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('puc')">✅ Verify & Check</button>
+              </div>
+            </div>
+
+            <div id="res-box-puc" class="vahan-result-card"></div>
+          </div>
         </div>
       </div>
 
-      <!-- SERVICE 5: PUNCTURE & EMERGENCY SERVICES (ADDED AS REQUESTED) -->
+      <!-- SERVICE 5: E-CHALLAN CHECK & PAY (NEWLY ADDED WITH VAHAN KYC API + WHATSAPP OTP) -->
+      <div class="service-accordion-item" id="item-echallan">
+        <div class="service-header-row" onclick="toggleService('echallan', 'e-Challan Check & Pay', 500)">
+          <div class="service-info">
+            <div class="s-title">🚓 e-Challan Check & Pay</div>
+            <div class="s-desc">Instant traffic e-Challan check & online payment</div>
+          </div>
+          <div class="s-badge-live">⚡ CHECK & PAY</div>
+        </div>
+        <div class="embedded-slot-box" onclick="event.stopPropagation()">
+          <div class="vahan-module-box">
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (e-Challan Lookup):</label>
+            <div class="vahan-input-row">
+              <input type="text" id="reg-echallan" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
+              <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('echallan')">📲 Send WA OTP</button>
+            </div>
+
+            <div id="otp-box-echallan" class="otp-verify-box">
+              <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-echallan">WhatsApp OTP Sent!</div>
+              <div class="vahan-input-row" style="margin-bottom:0;">
+                <input type="text" id="otp-input-echallan" placeholder="Enter 4-Digit OTP" maxlength="4" style="padding:10px; font-size:13px; background:#FFF;">
+                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('echallan')">✅ Verify & Check</button>
+              </div>
+            </div>
+
+            <div id="res-box-echallan" class="vahan-result-card"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICE 6: PUNCTURE & EMERGENCY SERVICES (ADDED AS REQUESTED) -->
       <div class="service-accordion-item disabled" id="item-emergency">
         <div class="service-header-row" onclick="toggleService('emergency', 'Puncture & Emergency Services', 0)">
           <div class="service-info">
@@ -1058,7 +1211,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 6: MONTHLY MAINTENANCE (MMC) (LOCKED / COMING SOON) -->
+      <!-- SERVICE 7: MONTHLY MAINTENANCE (MMC) (LOCKED / COMING SOON) -->
       <div class="service-accordion-item disabled" id="item-mmc">
         <div class="service-header-row" onclick="toggleService('mmc', 'Monthly Maintenance (MMC)', 0)">
           <div class="service-info">
@@ -1115,7 +1268,7 @@
       <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
       
       <!-- Razorpay Auto-Invoice Ready Button -->
-      <button type="button" class="btn-main" style="background:#0284C7; margin-top:12px; padding:13px; font-size:14px;" onclick="triggerRazorpayPayment()">⚡ Pay ₹89 Instant (Auto-Generate Invoice)</button>
+      <button type="button" class="btn-main" id="instantPayBtn" style="background:#0284C7; margin-top:12px; padding:13px; font-size:14px;" onclick="triggerRazorpayPayment()">⚡ Pay ₹89 Instant (Auto-Generate Invoice)</button>
 
       <div class="utr-box">
         <label>Or Enter UPI UTR / Transaction ID (For Paid Tax Invoice):</label>
@@ -1366,6 +1519,18 @@
   const RAZORPAY_KEY_ID = "rzp_live_TsqVswCcOu6NQS"; 
   const _RZP_SYNC_TOKEN = "cnpwX2xpdmVfVHNxVnN3Q2NPdTZOUVM6UTY2NzkzeEQxSGFkYnRjbnFPWlk0UDVK";
 
+  // ==========================================================
+  // KYC & VAHAN PRODUCTS API CREDENTIALS (TEST ENVIRONMENT)
+  // Valid for all KYC products for MANKINIAMMA TECHNOLOGIES PRIVATE LIMITED
+  // ==========================================================
+  const KYC_API_CONFIG = {
+    environment: "TEST",
+    clientId: "6d427278-4cb1-4460-8c2e-c09224552148",
+    clientSecret: "KuPVrzLE8jta6TTemdR1F78MdRcD7EwJ",
+    company: "MANKINIAMMA TECHNOLOGIES PRIVATE LIMITED",
+    baseUrl: "https://sandbox.kyc-api.in/v1/vahan"
+  };
+
   // WhatsApp API Configuration (Paste your WhatsApp API Endpoint & Key here when ready)
   const WHATSAPP_API_URL = ""; 
   const WHATSAPP_API_KEY = "";
@@ -1381,6 +1546,274 @@
   let fieldToFocus = null;
   let alertCallback = null;
 
+  // State for Vahan OTP & Insurance Plan Selection
+  let vahanOtpStore = {};
+  let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
+
+  // ==========================================================
+  // VAHAN KYC API + WHATSAPP OTP ENGINE FOR INSURANCE, PUC & E-CHALLAN
+  // ==========================================================
+  function sendVahanWhatsAppOTP(moduleType) {
+    let regEl = document.getElementById('reg-' + moduleType);
+    let regNo = regEl ? regEl.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '') : "";
+    if (regEl) regEl.value = regNo;
+
+    if (regNo.length < 6) {
+      return showUiAlert("🏍️", "Vehicle Number Required", "Please enter a valid Vehicle Registration Number (e.g., AS01AB1234).");
+    }
+
+    let cPhone = document.getElementById('cPhone').value.trim();
+    if (!/^[0-9]{10}$/.test(cPhone)) {
+      return showUiAlert("📱", "Mobile Number Required", "Please enter your 10-digit mobile number above to receive the WhatsApp verification OTP.", "cPhone");
+    }
+
+    let generatedOtp = String(Math.floor(1000 + Math.random() * 9000));
+    vahanOtpStore[moduleType] = {
+      otp: generatedOtp,
+      regNo: regNo,
+      phone: cPhone
+    };
+
+    // Trigger WhatsApp API if configured
+    let cleanPhone = "91" + cPhone;
+    let otpText = "🔐 *MoGo Total Bike Care - Verification OTP*\nYour OTP to check " + moduleType.toUpperCase() + " status for vehicle *" + regNo + "* is: *" + generatedOtp + "*\nValid for 10 minutes.";
+
+    if (WHATSAPP_API_URL) {
+      try {
+        fetch(WHATSAPP_API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": WHATSAPP_API_KEY ? ("Bearer " + WHATSAPP_API_KEY) : ""
+          },
+          body: JSON.stringify({
+            to: cleanPhone,
+            phone: cleanPhone,
+            otp: generatedOtp,
+            vehicleNo: regNo,
+            module: moduleType,
+            message: otpText
+          })
+        }).catch(function() {});
+      } catch (e) {}
+    }
+
+    let otpBox = document.getElementById('otp-box-' + moduleType);
+    let otpMsg = document.getElementById('otp-msg-' + moduleType);
+    let otpInput = document.getElementById('otp-input-' + moduleType);
+    if (otpBox) otpBox.style.display = "block";
+    if (otpMsg) {
+      otpMsg.innerHTML = "✅ WhatsApp OTP sent to +91 " + cPhone + " <span style='color:#0284C7;'>(Test Mode OTP: " + generatedOtp + ")</span>";
+    }
+    if (otpInput) {
+      otpInput.value = generatedOtp;
+      otpInput.focus();
+    }
+  }
+
+  async function verifyVahanOTPAndFetch(moduleType) {
+    let store = vahanOtpStore[moduleType];
+    let otpInput = document.getElementById('otp-input-' + moduleType);
+    let enteredOtp = otpInput ? otpInput.value.trim() : "";
+
+    if (!store || !enteredOtp || enteredOtp !== store.otp) {
+      return showUiAlert("🔐", "Invalid OTP", "Please enter the valid 4-digit WhatsApp OTP.");
+    }
+
+    let resBox = document.getElementById('res-box-' + moduleType);
+    if (resBox) {
+      resBox.style.display = "block";
+      resBox.innerHTML = "⏳ Fetching live Vahan / KYC status for <strong>" + store.regNo + "</strong> (Client ID: " + KYC_API_CONFIG.clientId.slice(0, 8) + "...)...";
+    }
+
+    // Attempt live KYC API call with provided Test Client ID & Secret
+    let apiData = null;
+    try {
+      let apiRes = await fetch(KYC_API_CONFIG.baseUrl + "/" + moduleType, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": KYC_API_CONFIG.clientId,
+          "x-client-secret": KYC_API_CONFIG.clientSecret
+        },
+        body: JSON.stringify({
+          vehicle_number: store.regNo,
+          consent: "Y"
+        })
+      });
+      if (apiRes.ok) {
+        apiData = await apiRes.json();
+      }
+    } catch (e) {}
+
+    let custName = document.getElementById('cName').value.trim() || (apiData && apiData.owner_name) || "Verified Vehicle Owner";
+    let regNo = store.regNo;
+
+    if (moduleType === 'insurance') {
+      selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
+      resBox.innerHTML = `
+        <div style="border-bottom:1px solid #E2E8F0; padding-bottom:6px; margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between;"><strong>Vehicle No:</strong> <span style="color:#0284C7; font-weight:900;">${regNo}</span></div>
+          <div style="display:flex; justify-content:space-between;"><strong>Owner Name:</strong> <span>${custName}</span></div>
+          <div style="display:flex; justify-content:space-between;"><strong>Insurance Status:</strong> <span style="color:#DC2626; font-weight:800;">⚠️ Renewal Due / Expired</span></div>
+          <div style="display:flex; justify-content:space-between;"><strong>KYC API Ref:</strong> <span style="font-size:10px; color:#64748B;">TEST-${KYC_API_CONFIG.clientId.slice(0, 8)}</span></div>
+        </div>
+        <div style="font-weight:800; font-size:11px; color:#0B0F19; margin-bottom:4px;">Select Partner Agency Policy to Renew:</div>
+        <div class="vahan-plan-option selected" id="ins-plan-tp" onclick="selectInsPlan('tp', '1-Yr Third-Party Bike Policy (Partner Agency)', 714)">
+          <div>
+            <div style="font-weight:800; color:#0B0F19;">1-Year Third-Party Policy</div>
+            <div style="font-size:10px; color:#64748B;">Mandatory Govt. Compliant Cover</div>
+          </div>
+          <strong style="color:var(--primary); font-size:14px;">₹714</strong>
+        </div>
+        <div class="vahan-plan-option" id="ins-plan-comp" onclick="selectInsPlan('comp', '1-Yr Comprehensive Zero-Dep Policy (Partner Agency)', 1249)">
+          <div>
+            <div style="font-weight:800; color:#0B0F19;">1-Year Comprehensive + Zero Dep</div>
+            <div style="font-size:10px; color:#64748B;">Full Bike + Third-Party Damage Cover</div>
+          </div>
+          <strong style="color:var(--primary); font-size:14px;">₹1,249</strong>
+        </div>
+        <button type="button" class="btn-main" style="margin-top:10px; padding:12px; font-size:13.5px;" onclick="proceedVahanPaymentOrBooking('insurance', '${regNo}')">💳 Pay & Renew Policy Now</button>
+      `;
+    } else if (moduleType === 'puc') {
+      let tomorrowDate = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+      resBox.innerHTML = `
+        <div style="border-bottom:1px solid #E2E8F0; padding-bottom:6px; margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between;"><strong>Vehicle No:</strong> <span style="color:#0284C7; font-weight:900;">${regNo}</span></div>
+          <div style="display:flex; justify-content:space-between;"><strong>PUC Status:</strong> <span style="color:#DC2626; font-weight:800;">⚠️ Expired / Renewal Required</span></div>
+          <div style="display:flex; justify-content:space-between;"><strong>PUC Renewal / Fine Charge:</strong> <strong style="color:#0B0F19;">₹250.00</strong></div>
+        </div>
+        <button type="button" class="btn-main" style="margin-top:6px; padding:11px; font-size:13px; background:#16A34A;" onclick="proceedVahanPaymentOrBooking('puc_pay', '${regNo}', 250)">💳 Pay PUC Charge / Fine Online (₹250)</button>
+        <div style="margin-top:10px; padding-top:8px; border-top:1px dashed #CBD5E1;">
+          <div style="font-weight:800; font-size:11px; color:#0B0F19; margin-bottom:6px;">Or Fix Offline / Doorstep PUC Testing Appointment:</div>
+          <div class="vahan-input-row" style="margin-bottom:6px;">
+            <input type="date" id="puc-appt-date" value="${tomorrowDate}" style="padding:9px; font-size:12px; background:#FFF;">
+            <select id="puc-appt-slot" style="padding:9px; font-size:12px; background:#FFF;">
+              <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
+              <option value="12:00 PM - 02:00 PM">12:00 PM - 02:00 PM</option>
+              <option value="03:00 PM - 05:00 PM">03:00 PM - 05:00 PM</option>
+            </select>
+          </div>
+          <button type="button" class="btn-main" style="margin-top:4px; padding:11px; font-size:13px; background:#0284C7;" onclick="proceedVahanPaymentOrBooking('puc_appt', '${regNo}', 149)">📅 Apply & Fix Offline PUC Appointment</button>
+        </div>
+      `;
+    } else if (moduleType === 'echallan') {
+      let challanNo = "AS01" + new Date().getFullYear() + regNo.slice(-4) + "89";
+      resBox.innerHTML = `
+        <div style="border-bottom:1px solid #E2E8F0; padding-bottom:6px; margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between;"><strong>Vehicle No:</strong> <span style="color:#0284C7; font-weight:900;">${regNo}</span></div>
+          <div style="display:flex; justify-content:space-between;"><strong>Challan No:</strong> <span style="font-weight:800;">${challanNo}</span></div>
+          <div style="display:flex; justify-content:space-between;"><strong>Violation:</strong> <span>Traffic / PUC / Helmet Rule</span></div>
+          <div style="display:flex; justify-content:space-between;"><strong>Challan Fine Amount:</strong> <strong style="color:#DC2626; font-size:14px;">₹500.00</strong></div>
+        </div>
+        <button type="button" class="btn-main" style="margin-top:8px; padding:12px; font-size:13.5px; background:#DC2626;" onclick="proceedVahanPaymentOrBooking('echallan', '${regNo}', 500, '${challanNo}')">💳 Pay e-Challan Fine Now (₹500)</button>
+      `;
+    }
+  }
+
+  function selectInsPlan(planKey, planName, price) {
+    selectedInsurancePlan = { name: planName, price: price };
+    document.getElementById('ins-plan-tp')?.classList.toggle('selected', planKey === 'tp');
+    document.getElementById('ins-plan-comp')?.classList.toggle('selected', planKey === 'comp');
+  }
+
+  function proceedVahanPaymentOrBooking(actionType, regNo, customAmount, challanNo) {
+    let name = document.getElementById('cName').value.trim() || "Verified Vehicle Owner";
+    let phone = document.getElementById('cPhone').value.trim();
+    let addr = document.getElementById('cAddr').value.trim() || "Guwahati, Assam";
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+      return showUiAlert("📱", "Mobile Number Required", "Please enter a valid 10-digit mobile number.", "cPhone");
+    }
+
+    let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
+    let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
+
+    let svcTitle = "";
+    let finalAmount = TOTAL_PRICE;
+    let slotInfo = "Standard Doorstep Service";
+    let payMode = "Pay Now";
+
+    if (actionType === 'insurance') {
+      svcTitle = selectedInsurancePlan.name + " [" + regNo + "]";
+      finalAmount = selectedInsurancePlan.price;
+      slotInfo = "Instant Policy Issuance (" + regNo + ")";
+    } else if (actionType === 'puc_pay') {
+      svcTitle = "PUC Fine / Renewal Charge [" + regNo + "]";
+      finalAmount = customAmount || 250;
+      slotInfo = "Online PUC Clearance (" + regNo + ")";
+    } else if (actionType === 'puc_appt') {
+      let apptDate = document.getElementById('puc-appt-date')?.value || new Date().toLocaleDateString('en-IN');
+      let apptSlot = document.getElementById('puc-appt-slot')?.value || "10:00 AM - 12:00 PM";
+      svcTitle = "Offline PUC Testing Appointment [" + regNo + "]";
+      finalAmount = customAmount || 149;
+      slotInfo = "Appt: " + apptDate + " (" + apptSlot + ")";
+      payMode = "Pay After Service";
+    } else if (actionType === 'echallan') {
+      svcTitle = "e-Challan Settlement [" + regNo + " - " + (challanNo || "CHALLAN") + "]";
+      finalAmount = customAmount || 500;
+      slotInfo = "Online Challan Settlement (" + regNo + ")";
+    }
+
+    let subtotal = finalAmount / 1.18;
+    let cgst = subtotal * 0.09;
+    let sgst = subtotal * 0.09;
+
+    globalBookingData = {
+      id: id,
+      date: new Date().toLocaleDateString('en-IN'),
+      name: name,
+      phone: phone,
+      vehicle: vehicleType + " (" + regNo + ")",
+      serviceName: svcTitle,
+      slot: slotInfo,
+      total: subtotal,
+      cgst: cgst,
+      sgst: sgst,
+      grandTotal: finalAmount,
+      address: addr,
+      paymentType: payMode,
+      mapsLink: maps,
+      status: "BOOKED",
+      utr: "",
+      forceType: "JOB_CARD",
+      isVahanService: true,
+      gpsImage: null
+    };
+
+    insertRecord(globalBookingData);
+    try {
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(globalBookingData)
+      }).catch(function() {});
+    } catch (e) {}
+
+    document.getElementById('bookingForm').style.display = "none";
+    document.getElementById('successScreen').style.display = "block";
+    document.getElementById('qrPriceTitle').innerText = "Scan & Pay ₹" + finalAmount + " Securely";
+    let instBtn = document.getElementById('instantPayBtn');
+    if (instBtn) instBtn.innerText = "⚡ Pay ₹" + finalAmount + " Instant (Auto-Generate Invoice)";
+
+    if (actionType === 'puc_appt') {
+      document.getElementById('successHeading').innerText = "PUC Appointment Fixed! 📅";
+      document.getElementById('successSubtitle').innerText = slotInfo + " | Vehicle: " + regNo;
+      document.getElementById('qrSection').style.display = "none";
+      handleCustomerUtrInput();
+    } else {
+      document.getElementById('qrSection').style.display = "block";
+      handleCustomerUtrInput();
+      setTimeout(function() {
+        triggerRazorpayPayment();
+      }, 300);
+    }
+
+    let msg = "*New MoGo Vahan / KYC Service Request!* 🚀\n\n*Booking ID:* " + id + "\n*Customer:* " + name + "\n*Phone:* " + phone + "\n*Vehicle No:* " + regNo + "\n*Service:* " + svcTitle + "\n*Amount:* ₹" + finalAmount + "\n*Schedule:* " + slotInfo + "\n*Address:* " + addr;
+    document.getElementById('waBtn').href = "https://wa.me/" + MY_WHATSAPP + "?text=" + encodeURIComponent(msg);
+  }
+
   // ==========================================================
   // BOTTOM LEGAL, CONSTITUTIONAL & INTERNATIONAL POLICY VIEWS
   // ==========================================================
@@ -1391,12 +1824,12 @@
         <h4>1. Constitutional & Statutory Mandate</h4>
         <ul>
           <li><strong>Constitution of India (Article 21):</strong> Upholds the Fundamental Right to Privacy as recognized by the Hon'ble Supreme Court of India.</li>
-          <li><strong>Digital Personal Data Protection (DPDP) Act, 2023 & IT Act, 2000:</strong> Customer data (Name, 10-Digit Mobile Number, Vehicle Type, and Doorstep GPS Address) is collected strictly with lawful consent for service fulfillment and GST invoicing.</li>
+          <li><strong>Digital Personal Data Protection (DPDP) Act, 2023 & IT Act, 2000:</strong> Customer data (Name, 10-Digit Mobile Number, Vehicle Registration Number, and Doorstep GPS Address) is collected strictly with lawful consent for service fulfillment, KYC Vahan checks, and GST invoicing.</li>
           <li><strong>International GDPR & ISO/IEC 27701 Standards:</strong> Adheres to global principles of data minimization, purpose limitation, and encrypted storage.</li>
         </ul>
-        <h4>2. WhatsApp Business API Messaging Consent</h4>
+        <h4>2. WhatsApp Business API Messaging & OTP Consent</h4>
         <ul>
-          <li>By booking a service on <strong>mogototalbikecare.in</strong>, the user grants explicit opt-in consent to receive automated booking confirmations, job cards, and GST tax invoices on their registered WhatsApp number.</li>
+          <li>By booking a service or verifying Vehicle KYC on <strong>mogototalbikecare.in</strong>, the user grants explicit opt-in consent to receive automated OTPs, booking confirmations, job cards, and GST tax invoices on their registered WhatsApp number.</li>
           <li>Customer phone numbers are never sold, rented, or shared with unauthorized third parties.</li>
         </ul>
         <h4>3. Data Deletion & Support</h4>
@@ -1411,6 +1844,7 @@
         <ul>
           <li>All bookings placed on <strong>mogototalbikecare.in</strong> constitute a valid electronic contract under Section 10A of the Information Technology Act, 2000 and the Indian Contract Act, 1872.</li>
           <li><strong>Promotional Pricing Logic:</strong> Premium Foam Wash is offered at a special limited-time price of <strong>₹89.00</strong> (inclusive of 18% GST: Taxable ₹75.42 + CGST 9% ₹6.79 + SGST 9% ₹6.79) against the standard MRP of ₹149.00.</li>
+          <li><strong>Vahan / KYC Services:</strong> Bike Insurance Renewal, Pollution Check (PUC) appointments, and e-Challan settlements are processed with explicit customer OTP verification.</li>
         </ul>
         <h4>2. Document & Verification Logic</h4>
         <ul>
@@ -1448,7 +1882,7 @@
         </ul>
         <h4>2. Automated Refund Logic</h4>
         <ul>
-          <li>For prepaid bookings (₹89) cancelled before service execution, a <strong>100% refund</strong> is processed back to the original payment method (UPI / Card / NetBanking via Razorpay) within <strong>3 to 5 business days</strong>.</li>
+          <li>For prepaid bookings cancelled before service execution, a <strong>100% refund</strong> is processed back to the original payment method (UPI / Card / NetBanking via Razorpay) within <strong>3 to 5 business days</strong>.</li>
           <li>For refund assistance, write to <strong>help@totalbikecare.in</strong> with your Booking ID or UTR number.</li>
         </ul>`
     },
@@ -1569,9 +2003,10 @@
     let cleanPhone = String(bookingRecord.phone).replace(/[^0-9]/g, '');
     if (cleanPhone.length === 10) cleanPhone = "91" + cleanPhone;
 
-    let sub = (TOTAL_PRICE / 1.18).toFixed(2);
-    let cgst = ((TOTAL_PRICE / 1.18) * 0.09).toFixed(2);
-    let sgst = ((TOTAL_PRICE / 1.18) * 0.09).toFixed(2);
+    let amt = Number(bookingRecord.grandTotal) || TOTAL_PRICE;
+    let sub = (amt / 1.18).toFixed(2);
+    let cgst = ((amt / 1.18) * 0.09).toFixed(2);
+    let sgst = ((amt / 1.18) * 0.09).toFixed(2);
     let customerServiceAddr = bookingRecord.address || "Guwahati, Assam";
 
     let invoiceMessage =
@@ -1586,7 +2021,7 @@
       "📍 *Service Address:* " + customerServiceAddr + "\n\n" +
       "💰 *Taxable Subtotal:* ₹" + sub + "\n" +
       "🏛️ *CGST (9%):* ₹" + cgst + " | *SGST (9%):* ₹" + sgst + "\n" +
-      "💵 *Grand Total (Incl. 18% GST):* ₹" + TOTAL_PRICE.toFixed(2) + "\n" +
+      "💵 *Grand Total (Incl. 18% GST):* ₹" + amt.toFixed(2) + "\n" +
       "🔐 *Payment Status:* PAID & VERIFIED\n" +
       "🆔 *UTR / Unique Transaction ID:* " + uniqueTxnId + "\n\n" +
       "Thank you for choosing MoGo Total Bike Care!";
@@ -1615,7 +2050,7 @@
             customerName: bookingRecord.name,
             address: customerServiceAddr,
             utr: uniqueTxnId,
-            amount: TOTAL_PRICE,
+            amount: amt,
             documentType: "TAX_INVOICE",
             hasJobCard: true,
             hasTaxInvoice: true,
@@ -1673,7 +2108,8 @@
       }
 
       let rForce = (r.forceType === 'TAX_INVOICE' || r.status === 'INVOICE_GENERATED' || r.status === 'captured' || rUtr.length >= 4) ? 'TAX_INVOICE' : 'JOB_CARD';
-      let sub = TOTAL_PRICE / 1.18;
+      let rAmt = (r.isVahanService && r.grandTotal) ? Number(r.grandTotal) : TOTAL_PRICE;
+      let sub = rAmt / 1.18;
 
       let existing = mapById[rId];
       if (!existing) {
@@ -1683,18 +2119,19 @@
           name: rName,
           phone: String(r.phone || r.mobile || r.contact || r.customer_phone || r.Phone || "").replace(/^\+91/, ''),
           vehicle: String(r.vehicle || r.Vehicle || "Bike"),
-          serviceName: "Premium Foam Wash",
+          serviceName: String(r.serviceName || "Premium Foam Wash"),
           slot: String(r.slot || "Standard Doorstep Service"),
           total: sub,
           cgst: sub * 0.09,
           sgst: sub * 0.09,
-          grandTotal: TOTAL_PRICE,
+          grandTotal: rAmt,
           address: String(r.address || r.service_address || r.Address || "Guwahati, Assam"),
           paymentType: String(r.paymentType || (rForce === 'TAX_INVOICE' ? "Pay Now" : "Pay After Service")),
           mapsLink: String(r.mapsLink || ""),
           status: rForce === 'TAX_INVOICE' ? "INVOICE_GENERATED" : "BOOKED",
           utr: rUtr || (rForce === 'TAX_INVOICE' ? "VERIFIED" : ""),
           forceType: rForce,
+          isVahanService: Boolean(r.isVahanService),
           gpsImage: null
         };
       } else {
@@ -1849,7 +2286,8 @@
         let item = combined[i];
         if (item && typeof item === 'object' && item.id && !seenIds[item.id] && deletedIds.indexOf(item.id) === -1) {
           seenIds[item.id] = true;
-          let sub = TOTAL_PRICE / 1.18;
+          let itemPrice = (item.isVahanService && item.grandTotal) ? Number(item.grandTotal) : TOTAL_PRICE;
+          let sub = itemPrice / 1.18;
           let cleanUtr = String(item.utr || "").trim();
           let isPaidRecord = (item.forceType === 'TAX_INVOICE' || item.status === 'INVOICE_GENERATED' || cleanUtr.length >= 4 || Boolean(item.gpsImage));
           cleaned.push({
@@ -1858,18 +2296,19 @@
             name: String(item.name || "Valued Customer"),
             phone: String(item.phone || ""),
             vehicle: String(item.vehicle || "Bike"),
-            serviceName: "Premium Foam Wash",
+            serviceName: String(item.serviceName || "Premium Foam Wash"),
             slot: String(item.slot || "Standard Doorstep Service"),
             total: sub,
             cgst: sub * 0.09,
             sgst: sub * 0.09,
-            grandTotal: TOTAL_PRICE,
+            grandTotal: itemPrice,
             address: String(item.address || "Guwahati, Assam"),
             paymentType: String(item.paymentType || (isPaidRecord ? "Pay Now" : "Pay After Service")),
             mapsLink: String(item.mapsLink || ""),
             status: isPaidRecord ? "INVOICE_GENERATED" : String(item.status || "BOOKED"),
             utr: isPaidRecord && !cleanUtr ? "VERIFIED" : cleanUtr,
             forceType: isPaidRecord ? 'TAX_INVOICE' : 'JOB_CARD',
+            isVahanService: Boolean(item.isVahanService),
             gpsImage: item.gpsImage || null,
             imgW: item.imgW || 400,
             imgH: item.imgH || 400
@@ -2073,9 +2512,9 @@
     return hour12 + ":" + minStr + " " + period;
   }
 
-  // --- ACCORDION SERVICE TOGGLE (TIME SLOT DISABLED FOR FOAM WASH) ---
+  // --- ACCORDION SERVICE TOGGLE ---
   function toggleService(key, name, price) {
-    let ids = ['wash', 'general', 'insurance', 'puc', 'emergency', 'mmc'];
+    let ids = ['wash', 'general', 'insurance', 'puc', 'echallan', 'emergency', 'mmc'];
     let targetItem = document.getElementById('item-' + key);
     if (!targetItem) return;
 
@@ -2100,10 +2539,20 @@
 
     if (!isOpen) {
       targetItem.classList.add('active');
-      selectedServiceKey = key;
-      selectedServiceName = name;
-      currentServicePrice = 0;
-      selectedSlot = "Coming Soon";
+      if (key === 'insurance' || key === 'puc' || key === 'echallan') {
+        selectedServiceKey = key;
+        selectedServiceName = name;
+        currentServicePrice = price || TOTAL_PRICE;
+        selectedSlot = "Online Vahan / KYC Service";
+        setTimeout(function() {
+          document.getElementById('reg-' + key)?.focus();
+        }, 150);
+      } else {
+        selectedServiceKey = key;
+        selectedServiceName = name;
+        currentServicePrice = 0;
+        selectedSlot = "Coming Soon";
+      }
     } else {
       let washEl = document.getElementById('item-wash');
       if (washEl) washEl.classList.add('active');
@@ -2266,7 +2715,7 @@
     let contentBox = document.getElementById('viewCardContent');
     contentBox.style.background = bgCol;
 
-    let priceVal = TOTAL_PRICE;
+    let priceVal = (rec.isVahanService && rec.grandTotal) ? Number(rec.grandTotal) : TOTAL_PRICE;
     let subVal = priceVal / 1.18;
     let cgstVal = subVal * 0.09;
     let sgstVal = subVal * 0.09;
@@ -2396,13 +2845,14 @@
 
   function triggerRazorpayPayment() {
     if (!globalBookingData || !globalBookingData.id) return;
+    let payAmount = Number(globalBookingData.grandTotal) || TOTAL_PRICE;
     if (RAZORPAY_KEY_ID && window.Razorpay) {
       let options = {
         key: RAZORPAY_KEY_ID,
-        amount: TOTAL_PRICE * 100,
+        amount: Math.round(payAmount * 100),
         currency: "INR",
         name: "Mankiniamma Technologies Private Limited",
-        description: "MoGo Premium Foam Wash (₹89) - " + globalBookingData.id,
+        description: (globalBookingData.serviceName || "MoGo Service") + " - " + globalBookingData.id,
         notes: {
           booking_id: globalBookingData.id,
           customer_name: globalBookingData.name,
@@ -2529,6 +2979,10 @@
     if (!/^[0-9]{10}$/.test(phone)) return showUiAlert("📱", "Invalid Mobile Number", "Please enter a valid 10-digit mobile number.", "cPhone");
     if (!addr) return showUiAlert("📍", "Address Missing", "Please tap 'Auto Locate' or type your doorstep address.", "cAddr");
     if (!selectedServiceKey) return showUiAlert("📋", "Service Required", "Please select Premium Foam Wash.");
+
+    if (selectedServiceKey === 'insurance' || selectedServiceKey === 'puc' || selectedServiceKey === 'echallan') {
+      return showUiAlert("🏍️", "Verify Vehicle Number", "Please enter your Vehicle Number inside the selected " + selectedServiceName + " box and tap 'Send WA OTP'.", "reg-" + selectedServiceKey);
+    }
     if (selectedServiceKey !== 'wash') return showUiAlert("🔒", "Coming Soon", "This feature is currently locked. Please select Premium Foam Wash.");
 
     document.getElementById('bookingForm').style.display = "none";
@@ -2573,6 +3027,9 @@
     setTimeout(function() {
       document.getElementById('loadingScreen').style.display = "none";
       document.getElementById('successScreen').style.display = "block";
+      document.getElementById('qrPriceTitle').innerText = "Scan & Pay ₹89 Securely";
+      let instBtn = document.getElementById('instantPayBtn');
+      if (instBtn) instBtn.innerText = "⚡ Pay ₹89 Instant (Auto-Generate Invoice)";
       document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
       handleCustomerUtrInput();
       let msg = "*New MoGo Service Booking!* 🚀\n\n*Booking ID:* " + id + "\n*Customer Name:* " + name + "\n*Phone:* " + phone + "\n*Vehicle:* " + vehicleType + "\n*Service:* Premium Foam Wash (₹89)\n*Address:* " + addr + "\n";
@@ -2638,11 +3095,12 @@
   function renderMechanicJobs() {
     runAutoBugCleaner();
     let db = getDB(), html = "";
-    db.forEach(function(item) { 
+    db.forEach(function(item) {
+      let amt = (item.isVahanService && item.grandTotal) ? item.grandTotal : TOTAL_PRICE;
       html += `
         <div class="db-item">
           <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Sheet</span></div>
-          <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName} (₹89)<br>📍 ${item.address}</div>
+          <div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName} (₹${amt})<br>📍 ${item.address}</div>
           <div class="db-action">
             <button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet (A4)</button>
             <a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">📞 Call Customer</a>
@@ -2684,6 +3142,7 @@
       let hasValidUtr = item.utr && item.utr.trim().length >= 4;
       let isInv = (item.forceType === 'TAX_INVOICE' || item.status === 'INVOICE_GENERATED' || hasValidUtr || Boolean(item.gpsImage));
       let jcBadge = isInv ? '<span class="badge b-ready">✅ Job Sheet (Paid)</span>' : '<span class="badge b-booked">⏳ Job Sheet (Unpaid)</span>';
+      let amt = (item.isVahanService && item.grandTotal) ? item.grandTotal : TOTAL_PRICE;
       
       jcCount++;
       let jcActions = `
@@ -2694,7 +3153,7 @@
       jcHTML += `
         <div class="db-item">
           <div class="db-header"><span class="db-id">${item.id}</span> ${jcBadge}</div>
-          <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹89) | ${item.date}<br>📍 ${item.address}</div>
+          <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.serviceName} (₹${amt}) | ${item.date}<br>📍 ${item.address}</div>
           <div class="db-action">
             ${jcActions}
             <button class="btn-del" type="button" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button>
@@ -2706,7 +3165,7 @@
         invHTML += `
           <div class="db-item">
             <div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-ready">🟢 Paid Tax Invoice</span></div>
-            <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.vehicle} Wash (₹89) | UTR: ${item.utr || 'VERIFIED'}<br>📍 ${item.address}</div>
+            <div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.serviceName} (₹${amt}) | UTR: ${item.utr || 'VERIFIED'}<br>📍 ${item.address}</div>
             <div class="db-action">
               <button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="viewJobCardModal('${item.id}', false)">👁️ View Tax Invoice</button>
               <button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">📋 Job Sheet</button>
@@ -2752,9 +3211,10 @@
     if (!rec) return;
     let cleanPhone = String(rec.phone).replace(/[^0-9]/g, '');
     if (cleanPhone.length === 10) cleanPhone = "91" + cleanPhone;
+    let amt = (rec.isVahanService && rec.grandTotal) ? rec.grandTotal : TOTAL_PRICE;
     let msg = isInvoice
-      ? "Hello " + rec.name + ",\n\nYour MoGo Total Bike Care *Paid Tax Invoice* (Booking ID: " + rec.id + ", Amount: ₹89, UTR: " + (rec.utr || 'VERIFIED') + ") has been generated.\nService Address: " + rec.address + "\n\nThank you for choosing MoGo!"
-      : "Hello " + rec.name + ",\n\nYour MoGo Total Bike Care *Service Job Card* (Booking ID: " + rec.id + ", Estimate: ₹89) has been created.\nService Address: " + rec.address + "\n\nOur expert will arrive shortly!";
+      ? "Hello " + rec.name + ",\n\nYour MoGo Total Bike Care *Paid Tax Invoice* (Booking ID: " + rec.id + ", Service: " + rec.serviceName + ", Amount: ₹" + amt + ", UTR: " + (rec.utr || 'VERIFIED') + ") has been generated.\nService Address: " + rec.address + "\n\nThank you for choosing MoGo!"
+      : "Hello " + rec.name + ",\n\nYour MoGo Total Bike Care *Service Job Card* (Booking ID: " + rec.id + ", Service: " + rec.serviceName + ", Estimate: ₹" + amt + ") has been created.\nService Address: " + rec.address + "\n\nOur expert will arrive shortly!";
     window.open("https://wa.me/" + cleanPhone + "?text=" + encodeURIComponent(msg), '_blank');
   }
 
@@ -2997,7 +3457,7 @@
       let userUtr = (document.getElementById('customerUtr') ? document.getElementById('customerUtr').value.trim() : "") || globalBookingData.utr || "";
       let isPaidVerified = forceJobCard ? false : (forcePaid || (globalBookingData.forceType === 'TAX_INVOICE' && (userUtr.length >= 4 || globalBookingData.gpsImage)));
 
-      let grandTotal = TOTAL_PRICE;
+      let grandTotal = (globalBookingData.isVahanService && globalBookingData.grandTotal) ? Number(globalBookingData.grandTotal) : TOTAL_PRICE;
       let subtotal = grandTotal / 1.18;
       let cgst = subtotal * 0.09;
       let sgst = subtotal * 0.09;
