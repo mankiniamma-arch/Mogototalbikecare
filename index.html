@@ -14,6 +14,10 @@
   <!-- External Libraries (Loaded Safely) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  
+  <!-- TESSERACT.JS (AI OCR FOR NUMBER PLATE SCANNING) -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- CONNECTING EXTERNAL CSS FILE -->
@@ -49,7 +53,7 @@
     <label>Select Service</label>
     <div class="services-stack">
       
-      <!-- SERVICE 1: PREMIUM FOAM WASH (LIMITED TIME DEAL ₹149 -> ₹89) -->
+      <!-- SERVICE 1: PREMIUM FOAM WASH -->
       <div class="service-accordion-item active" id="item-wash">
         <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 89)">
           <div class="service-info">
@@ -69,7 +73,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 2: GENERAL SERVICING (LOCKED / COMING SOON) -->
+      <!-- SERVICE 2: GENERAL SERVICING -->
       <div class="service-accordion-item disabled" id="item-general">
         <div class="service-header-row" onclick="toggleService('general', 'General Servicing', 0)">
           <div class="service-info">
@@ -84,7 +88,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 3: BIKE INSURANCE RENEWAL (VAHAN KYC API + WHATSAPP OTP + RENEW) -->
+      <!-- SERVICE 3: BIKE INSURANCE RENEWAL (WITH AI CAMERA SCANNER) -->
       <div class="service-accordion-item" id="item-insurance">
         <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 714)">
           <div class="service-info">
@@ -95,9 +99,11 @@
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (KYC API Check):</label>
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
             <div class="vahan-input-row">
               <input type="text" id="reg-insurance" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
+              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-insurance" onchange="processNumberPlateScan(event, 'insurance')">
+              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-insurance').click()" title="Scan Bike Number Plate">📷</button>
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('insurance')">📲 Send WA OTP</button>
             </div>
 
@@ -114,7 +120,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 4: POLLUTION CHECK (PUC) (VAHAN KYC API + PAY FINE / BOOK APPOINTMENT) -->
+      <!-- SERVICE 4: POLLUTION CHECK (PUC) (WITH AI CAMERA SCANNER) -->
       <div class="service-accordion-item" id="item-puc">
         <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 149)">
           <div class="service-info">
@@ -125,9 +131,11 @@
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (PUC Status Check):</label>
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
             <div class="vahan-input-row">
               <input type="text" id="reg-puc" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
+              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-puc" onchange="processNumberPlateScan(event, 'puc')">
+              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-puc').click()" title="Scan Bike Number Plate">📷</button>
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('puc')">📲 Send WA OTP</button>
             </div>
 
@@ -144,7 +152,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 5: E-CHALLAN CHECK & PAY (NEWLY ADDED WITH VAHAN KYC API + WHATSAPP OTP) -->
+      <!-- SERVICE 5: E-CHALLAN CHECK & PAY (WITH AI CAMERA SCANNER) -->
       <div class="service-accordion-item" id="item-echallan">
         <div class="service-header-row" onclick="toggleService('echallan', 'e-Challan Check & Pay', 500)">
           <div class="service-info">
@@ -155,9 +163,11 @@
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (e-Challan Lookup):</label>
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
             <div class="vahan-input-row">
               <input type="text" id="reg-echallan" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
+              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-echallan" onchange="processNumberPlateScan(event, 'echallan')">
+              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-echallan').click()" title="Scan Bike Number Plate">📷</button>
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('echallan')">📲 Send WA OTP</button>
             </div>
 
@@ -174,7 +184,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 6: PUNCTURE & EMERGENCY SERVICES (ADDED AS REQUESTED) -->
+      <!-- SERVICE 6: PUNCTURE & EMERGENCY SERVICES -->
       <div class="service-accordion-item disabled" id="item-emergency">
         <div class="service-header-row" onclick="toggleService('emergency', 'Puncture & Emergency Services', 0)">
           <div class="service-info">
@@ -189,7 +199,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 7: MONTHLY MAINTENANCE (MMC) (LOCKED / COMING SOON) -->
+      <!-- SERVICE 7: MONTHLY MAINTENANCE (MMC) -->
       <div class="service-accordion-item disabled" id="item-mmc">
         <div class="service-header-row" onclick="toggleService('mmc', 'Monthly Maintenance (MMC)', 0)">
           <div class="service-info">
@@ -220,22 +230,21 @@
 
     <button class="btn-main" type="button" onclick="submitBooking()">Confirm Booking 🚀</button>
     
-    <!-- FIX: Ensure the portal links are properly closing and have higher z-index/clickable area -->
-    <div class="portal-links" style="position: relative; z-index: 10;">
-      <span class="portal-link" onclick="openAdminPortal()" style="cursor: pointer; padding: 10px;">🔐 Admin Portal</span>
-      <span class="portal-link" style="color:#0284C7; cursor: pointer; padding: 10px;" onclick="openMechanicPortal()">🔧 Mechanic Portal</span>
+    <div class="portal-links">
+      <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
+      <span class="portal-link" style="color:#0284C7;" onclick="openMechanicPortal()">🔧 Mechanic Portal</span>
     </div>
   </div>
 
   <!-- LOADING SCREEN -->
-  <div class="card" id="loadingScreen" style="display: none;">
+  <div class="card" id="loadingScreen">
     <div class="loader"></div>
     <h3 style="margin:0 0 8px; font-size:20px;">Processing Booking...</h3>
     <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating documents.</p>
   </div>
 
   <!-- SUCCESS SCREEN -->
-  <div class="card" id="successScreen" style="display: none;">
+  <div class="card" id="successScreen">
     <div style="font-size:56px; margin-bottom:12px;">✅</div>
     <h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;" id="successHeading">Submitted Successfully!</h2>
     <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will connect with you.</p>
@@ -246,7 +255,6 @@
       <img src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=89.00%26cu=INR&margin=10';">
       <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
       
-      <!-- Razorpay Auto-Invoice Ready Button -->
       <button type="button" class="btn-main" id="instantPayBtn" style="background:#0284C7; margin-top:12px; padding:13px; font-size:14px;" onclick="triggerRazorpayPayment()">⚡ Pay ₹89 Instant (Auto-Generate Invoice)</button>
 
       <div class="utr-box">
@@ -261,7 +269,7 @@
   </div>
 
   <!-- BOTTOM LEGAL FOOTER -->
-  <footer class="bottom-legal-structure" style="position: relative; z-index: 10;">
+  <footer class="bottom-legal-structure">
     <div class="bls-top-bar">
       <div>
         <div class="bls-company-title">MoGo Total Bike Care</div>
@@ -461,7 +469,7 @@
   </div>
 </div>
 
-<!-- हमारी नई JavaScript फाईल -->
+<!-- CONNECTING EXTERNAL JAVASCRIPT FILE -->
 <script src="script.js"></script>
 
 </body>
