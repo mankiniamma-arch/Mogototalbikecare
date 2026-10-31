@@ -6,19 +6,15 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>MoGo - Total Bike Care | Guwahati</title>
+  <title>MoGo | Total Bike Care</title>
   
   <!-- FAVICON -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%23FF5A00' stroke-width='14'/><circle cx='50' cy='50' r='36' fill='none' stroke='%23CBD5E1' stroke-width='2' stroke-dasharray='4 4'/><path d='M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19' stroke='%230B0F19' stroke-width='5'/><circle cx='50' cy='50' r='9' fill='%23FF5A00'/><circle cx='50' cy='50' r='3.5' fill='%23FFFFFF'/></svg>">
   
-  <!-- External Libraries (Loaded Safely) -->
+  <!-- External Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  
-  <!-- TESSERACT.JS (AI OCR FOR NUMBER PLATE SCANNING) -->
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- CONNECTING EXTERNAL CSS FILE -->
   <link rel="stylesheet" href="style.css">
@@ -40,35 +36,34 @@
       <div class="logo-tagline">TOTAL BIKE CARE</div>
     </div>
 
-    <label>Select Vehicle Type</label>
+    <label class="form-label">Vehicle Category</label>
     <div class="segmented-control">
-      <div class="seg-btn active" id="v-bike" onclick="selectVehicle('Bike')">🏍️ Bike <span>Standard/Sports</span></div>
-      <div class="seg-btn" id="v-scooty" onclick="selectVehicle('Scooty')">🛵 Scooty <span>Gearless</span></div>
+      <div class="seg-btn active" id="v-bike" onclick="selectVehicle('Bike')">Bike <span>Standard / Sports</span></div>
+      <div class="seg-btn" id="v-scooty" onclick="selectVehicle('Scooty')">Scooter <span>Gearless</span></div>
     </div>
 
-    <label>Customer Details</label>
-    <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
-    <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
+    <label class="form-label">Customer Information</label>
+    <input type="text" id="cName" class="minimal-input" placeholder="Full Legal Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
+    <input type="tel" id="cPhone" class="minimal-input" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
 
-    <label>Select Service</label>
+    <label class="form-label">Select Service</label>
     <div class="services-stack">
       
       <!-- SERVICE 1: PREMIUM FOAM WASH -->
       <div class="service-accordion-item active" id="item-wash">
         <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 89)">
           <div class="service-info">
-            <div class="deal-badge-pill">⚡ LIMITED TIME DEAL • SAVE 40%</div>
-            <div class="s-title">🫧 Premium Foam Wash</div>
+            <div class="deal-badge-pill">LIMITED TIME DEAL • SAVE 40%</div>
+            <div class="s-title">Premium Foam Wash</div>
             <div class="s-desc">Complete exterior deep cleaning</div>
           </div>
           <div class="special-price-box">
             <div class="old-price-strike">₹149</div>
             <div class="new-offer-price">₹89</div>
-            <div class="special-price-label">SPECIAL PRICE</div>
+            <div class="special-price-label">SPECIAL</div>
           </div>
         </div>
         <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:var(--primary);">Select Foam Wash Time Window (08:00 AM - 08:00 PM):</label>
           <div class="slots-grid-inner" id="slotsContainerWash"></div>
         </div>
       </div>
@@ -77,195 +72,167 @@
       <div class="service-accordion-item disabled" id="item-general">
         <div class="service-header-row" onclick="toggleService('general', 'General Servicing', 0)">
           <div class="service-info">
-            <div class="s-title">🛠️ General Servicing</div>
-            <div class="s-desc">Complete mechanical checkup</div>
+            <div class="s-title">General Servicing</div>
+            <div class="s-desc">Complete mechanical diagnostics</div>
           </div>
-          <div class="s-badge">COMING SOON</div>
-        </div>
-        <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
-          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
+          <div class="s-badge">UPCOMING</div>
         </div>
       </div>
 
-      <!-- SERVICE 3: BIKE INSURANCE RENEWAL (WITH AI CAMERA SCANNER) -->
+      <!-- SERVICE 3: BIKE INSURANCE RENEWAL -->
       <div class="service-accordion-item" id="item-insurance">
-        <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 714)">
+        <div class="service-header-row" onclick="toggleService('insurance', 'Insurance Renewal', 714)">
           <div class="service-info">
-            <div class="s-title">🛡️ Bike Insurance Renewal</div>
-            <div class="s-desc">Check insurance status by Vehicle No. & renew</div>
+            <div class="s-title">Insurance Renewal</div>
+            <div class="s-desc">Vahan KYC status check & policy issuance</div>
           </div>
-          <div class="s-badge-live">⚡ CHECK & RENEW</div>
+          <div class="s-badge-live">AVAILABLE</div>
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
             <div class="vahan-input-row">
-              <input type="text" id="reg-insurance" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-insurance" onchange="processNumberPlateScan(event, 'insurance')">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-insurance').click()" title="Scan Bike Number Plate">📷</button>
-              <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('insurance')">📲 Send WA OTP</button>
+              <input type="text" id="reg-insurance" class="vahan-reg-input" placeholder="Registration No. (e.g. AS01AB1234)" maxlength="12">
+              <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('insurance')">Request OTP</button>
             </div>
-
             <div id="otp-box-insurance" class="otp-verify-box">
-              <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-insurance">WhatsApp OTP Sent!</div>
+              <div class="otp-msg-text" id="otp-msg-insurance">OTP sent to registered WhatsApp.</div>
               <div class="vahan-input-row" style="margin-bottom:0;">
-                <input type="text" id="otp-input-insurance" placeholder="Enter 4-Digit OTP" maxlength="4" style="padding:10px; font-size:13px; background:#FFF;">
-                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('insurance')">✅ Verify & Check</button>
+                <input type="text" id="otp-input-insurance" class="vahan-reg-input" placeholder="4-Digit OTP" maxlength="4">
+                <button type="button" class="vahan-btn-sm btn-green" onclick="verifyVahanOTPAndFetch('insurance')">Verify</button>
               </div>
             </div>
-
             <div id="res-box-insurance" class="vahan-result-card"></div>
           </div>
         </div>
       </div>
 
-      <!-- SERVICE 4: POLLUTION CHECK (PUC) (WITH AI CAMERA SCANNER) -->
+      <!-- SERVICE 4: POLLUTION CHECK (PUC) -->
       <div class="service-accordion-item" id="item-puc">
         <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 149)">
           <div class="service-info">
-            <div class="s-title">💨 Pollution Check (PUC)</div>
-            <div class="s-desc">Check PUC status, pay charges or fix appointment</div>
+            <div class="s-title">Pollution Check (PUC)</div>
+            <div class="s-desc">Vahan PUC status, fine payment & appointments</div>
           </div>
-          <div class="s-badge-live">⚡ CHECK & APPLY</div>
+          <div class="s-badge-live">AVAILABLE</div>
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
             <div class="vahan-input-row">
-              <input type="text" id="reg-puc" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-puc" onchange="processNumberPlateScan(event, 'puc')">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-puc').click()" title="Scan Bike Number Plate">📷</button>
-              <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('puc')">📲 Send WA OTP</button>
+              <input type="text" id="reg-puc" class="vahan-reg-input" placeholder="Registration No. (e.g. AS01AB1234)" maxlength="12">
+              <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('puc')">Request OTP</button>
             </div>
-
             <div id="otp-box-puc" class="otp-verify-box">
-              <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-puc">WhatsApp OTP Sent!</div>
+              <div class="otp-msg-text" id="otp-msg-puc">OTP sent to registered WhatsApp.</div>
               <div class="vahan-input-row" style="margin-bottom:0;">
-                <input type="text" id="otp-input-puc" placeholder="Enter 4-Digit OTP" maxlength="4" style="padding:10px; font-size:13px; background:#FFF;">
-                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('puc')">✅ Verify & Check</button>
+                <input type="text" id="otp-input-puc" class="vahan-reg-input" placeholder="4-Digit OTP" maxlength="4">
+                <button type="button" class="vahan-btn-sm btn-green" onclick="verifyVahanOTPAndFetch('puc')">Verify</button>
               </div>
             </div>
-
             <div id="res-box-puc" class="vahan-result-card"></div>
           </div>
         </div>
       </div>
 
-      <!-- SERVICE 5: E-CHALLAN CHECK & PAY (WITH AI CAMERA SCANNER) -->
+      <!-- SERVICE 5: E-CHALLAN CHECK & PAY -->
       <div class="service-accordion-item" id="item-echallan">
-        <div class="service-header-row" onclick="toggleService('echallan', 'e-Challan Check & Pay', 500)">
+        <div class="service-header-row" onclick="toggleService('echallan', 'e-Challan Settlement', 500)">
           <div class="service-info">
-            <div class="s-title">🚓 e-Challan Check & Pay</div>
-            <div class="s-desc">Instant traffic e-Challan check & online payment</div>
+            <div class="s-title">e-Challan Settlement</div>
+            <div class="s-desc">Traffic violation check & online clearance</div>
           </div>
-          <div class="s-badge-live">⚡ CHECK & PAY</div>
+          <div class="s-badge-live">AVAILABLE</div>
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
             <div class="vahan-input-row">
-              <input type="text" id="reg-echallan" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-echallan" onchange="processNumberPlateScan(event, 'echallan')">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-echallan').click()" title="Scan Bike Number Plate">📷</button>
-              <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('echallan')">📲 Send WA OTP</button>
+              <input type="text" id="reg-echallan" class="vahan-reg-input" placeholder="Registration No. (e.g. AS01AB1234)" maxlength="12">
+              <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('echallan')">Request OTP</button>
             </div>
-
             <div id="otp-box-echallan" class="otp-verify-box">
-              <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-echallan">WhatsApp OTP Sent!</div>
+              <div class="otp-msg-text" id="otp-msg-echallan">OTP sent to registered WhatsApp.</div>
               <div class="vahan-input-row" style="margin-bottom:0;">
-                <input type="text" id="otp-input-echallan" placeholder="Enter 4-Digit OTP" maxlength="4" style="padding:10px; font-size:13px; background:#FFF;">
-                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('echallan')">✅ Verify & Check</button>
+                <input type="text" id="otp-input-echallan" class="vahan-reg-input" placeholder="4-Digit OTP" maxlength="4">
+                <button type="button" class="vahan-btn-sm btn-green" onclick="verifyVahanOTPAndFetch('echallan')">Verify</button>
               </div>
             </div>
-
             <div id="res-box-echallan" class="vahan-result-card"></div>
           </div>
         </div>
       </div>
 
-      <!-- SERVICE 6: PUNCTURE & EMERGENCY SERVICES -->
+      <!-- SERVICE 6: PUNCTURE & EMERGENCY -->
       <div class="service-accordion-item disabled" id="item-emergency">
-        <div class="service-header-row" onclick="toggleService('emergency', 'Puncture & Emergency Services', 0)">
+        <div class="service-header-row" onclick="toggleService('emergency', 'Emergency Assistance', 0)">
           <div class="service-info">
-            <div class="s-title">🚨 Puncture & Emergency Services</div>
-            <div class="s-desc">Expert Care & Assistance</div>
+            <div class="s-title">Emergency Assistance</div>
+            <div class="s-desc">Breakdown & puncture repair</div>
           </div>
-          <div class="s-badge">COMING SOON</div>
-        </div>
-        <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
-          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
+          <div class="s-badge">UPCOMING</div>
         </div>
       </div>
 
-      <!-- SERVICE 7: MONTHLY MAINTENANCE (MMC) -->
+      <!-- SERVICE 7: MONTHLY MAINTENANCE -->
       <div class="service-accordion-item disabled" id="item-mmc">
-        <div class="service-header-row" onclick="toggleService('mmc', 'Monthly Maintenance (MMC)', 0)">
+        <div class="service-header-row" onclick="toggleService('mmc', 'Monthly Maintenance', 0)">
           <div class="service-info">
-            <div class="s-title">🤝 Monthly Maintenance (MMC)</div>
-            <div class="s-desc">Whole month maintenance contract</div>
+            <div class="s-title">Monthly Maintenance</div>
+            <div class="s-desc">Comprehensive monthly care plans</div>
           </div>
-          <div class="s-badge">COMING SOON</div>
-        </div>
-        <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
-          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
+          <div class="s-badge">UPCOMING</div>
         </div>
       </div>
-
     </div>
 
     <div class="loc-header">
-      <label>Doorstep Address</label>
-      <button class="loc-btn" id="locBtn" onclick="getLocation()" type="button">📍 Auto Locate</button>
+      <label class="form-label">Service Location</label>
+      <button class="loc-btn-minimal" id="locBtn" onclick="getLocation()" type="button">Auto-Locate via GPS</button>
     </div>
-    <textarea id="cAddr" rows="3" placeholder="Tap 'Auto Locate' or type manually..." oninput="clearError('cAddr')"></textarea>
+    <textarea id="cAddr" class="minimal-input" rows="3" placeholder="Enter complete doorstep address..." oninput="clearError('cAddr')"></textarea>
 
-    <label>Payment Method</label>
+    <label class="form-label">Payment Preference</label>
     <div class="segmented-control">
-      <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">💳 Pay Now <span>Online / QR</span></div>
-      <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
+      <div class="seg-btn active" id="opt-now" onclick="selectPayType('Pay Now')">Pay Online</div>
+      <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">Pay Later</div>
     </div>
 
-    <button class="btn-main" type="button" onclick="submitBooking()">Confirm Booking 🚀</button>
+    <button class="btn-main-dark" type="button" onclick="submitBooking()">Confirm Booking</button>
     
     <div class="portal-links">
-      <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
-      <span class="portal-link" style="color:#0284C7;" onclick="openMechanicPortal()">🔧 Mechanic Portal</span>
+      <span class="portal-link" onclick="openAdminPortal()">Admin Console</span>
+      <span class="portal-link" onclick="openMechanicPortal()">Technician Portal</span>
     </div>
   </div>
 
   <!-- LOADING SCREEN -->
-  <div class="card" id="loadingScreen">
-    <div class="loader"></div>
-    <h3 style="margin:0 0 8px; font-size:20px;">Processing Booking...</h3>
-    <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating documents.</p>
+  <div class="card" id="loadingScreen" style="display:none; text-align:center; padding: 60px 20px;">
+    <div class="loader-spinner"></div>
+    <h3 class="status-heading">Processing Request</h3>
+    <p class="status-sub">Establishing secure connection...</p>
   </div>
 
   <!-- SUCCESS SCREEN -->
-  <div class="card" id="successScreen">
-    <div style="font-size:56px; margin-bottom:12px;">✅</div>
-    <h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;" id="successHeading">Submitted Successfully!</h2>
-    <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will connect with you.</p>
+  <div class="card" id="successScreen" style="display:none; text-align:center;">
+    <div class="success-icon">✓</div>
+    <h2 class="status-heading">Booking Confirmed</h2>
+    <p class="status-sub">Your request has been successfully registered.</p>
     
     <div id="qrSection" class="official-qr-box" style="display:none;">
-      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;" id="qrPriceTitle">Scan & Pay ₹89 Securely</p>
-      <p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Private Limited</p>
-      <img src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=89.00%26cu=INR&margin=10';">
-      <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
+      <p class="qr-title" id="qrPriceTitle">Complete Payment of ₹89</p>
+      <p class="qr-sub">Mankiniamma Technologies Pvt. Ltd.</p>
+      <img src="1001243382.jpg" alt="UPI QR Code" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=89.00%26cu=INR&margin=10';">
+      <p class="qr-upi-id">UPI ID: mankiniamma@okhdfcbank</p>
       
-      <button type="button" class="btn-main" id="instantPayBtn" style="background:#0284C7; margin-top:12px; padding:13px; font-size:14px;" onclick="triggerRazorpayPayment()">⚡ Pay ₹89 Instant (Auto-Generate Invoice)</button>
+      <button type="button" class="btn-main-dark" id="instantPayBtn" style="margin-top:16px;" onclick="triggerRazorpayPayment()">Pay via Gateway (Razorpay)</button>
 
       <div class="utr-box">
-        <label>Or Enter UPI UTR / Transaction ID (For Paid Tax Invoice):</label>
-        <input type="text" id="customerUtr" placeholder="e.g. 429381928312" style="padding: 12px; font-size: 14px;" oninput="handleCustomerUtrInput()">
+        <label class="form-label">Or Enter Transaction UTR:</label>
+        <input type="text" id="customerUtr" class="minimal-input" placeholder="e.g. 429381928312" oninput="handleCustomerUtrInput()">
       </div>
     </div>
 
-    <button class="btn-main" type="button" id="pdfDownloadBtn" style="background:#0F172A;" onclick="previewCurrentBookingDoc()">👁️ View & Download Document (A4 PDF)</button>
-    <a id="waBtn" href="#" target="_blank" class="btn-main" style="background:#25D366; text-decoration:none;">💬 Send Details on WhatsApp</a>
-    <button class="btn-outline" type="button" onclick="location.reload()">Book Another Service</button>
+    <button class="btn-main-dark" type="button" id="pdfDownloadBtn" onclick="previewCurrentBookingDoc()">View Official Document (PDF)</button>
+    <a id="waBtn" href="#" target="_blank" class="btn-main-outline" style="text-decoration:none;">Share via WhatsApp</a>
+    <button class="btn-main-text" type="button" onclick="location.reload()">Create New Request</button>
   </div>
 
   <!-- BOTTOM LEGAL FOOTER -->
@@ -273,71 +240,71 @@
     <div class="bls-top-bar">
       <div>
         <div class="bls-company-title">MoGo Total Bike Care</div>
-        <div class="bls-company-sub">Mankiniamma Technologies Private Limited</div>
+        <div class="bls-company-sub">Mankiniamma Technologies Pvt. Ltd.</div>
       </div>
-      <div class="bls-verified-tag">✔ GST & API Verified</div>
+      <div class="bls-verified-tag">Verified Entity</div>
     </div>
 
     <div class="bls-policy-stack">
       <div class="bls-policy-row">
         <div class="bls-policy-info">
-          <div class="bls-p-title">🛡️ Privacy Policy & Data Protection</div>
-          <div class="bls-p-desc">Article 21, Indian DPDP Act 2023 & International GDPR</div>
+          <div class="bls-p-title">Privacy Policy & Data Protection</div>
+          <div class="bls-p-desc">DPDP Act 2023 & GDPR Compliant</div>
         </div>
-        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('privacy')">👁️ View</button>
+        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('privacy')">View</button>
       </div>
       <div class="bls-policy-row">
         <div class="bls-policy-info">
-          <div class="bls-p-title">📜 Terms & Conditions (Service Logic)</div>
-          <div class="bls-p-desc">Indian Contract Act 1872, ₹89 Deal & WhatsApp Opt-In</div>
+          <div class="bls-p-title">Terms & Conditions</div>
+          <div class="bls-p-desc">Service Agreement & Logic</div>
         </div>
-        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('terms')">👁️ View</button>
+        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('terms')">View</button>
       </div>
       <div class="bls-policy-row">
         <div class="bls-policy-info">
-          <div class="bls-p-title">⚖️ Legal & Constitutional Compliance</div>
-          <div class="bls-p-desc">Constitution of India Art. 19(1)(g), IT Act & UNCITRAL</div>
+          <div class="bls-p-title">Legal & Constitutional Compliance</div>
+          <div class="bls-p-desc">IT Act 2000 & Statutory Mandates</div>
         </div>
-        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('legal')">👁️ View</button>
+        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('legal')">View</button>
       </div>
       <div class="bls-policy-row">
         <div class="bls-policy-info">
-          <div class="bls-p-title">💳 Refund, Cancellation & Consumer Rights</div>
-          <div class="bls-p-desc">Consumer Protection Act 2019 & Payment Gateway Logic</div>
+          <div class="bls-p-title">Refund & Cancellation</div>
+          <div class="bls-p-desc">Consumer Protection Guidelines</div>
         </div>
-        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('refund')">👁️ View</button>
+        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('refund')">View</button>
       </div>
       <div class="bls-policy-row">
         <div class="bls-policy-info">
-          <div class="bls-p-title">🏢 Contact Us & Grievance Redressal</div>
-          <div class="bls-p-desc">Official Helpdesk, Website & Registered Office</div>
+          <div class="bls-p-title">Contact & Grievance Redressal</div>
+          <div class="bls-p-desc">Official Support Information</div>
         </div>
-        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('contact')">👁️ View</button>
+        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('contact')">View</button>
       </div>
     </div>
 
     <div class="bls-contact-box">
-      <div><strong>📧 Official Help Email:</strong> <a href="mailto:help@totalbikecare.in">help@totalbikecare.in</a> | <a href="mailto:help@mogototalbikecare.in">help@mogototalbikecare.in</a></div>
-      <div><strong>🌐 Official Website:</strong> <a href="https://mogototalbikecare.in" target="_blank" rel="noopener">https://mogototalbikecare.in</a></div>
-      <div><strong>📞 Helpline / WhatsApp:</strong> <a href="tel:+919954924948">+91 99549 24948</a> &nbsp;|&nbsp; <strong>GSTIN:</strong> 18AASCM6250H1Z1</div>
-      <div><strong>📍 Registered Address:</strong> Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035, India</div>
+      <div><strong>Email:</strong> <a href="mailto:help@totalbikecare.in">help@totalbikecare.in</a></div>
+      <div><strong>Web:</strong> <a href="https://mogototalbikecare.in" target="_blank" rel="noopener">mogototalbikecare.in</a></div>
+      <div><strong>Support:</strong> <a href="tel:+919954924948">+91 99549 24948</a> &nbsp;|&nbsp; <strong>GSTIN:</strong> 18AASCM6250H1Z1</div>
+      <div style="margin-top:4px;"><strong>Reg. Office:</strong> H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Guwahati, Assam, 781035, India</div>
     </div>
     <div class="bls-copyright">
-      © 2024–2026 Mankiniamma Technologies Private Limited. All Rights Reserved.
+      © 2024–2026 Mankiniamma Technologies Pvt. Ltd.
     </div>
   </footer>
 
 </div>
 
-<!-- BOTTOM LEGAL & LOGIC VIEW MODAL -->
+<!-- BOTTOM LEGAL VIEW MODAL -->
 <div class="ui-modal-overlay" id="bottomLegalModal" onclick="if(event.target === this) closeBottomLegalModal()">
-  <div class="ui-modal-box" style="max-width: 450px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #E2E8F0; padding-bottom:10px;">
-      <h3 style="margin:0; font-size:16px; font-weight:900; color:#0B0F19;" id="bottomLegalTitle">Legal & Policy View</h3>
-      <button type="button" onclick="closeBottomLegalModal()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer; color:#0B0F19;">✕</button>
+  <div class="ui-modal-box">
+    <div class="modal-header-minimal">
+      <h3 id="bottomLegalTitle">Legal Policy</h3>
+      <button type="button" class="close-btn-minimal" onclick="closeBottomLegalModal()">✕</button>
     </div>
     <div id="bottomLegalBody" class="legal-view-content"></div>
-    <button class="btn-outline" type="button" onclick="closeBottomLegalModal()" style="margin-top:14px;">Close View</button>
+    <button class="btn-main-dark" type="button" style="margin-top:20px;" onclick="closeBottomLegalModal()">Close</button>
   </div>
 </div>
 
@@ -345,60 +312,44 @@
 <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
   <div class="ui-modal-box">
     <div id="adminPinSection">
-      <div class="portal-header-title">Admin Portal</div>
-      <div class="portal-header-subtitle">Secure Access Required</div>
-      <label style="margin-top:0;">Enter Admin PIN:</label>
-      <input type="password" id="adminPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
-      <button class="btn-main" type="button" onclick="verifyAdminPin()" style="margin-top:0;">Unlock Portal</button>
-      <button class="btn-outline" type="button" onclick="closeAdminPortal()">Cancel</button>
+      <div class="portal-header-title">Admin Console</div>
+      <div class="portal-header-subtitle">Restricted Access</div>
+      <input type="password" id="adminPinInput" class="minimal-input" placeholder="Enter PIN" maxlength="4" style="text-align:center; letter-spacing:8px; font-size:20px; margin-bottom:16px;">
+      <button class="btn-main-dark" type="button" onclick="verifyAdminPin()">Authenticate</button>
+      <button class="btn-main-text" type="button" onclick="closeAdminPortal()">Cancel</button>
     </div>
     <div id="adminDashboard" style="display: none;">
-      <div class="portal-header-title">Admin Portal</div>
-      <div class="portal-header-subtitle">Job Sheets, Paid Invoices & Manual Generation</div>
+      <div class="portal-header-title">Admin Console</div>
       <div class="sync-status-bar">
-        <span id="adminSyncStatus">🟢 Syncing Razorpay & Cloud...</span>
-        <div style="display:flex; gap:4px;">
-          <button type="button" class="sync-btn" onclick="restoreAndSyncAllData()">🔄 Sync & Restore All</button>
-        </div>
+        <span id="adminSyncStatus" class="status-indicator">Data Synchronized</span>
+        <button type="button" class="sync-btn-minimal" onclick="restoreAndSyncAllData()">Force Sync</button>
       </div>
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards <span id="count-jc"></span></div>
         <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Invoices <span id="count-inv"></span></div>
-        <div class="db-tab" id="tab-gen" onclick="switchAdminTab('gen')">+ Generate</div>
+        <div class="db-tab" id="tab-gen" onclick="switchAdminTab('gen')">Create New</div>
       </div>
       <div id="view-jc" class="db-list"></div>
       <div id="view-inv" class="db-list" style="display: none;"></div>
       <div id="view-gen" style="display: none;">
-        <label style="margin-top:0;">Customer Name</label>
-        <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
-        <label style="margin-top:8px;">Mobile Number</label>
-        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <input type="text" id="admName" class="minimal-input" placeholder="Customer Name" style="margin-bottom:8px;">
+        <input type="tel" id="admPhone" class="minimal-input" placeholder="Mobile Number" style="margin-bottom:8px;" maxlength="10">
         <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <div style="flex:1;">
-            <label style="margin-top:4px;">Vehicle</label>
-            <select id="admVehicle" style="padding:12px;">
-              <option value="Bike">Bike</option>
-              <option value="Scooty">Scooty</option>
-            </select>
-          </div>
-          <div style="flex:1;">
-            <label style="margin-top:4px;">Document</label>
-            <select id="admDocType" style="padding:12px;" onchange="toggleAdminUtrRequirement()">
-              <option value="JOB_CARD" selected>Job Sheet / Card</option>
-              <option value="TAX_INVOICE">Paid Tax Invoice</option>
-            </select>
-          </div>
+          <select id="admVehicle" class="minimal-input" style="flex:1;"><option value="Bike">Bike</option><option value="Scooty">Scooter</option></select>
+          <select id="admDocType" class="minimal-input" style="flex:1;" onchange="toggleAdminUtrRequirement()">
+            <option value="JOB_CARD" selected>Job Card</option>
+            <option value="TAX_INVOICE">Tax Invoice</option>
+          </select>
         </div>
-        <label style="margin-top:4px;">Address</label>
-        <input type="text" id="admAddr" placeholder="Customer Doorstep / GPS Address, Guwahati" style="margin-bottom:10px; padding:12px;">
-        <div id="admUtrBox" style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
-          <label style="color:var(--text-main); margin-top:0; font-size:11px;" id="admUtrLabel">UTR / Payment Proof (Optional for Job Card):</label>
-          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;">
-          <input type="text" id="admUtr" placeholder="Enter UPI UTR / Transaction Ref" style="padding:10px; font-size:13px; background:#FFF;">
+        <input type="text" id="admAddr" class="minimal-input" placeholder="Address" style="margin-bottom:10px;">
+        <div class="minimal-upload-box">
+          <label class="form-label" id="admUtrLabel">Transaction UTR / Proof:</label>
+          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; font-size:12px;">
+          <input type="text" id="admUtr" class="minimal-input" placeholder="UTR Number">
         </div>
-        <button class="btn-main" type="button" onclick="processAdminForm()" style="margin-top:0; background:#16A34A; box-shadow:0 8px 20px rgba(22,163,74,0.25);">Generate & View A4 Sheet</button>
+        <button class="btn-main-dark" type="button" onclick="processAdminForm()">Generate Record</button>
       </div>
-      <button class="btn-outline" type="button" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Portal</button>
+      <button class="btn-main-text" type="button" onclick="closeAdminPortal()" style="margin-top: 12px;">Exit Console</button>
     </div>
   </div>
 </div>
@@ -407,69 +358,64 @@
 <div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
   <div class="ui-modal-box">
     <div id="mechPinSection">
-      <div class="portal-header-title" style="color:#0284C7;">Mechanic Portal</div>
-      <div class="portal-header-subtitle">Secure Access Required</div>
-      <label style="margin-top:0;">Enter Mechanic PIN:</label>
-      <input type="password" id="mechPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
-      <button class="btn-main" type="button" style="background:#0284C7;" onclick="verifyMechPin()">Unlock Portal</button>
-      <button class="btn-outline" type="button" onclick="closeMechanicPortal()">Cancel</button>
+      <div class="portal-header-title">Technician Portal</div>
+      <div class="portal-header-subtitle">Restricted Access</div>
+      <input type="password" id="mechPinInput" class="minimal-input" placeholder="Enter PIN" maxlength="4" style="text-align:center; letter-spacing:8px; font-size:20px; margin-bottom:16px;">
+      <button class="btn-main-dark" type="button" onclick="verifyMechPin()">Authenticate</button>
+      <button class="btn-main-text" type="button" onclick="closeMechanicPortal()">Cancel</button>
     </div>
     <div id="mechDashboard" style="display: none;">
-      <div class="portal-header-title" style="color:#0284C7;">Assigned Job Cards</div>
-      <div class="portal-header-subtitle">Tap 'View Job Sheet' to open full A4 Sheet & Download PDF</div>
+      <div class="portal-header-title">Assigned Tasks</div>
       <div class="sync-status-bar">
-        <span id="mechSyncStatus">🟢 Syncing Live Job Cards...</span>
-        <button type="button" class="sync-btn" style="background:#0284C7;" onclick="restoreAndSyncAllData()">🔄 Sync & Restore Jobs</button>
+        <span id="mechSyncStatus" class="status-indicator">Tasks Synchronized</span>
+        <button type="button" class="sync-btn-minimal" onclick="restoreAndSyncAllData()">Refresh</button>
       </div>
       <div id="mechJobList" class="db-list"></div>
-      <button class="btn-outline" type="button" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Portal</button>
+      <button class="btn-main-text" type="button" onclick="closeMechanicPortal()" style="margin-top: 12px;">Exit Portal</button>
     </div>
   </div>
 </div>
 
 <!-- FULL A4 SHEET PREVIEW MODAL -->
 <div class="ui-modal-overlay" id="viewCardModal" onclick="if(event.target === this) closeViewCard()">
-  <div class="ui-modal-box" style="max-width: 450px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h3 style="margin:0; font-size:17px; font-weight:900;" id="previewModalTitle">A4 Document Preview</h3>
-      <button type="button" onclick="closeViewCard()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer; color:#0B0F19;">✕</button>
+  <div class="ui-modal-box" style="max-width: 450px; padding: 20px;">
+    <div class="modal-header-minimal">
+      <h3 id="previewModalTitle">Document Preview</h3>
+      <button type="button" class="close-btn-minimal" onclick="closeViewCard()">✕</button>
     </div>
     <div id="viewCardContent" class="a4-sheet-preview"></div>
-    <button class="btn-main" type="button" id="modalDownloadPdfBtn" style="margin-top:0; background:#16A34A;">📥 Download Official A4 PDF</button>
-    <button class="btn-outline" type="button" onclick="closeViewCard()" style="margin-top:10px;">Close Preview</button>
+    <button class="btn-main-dark" type="button" id="modalDownloadPdfBtn" style="margin-top:10px;">Download PDF</button>
   </div>
 </div>
 
 <!-- UNIVERSAL ALERT / CONFIRM MODAL -->
 <div class="ui-modal-overlay" id="uiAlertModal" onclick="if(event.target === this) closeUiAlert()">
-  <div class="ui-modal-box" style="text-align: center; max-width: 340px;">
-    <div class="ui-modal-icon" id="uiAlertIcon">⚠️</div>
-    <h3 class="ui-modal-title" id="uiAlertTitle">Alert</h3>
-    <p class="ui-modal-msg" id="uiAlertMsg">Message</p>
-    <div id="alertActionButtons" style="display: none; gap: 10px; margin-bottom: 10px;">
-      <button class="btn-sm" type="button" style="flex:1; padding:12px; background:#E2E8F0; color:#0B0F19;" onclick="closeUiAlert()">Cancel</button>
-      <button class="btn-sm" type="button" style="flex:1; padding:12px; background:#EF4444; color:#fff;" id="alertConfirmBtn">Delete</button>
+  <div class="ui-modal-box" style="text-align: center; max-width: 320px; padding: 30px 20px;">
+    <h3 class="ui-modal-title" id="uiAlertTitle" style="margin-bottom:12px;">Notice</h3>
+    <p class="ui-modal-msg" id="uiAlertMsg" style="color:#475569; font-size:14px;">Message</p>
+    <div id="alertActionButtons" style="display: none; gap: 10px; margin-top: 20px;">
+      <button class="btn-main-outline" type="button" style="flex:1;" onclick="closeUiAlert()">Cancel</button>
+      <button class="btn-main-dark" type="button" style="flex:1; background:#DC2626;" id="alertConfirmBtn">Confirm</button>
     </div>
-    <button class="ui-modal-btn" type="button" id="alertOkBtn" onclick="closeUiAlert()">Got It</button>
+    <button class="btn-main-dark" type="button" id="alertOkBtn" style="margin-top: 20px;" onclick="closeUiAlert()">Acknowledge</button>
   </div>
 </div>
 
 <!-- CUSTOM PROMPT MODAL FOR UTR ENTRY -->
 <div class="ui-modal-overlay" id="customAlertModal" onclick="if(event.target === this) closeCustomAlert(false)">
-  <div class="ui-modal-box" style="text-align: center; max-width: 350px;">
-    <h3 id="customAlertTitle" style="margin:0 0 8px; font-size:18px; font-weight:900; color:var(--text-main);">Enter UTR</h3>
-    <p id="customAlertMsg" style="margin:0 0 18px; font-size:13.5px; color:var(--text-muted); line-height:1.4;">Message</p>
-    <div id="customAlertInputContainer" style="margin-bottom:16px; display:none;">
-      <input type="text" id="customAlertInput" placeholder="Enter UPI UTR / Ref No." style="padding:12px; font-size:14px;">
+  <div class="ui-modal-box" style="text-align: center; max-width: 320px; padding: 30px 20px;">
+    <h3 id="customAlertTitle" class="ui-modal-title" style="margin-bottom:12px;">Input Required</h3>
+    <p id="customAlertMsg" class="ui-modal-msg" style="color:#475569; font-size:14px;">Message</p>
+    <div id="customAlertInputContainer" style="margin:bottom:20px; display:none;">
+      <input type="text" id="customAlertInput" class="minimal-input" placeholder="Enter value..." style="text-align:center;">
     </div>
-    <div style="display:flex; gap:8px;">
-      <button class="btn-sm" type="button" id="customAlertBtnCancel" style="margin-top:0; padding:12px; background:#E2E8F0; display:none;" onclick="closeCustomAlert(false)">Cancel</button>
-      <button class="btn-main" type="button" id="customAlertBtnOk" style="margin-top:0; padding:12px;" onclick="closeCustomAlert(true)">Verify & Generate Invoice</button>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+      <button class="btn-main-outline" type="button" id="customAlertBtnCancel" style="flex:1; display:none;" onclick="closeCustomAlert(false)">Cancel</button>
+      <button class="btn-main-dark" type="button" id="customAlertBtnOk" style="flex:1;" onclick="closeCustomAlert(true)">Submit</button>
     </div>
   </div>
 </div>
 
-<!-- CONNECTING EXTERNAL JAVASCRIPT FILE -->
 <script src="script.js"></script>
 
 </body>
