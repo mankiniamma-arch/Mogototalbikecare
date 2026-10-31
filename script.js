@@ -34,6 +34,52 @@ let alertCallback = null;
 let vahanOtpStore = {};
 let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
 
+// ==========================================================
+// AI NUMBER PLATE SCANNER (TESSERACT.JS OCR)
+// ==========================================================
+async function processNumberPlateScan(event, moduleType) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const regInput = document.getElementById('reg-' + moduleType);
+  const originalPlaceholder = regInput.placeholder;
+  
+  // Provide User Feedback during AI analysis
+  regInput.value = "";
+  regInput.placeholder = "📷 Scanning Plate...";
+  showUiAlert("⏳", "Scanning Number Plate", "AI is analyzing the image. Please wait a few seconds...");
+
+  try {
+    // Run Optical Character Recognition using Tesseract.js
+    const result = await Tesseract.recognize(file, 'eng');
+    
+    let text = result.data.text;
+    
+    // Clean and Extract Number: remove non-alphanumerics, spaces, etc.
+    let cleanText = text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    
+    // Pattern Match for standard Indian Registration formats (e.g. AS01AB1234, AS011234)
+    let match = cleanText.match(/[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}/);
+    
+    closeUiAlert();
+    
+    if (match && match[0]) {
+      regInput.value = match[0];
+      showUiAlert("✅", "Scan Successful", "Vehicle number " + match[0] + " detected! Tap 'Send WA OTP' to continue.");
+    } else {
+      regInput.placeholder = originalPlaceholder;
+      showUiAlert("⚠️", "Scan Failed", "Could not perfectly read the vehicle number from the photo. Please try again or type manually.");
+    }
+  } catch (err) {
+    closeUiAlert();
+    regInput.placeholder = originalPlaceholder;
+    showUiAlert("❌", "Scanner Error", "Something went wrong with the AI scanner. Please type manually.");
+  }
+  
+  // Reset the file input so the user can scan another photo if needed
+  event.target.value = "";
+}
+
 const BOTTOM_LEGAL_DATA = {
   privacy: {
     title: "🛡️ Privacy Policy (Indian & International Law)",
