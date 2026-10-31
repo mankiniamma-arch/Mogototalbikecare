@@ -220,21 +220,22 @@
 
     <button class="btn-main" type="button" onclick="submitBooking()">Confirm Booking 🚀</button>
     
-    <div class="portal-links">
-      <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
-      <span class="portal-link" style="color:#0284C7;" onclick="openMechanicPortal()">🔧 Mechanic Portal</span>
+    <!-- FIX: Ensure the portal links are properly closing and have higher z-index/clickable area -->
+    <div class="portal-links" style="position: relative; z-index: 10;">
+      <span class="portal-link" onclick="openAdminPortal()" style="cursor: pointer; padding: 10px;">🔐 Admin Portal</span>
+      <span class="portal-link" style="color:#0284C7; cursor: pointer; padding: 10px;" onclick="openMechanicPortal()">🔧 Mechanic Portal</span>
     </div>
   </div>
 
   <!-- LOADING SCREEN -->
-  <div class="card" id="loadingScreen">
+  <div class="card" id="loadingScreen" style="display: none;">
     <div class="loader"></div>
     <h3 style="margin:0 0 8px; font-size:20px;">Processing Booking...</h3>
     <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating documents.</p>
   </div>
 
   <!-- SUCCESS SCREEN -->
-  <div class="card" id="successScreen">
+  <div class="card" id="successScreen" style="display: none;">
     <div style="font-size:56px; margin-bottom:12px;">✅</div>
     <h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;" id="successHeading">Submitted Successfully!</h2>
     <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will connect with you.</p>
@@ -259,10 +260,8 @@
     <button class="btn-outline" type="button" onclick="location.reload()">Book Another Service</button>
   </div>
 
-  <!-- =================================================================== -->
-  <!-- MANDATORY BOTTOM LEGAL, CONSTITUTIONAL & INTERNATIONAL STRUCTURE    -->
-  <!-- =================================================================== -->
-  <footer class="bottom-legal-structure">
+  <!-- BOTTOM LEGAL FOOTER -->
+  <footer class="bottom-legal-structure" style="position: relative; z-index: 10;">
     <div class="bls-top-bar">
       <div>
         <div class="bls-company-title">MoGo Total Bike Care</div>
@@ -279,7 +278,6 @@
         </div>
         <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('privacy')">👁️ View</button>
       </div>
-
       <div class="bls-policy-row">
         <div class="bls-policy-info">
           <div class="bls-p-title">📜 Terms & Conditions (Service Logic)</div>
@@ -287,7 +285,6 @@
         </div>
         <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('terms')">👁️ View</button>
       </div>
-
       <div class="bls-policy-row">
         <div class="bls-policy-info">
           <div class="bls-p-title">⚖️ Legal & Constitutional Compliance</div>
@@ -295,7 +292,6 @@
         </div>
         <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('legal')">👁️ View</button>
       </div>
-
       <div class="bls-policy-row">
         <div class="bls-policy-info">
           <div class="bls-p-title">💳 Refund, Cancellation & Consumer Rights</div>
@@ -303,7 +299,6 @@
         </div>
         <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('refund')">👁️ View</button>
       </div>
-
       <div class="bls-policy-row">
         <div class="bls-policy-info">
           <div class="bls-p-title">🏢 Contact Us & Grievance Redressal</div>
@@ -319,17 +314,12 @@
       <div><strong>📞 Helpline / WhatsApp:</strong> <a href="tel:+919954924948">+91 99549 24948</a> &nbsp;|&nbsp; <strong>GSTIN:</strong> 18AASCM6250H1Z1</div>
       <div><strong>📍 Registered Address:</strong> Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035, India</div>
     </div>
-
     <div class="bls-copyright">
       © 2024–2026 Mankiniamma Technologies Private Limited. All Rights Reserved.
     </div>
   </footer>
 
 </div>
-
-<!-- ========================================== -->
-<!-- MODALS (PROPER Z-INDEX LAYERING)           -->
-<!-- ========================================== -->
 
 <!-- BOTTOM LEGAL & LOGIC VIEW MODAL -->
 <div class="ui-modal-overlay" id="bottomLegalModal" onclick="if(event.target === this) closeBottomLegalModal()">
@@ -343,7 +333,7 @@
   </div>
 </div>
 
-<!-- ADMIN PORTAL (ALL 3 TABS: JOB CARDS, INVOICES, + GENERATE) -->
+<!-- ADMIN PORTAL -->
 <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
   <div class="ui-modal-box">
     <div id="adminPinSection">
@@ -357,23 +347,19 @@
     <div id="adminDashboard" style="display: none;">
       <div class="portal-header-title">Admin Portal</div>
       <div class="portal-header-subtitle">Job Sheets, Paid Invoices & Manual Generation</div>
-
       <div class="sync-status-bar">
         <span id="adminSyncStatus">🟢 Syncing Razorpay & Cloud...</span>
         <div style="display:flex; gap:4px;">
           <button type="button" class="sync-btn" onclick="restoreAndSyncAllData()">🔄 Sync & Restore All</button>
         </div>
       </div>
-      
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards <span id="count-jc"></span></div>
         <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Invoices <span id="count-inv"></span></div>
         <div class="db-tab" id="tab-gen" onclick="switchAdminTab('gen')">+ Generate</div>
       </div>
-      
       <div id="view-jc" class="db-list"></div>
       <div id="view-inv" class="db-list" style="display: none;"></div>
-      
       <div id="view-gen" style="display: none;">
         <label style="margin-top:0;">Customer Name</label>
         <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
@@ -397,7 +383,6 @@
         </div>
         <label style="margin-top:4px;">Address</label>
         <input type="text" id="admAddr" placeholder="Customer Doorstep / GPS Address, Guwahati" style="margin-bottom:10px; padding:12px;">
-        
         <div id="admUtrBox" style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
           <label style="color:var(--text-main); margin-top:0; font-size:11px;" id="admUtrLabel">UTR / Payment Proof (Optional for Job Card):</label>
           <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;">
@@ -405,13 +390,12 @@
         </div>
         <button class="btn-main" type="button" onclick="processAdminForm()" style="margin-top:0; background:#16A34A; box-shadow:0 8px 20px rgba(22,163,74,0.25);">Generate & View A4 Sheet</button>
       </div>
-
       <button class="btn-outline" type="button" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
   </div>
 </div>
 
-<!-- MECHANIC PORTAL (STRICTLY JOB CARDS ONLY) -->
+<!-- MECHANIC PORTAL -->
 <div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
   <div class="ui-modal-box">
     <div id="mechPinSection">
@@ -425,36 +409,30 @@
     <div id="mechDashboard" style="display: none;">
       <div class="portal-header-title" style="color:#0284C7;">Assigned Job Cards</div>
       <div class="portal-header-subtitle">Tap 'View Job Sheet' to open full A4 Sheet & Download PDF</div>
-
       <div class="sync-status-bar">
         <span id="mechSyncStatus">🟢 Syncing Live Job Cards...</span>
         <button type="button" class="sync-btn" style="background:#0284C7;" onclick="restoreAndSyncAllData()">🔄 Sync & Restore Jobs</button>
       </div>
-
       <div id="mechJobList" class="db-list"></div>
       <button class="btn-outline" type="button" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
   </div>
 </div>
 
-<!-- FULL A4 SHEET PREVIEW MODAL (WITH SINGLE DOWNLOAD BUTTON AT BOTTOM) -->
+<!-- FULL A4 SHEET PREVIEW MODAL -->
 <div class="ui-modal-overlay" id="viewCardModal" onclick="if(event.target === this) closeViewCard()">
   <div class="ui-modal-box" style="max-width: 450px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3 style="margin:0; font-size:17px; font-weight:900;" id="previewModalTitle">A4 Document Preview</h3>
       <button type="button" onclick="closeViewCard()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer; color:#0B0F19;">✕</button>
     </div>
-    
-    <!-- Full A4 Sheet Container -->
     <div id="viewCardContent" class="a4-sheet-preview"></div>
-    
-    <!-- Single Download Option Below the A4 Preview -->
     <button class="btn-main" type="button" id="modalDownloadPdfBtn" style="margin-top:0; background:#16A34A;">📥 Download Official A4 PDF</button>
     <button class="btn-outline" type="button" onclick="closeViewCard()" style="margin-top:10px;">Close Preview</button>
   </div>
 </div>
 
-<!-- UNIVERSAL ALERT / CONFIRM MODAL (TOP Z-INDEX) -->
+<!-- UNIVERSAL ALERT / CONFIRM MODAL -->
 <div class="ui-modal-overlay" id="uiAlertModal" onclick="if(event.target === this) closeUiAlert()">
   <div class="ui-modal-box" style="text-align: center; max-width: 340px;">
     <div class="ui-modal-icon" id="uiAlertIcon">⚠️</div>
@@ -483,7 +461,7 @@
   </div>
 </div>
 
-<!-- CONNECTING EXTERNAL JAVASCRIPT FILE -->
+<!-- हमारी नई JavaScript फाईल -->
 <script src="script.js"></script>
 
 </body>
