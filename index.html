@@ -11,70 +11,67 @@
   <!-- FAVICON -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%23FF5A00' stroke-width='14'/><circle cx='50' cy='50' r='36' fill='none' stroke='%23CBD5E1' stroke-width='2' stroke-dasharray='4 4'/><path d='M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19' stroke='%230B0F19' stroke-width='5'/><circle cx='50' cy='50' r='9' fill='%23FF5A00'/><circle cx='50' cy='50' r='3.5' fill='%23FFFFFF'/></svg>">
   
-  <!-- External Libraries -->
+  <!-- External Libraries (Loaded Safely) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <!-- Tesseract.js for OCR -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Google Identity API -->
+  <!-- Google Identity API for One Tap Login -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
-  <!-- EXTERNAL CSS -->
+  <!-- CONNECTING EXTERNAL CSS FILE -->
   <link rel="stylesheet" href="style.css">
 
   <!-- ========================================================== -->
-  <!-- GPAY STYLE LIVE SCANNER CSS                                -->
+  <!-- GPAY STYLE LIVE SCANNER CSS (Added Inline for safety)      -->
   <!-- ========================================================== -->
   <style>
-    /* Full Screen Overlay */
+    /* GPay Style Live Scanner Overlay */
     .scanner-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.95);
+      background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(10px);
       z-index: 99999999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
+      opacity: 0; visibility: hidden; transition: all 0.3s ease;
     }
     .scanner-overlay.show { opacity: 1; visibility: visible; }
     
-    /* Header Text */
     .scanner-header-text {
       position: absolute; top: 40px; width: 100%; text-align: center;
       color: #FFFFFF; font-size: 18px; font-weight: 800; letter-spacing: 0.5px;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.8); z-index: 10;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 10;
     }
     
-    /* Video Container (Square for bikes) */
     .scanner-video-container {
-      position: relative; width: 85vw; max-width: 400px; height: 85vw; max-height: 400px;
-      border-radius: 20px; overflow: hidden;
-      box-shadow: 0 0 0 4px rgba(255, 90, 0, 0.3), 0 20px 50px rgba(0,0,0,0.5);
-      background: #111;
+      position: relative; width: 85vw; max-width: 380px; height: 85vw; max-height: 380px;
+      border-radius: 32px; overflow: hidden;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 20px 50px rgba(0,0,0,0.5);
+      background: #000;
     }
     .scanner-video {
       width: 100%; height: 100%; object-fit: cover; display: block;
     }
     
-    /* Square Focus Box */
+    /* The Square Focus Box */
     .scanner-frame-square {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 80%; height: 80%;
-      border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 12px;
-      box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); /* Dark background outside focus area */
+      width: 75%; height: 75%;
+      border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 16px;
+      box-shadow: 0 0 0 4000px rgba(0,0,0,0.65);
       z-index: 2; pointer-events: none; overflow: hidden;
     }
     
-    /* Corner Brackets (Orange) */
+    /* Corner Brackets for GPay Feel */
     .scanner-frame-square::before, .scanner-frame-square::after {
-      content: ''; position: absolute; width: 40px; height: 40px; border-color: #FF5A00; border-style: solid;
+      content: ''; position: absolute; width: 30px; height: 30px; border-color: #10B981; border-style: solid;
     }
-    .scanner-frame-square::before { top: -3px; left: -3px; border-width: 5px 0 0 5px; border-top-left-radius: 12px; }
-    .scanner-frame-square::after { bottom: -3px; right: -3px; border-width: 0 5px 5px 0; border-bottom-right-radius: 12px; }
+    .scanner-frame-square::before { top: -3px; left: -3px; border-width: 4px 0 0 4px; border-top-left-radius: 16px; }
+    .scanner-frame-square::after { bottom: -3px; right: -3px; border-width: 0 4px 4px 0; border-bottom-right-radius: 16px; }
 
-    /* Left-to-Right Animated Laser (Orange) */
+    /* Left-to-Right Animated Laser Scanning Line */
     .scanner-laser {
-      position: absolute; top: 0; left: -100%; width: 40%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 90, 0, 0.7), transparent);
+      position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.6), transparent);
       z-index: 3;
       animation: scanLeftRight 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
@@ -84,23 +81,22 @@
       100% { left: -50%; }
     }
 
-    /* Cancel Button */
     .scanner-cancel-btn {
-      position: absolute; bottom: 50px; background: rgba(255, 255, 255, 0.15);
-      color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 12px 30px; border-radius: 12px; font-size: 15px; font-weight: 800;
-      cursor: pointer; backdrop-filter: blur(4px); z-index: 10; transition: background 0.2s;
+      position: absolute; bottom: 50px; background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 14px 32px; border-radius: 16px; font-size: 15px; font-weight: 800;
+      cursor: pointer; backdrop-filter: blur(5px); z-index: 10;
     }
-    .scanner-cancel-btn:hover { background: rgba(255, 255, 255, 0.25); }
+    .scanner-cancel-btn:active { background: rgba(255, 255, 255, 0.2); }
 
-    /* Camera Icon Button in Form */
+    /* Beautiful Camera Icon Button inside Input Row */
     .cam-icon-btn {
-      background: #0B0F19; color: #FFFFFF; border: none; border-radius: 10px;
-      padding: 0 16px; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: 0.2s;
+      background: #E2E8F0; color: #0B0F19; border: none; border-radius: 10px;
+      padding: 0 14px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: 0.2s; box-shadow: inset 0 0 0 1px #CBD5E1;
     }
-    .cam-icon-btn:hover { background: #FF5A00; }
-    .cam-icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
+    .cam-icon-btn:hover { background: #CBD5E1; }
+    .cam-icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
   </style>
 </head>
 <body>
@@ -110,7 +106,7 @@
   <!-- CUSTOMER BOOKING FORM -->
   <div class="card" id="bookingForm" style="position: relative;">
     
-    <!-- PREMIUM LOGIN BUTTON -->
+    <!-- PREMIUM APP-STYLE LOGIN BUTTON (Top Right Inside Card) -->
     <div style="position: absolute; top: 18px; right: 22px; z-index: 50;">
       <button class="login-btn-top" id="topLoginBtn" onclick="openAuthModal()">👤 Login / Sign Up</button>
     </div>
@@ -135,6 +131,10 @@
     <label>Customer Details</label>
     <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
     <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
+    
+    <!-- NEW VEHICLE NUMBER FIELD ADDED HERE -->
+    <input type="text" id="cVehicleNo" placeholder="Bike / Scooty Number (e.g. AS01AB1234)" style="margin-top: 12px; text-transform: uppercase;" oninput="clearError('cVehicleNo')">
+    
     <input type="email" id="cEmail" placeholder="Email Address (Optional)" style="display:none; margin-top:12px;">
 
     <label>Select Service</label>
@@ -278,7 +278,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 6 & 7: EMERGENCY & MMC (UNCHANGED) -->
+      <!-- SERVICE 6 & 7: EMERGENCY & MMC -->
       <div class="service-accordion-item disabled" id="item-emergency">
         <div class="service-header-row" onclick="toggleService('emergency', 'Puncture & Emergency Services', 0)">
           <div class="service-info"><div class="s-title">🚨 Puncture & Emergency Services</div><div class="s-desc">Expert Care & Assistance</div></div><div class="s-badge">COMING SOON</div>
@@ -303,7 +303,6 @@
       <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
     </div>
 
-    <!-- Booking Button handles Login Check -->
     <button class="btn-main" type="button" onclick="submitBooking()">Confirm Booking 🚀</button>
     
     <div class="portal-links">
@@ -312,10 +311,12 @@
     </div>
   </div>
 
-  <!-- SCREENS & LEGAL (UNCHANGED) -->
+  <!-- LOADING SCREEN -->
   <div class="card" id="loadingScreen">
     <div class="loader"></div><h3 style="margin:0 0 8px; font-size:20px;">Processing Booking...</h3><p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating documents.</p>
   </div>
+
+  <!-- SUCCESS SCREEN -->
   <div class="card" id="successScreen">
     <div style="font-size:56px; margin-bottom:12px;">✅</div><h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;" id="successHeading">Submitted Successfully!</h2><p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will connect with you.</p>
     <div id="qrSection" class="official-qr-box" style="display:none;">
@@ -355,14 +356,14 @@
 
 <!-- NEW GPAY-STYLE LIVE SCANNER OVERLAY -->
 <div class="scanner-overlay" id="gpayScannerOverlay">
-  <div class="scanner-header-text" id="scannerStatusText">Align Number Plate in Box</div>
+  <div class="scanner-header-text" id="scannerStatusText">Scan Bike Number Plate</div>
   
   <div class="scanner-video-container">
     <video class="scanner-video" id="scannerVideoElement" autoplay playsinline></video>
     
-    <!-- Focus Box with Orange Corners -->
+    <!-- Focus Box with Corners -->
     <div class="scanner-frame-square">
-      <!-- Animated Left-to-Right Orange Laser -->
+      <!-- Animated Left-to-Right Laser -->
       <div class="scanner-laser"></div>
     </div>
   </div>
