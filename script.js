@@ -4,9 +4,11 @@ const TOTAL_PRICE = 89;
 const COMPANY_GSTIN = "18AASCM6250H1Z1"; 
 const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035";
 
+// Live Razorpay Credentials
 const RAZORPAY_KEY_ID = "rzp_live_TsqVswCcOu6NQS"; 
 const _RZP_SYNC_TOKEN = "cnpwX2xpdmVfVHNxVnN3Q2NPdTZOUVM6UTY2NzkzeEQxSGFkYnRjbnFPWlk0UDVK";
 
+// KYC & VAHAN PRODUCTS API CREDENTIALS
 const KYC_API_CONFIG = {
   environment: "TEST",
   clientId: "6d427278-4cb1-4460-8c2e-c09224552148",
@@ -120,7 +122,7 @@ function verifyAuthOTP() {
 
 // ==========================================================
 // NEW SUPERFAST 'CLICK & SCAN' AI NUMBER PLATE ENGINE
-// (Replaces the slow live video with instant photo processing)
+// (Fixes the slow scanning and garbage number detection)
 // ==========================================================
 async function processNumberPlateScan(event, moduleType) {
   const file = event.target.files[0];
@@ -289,7 +291,6 @@ function proceedVahanPaymentOrBooking(actionType, regNo, customAmount) {
   document.getElementById('qrSection').style.display = "block";
 }
 
-// 3-LAYER GPS LOCATOR
 async function fillAddressFromCoords(lat, lon) {
   const addrInput = document.getElementById('cAddr');
   const locBtn = document.getElementById('locBtn');
@@ -347,21 +348,17 @@ function toggleService(key, name, price) {
   }
 }
 
-// MAIN BOOKING FUNCTION WITH STRICT AUTH CHECK
 function submitBooking() {
   let name = document.getElementById('cName').value.trim(), phone = document.getElementById('cPhone').value.trim(), addr = document.getElementById('cAddr').value.trim();
   
   if (!name || !/^[0-9]{10}$/.test(phone) || !addr) return showUiAlert("⚠️", "Missing Details", "Please fill name, phone, and address.");
   if (selectedServiceKey !== 'wash') return showUiAlert("🔒", "Feature Locked", "Select Premium Foam Wash or use Vahan module.");
 
-  // FORCE LOGIN IF NOT LOGGED IN
   if (!loggedInUser) {
     showUiAlert("🔒", "Authentication Required", "Please Login or Sign Up to confirm your booking.");
-    setTimeout(function() { openAuthModal(true); }, 1500); // true indicates it was opened from checkout
+    setTimeout(function() { openAuthModal(true); }, 1500); 
     return; 
   }
-
-  // If logged in, proceed
   processFinalBooking();
 }
 
@@ -370,17 +367,14 @@ function processFinalBooking() {
   let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
   let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
   let subtotal = TOTAL_PRICE / 1.18;
-
   globalBookingData = {
     id: id, date: new Date().toLocaleDateString('en-IN'), name: name, phone: phone, vehicle: vehicleType, serviceName: "Premium Foam Wash",
     grandTotal: TOTAL_PRICE, address: addr, paymentType: paymentType, status: "BOOKED", forceType: "JOB_CARD", utr: ""
   };
-  
   insertRecord(globalBookingData);
   document.getElementById('bookingForm').style.display = "none";
   document.getElementById('successScreen').style.display = "block";
   document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
-  
   if (paymentType === "Pay Now") setTimeout(triggerRazorpayPayment, 400);
 }
 
