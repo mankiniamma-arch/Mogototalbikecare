@@ -1,23 +1,26 @@
-/* FLOATING USER PROFILE BUTTON (Clean & Out of the way) */
-.floating-profile-btn {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: #FFFFFF;
+/* NEW PREMIUM LOGIN BUTTON (Positioned cleanly on top right) */
+.login-btn-top {
+  background: #F1F5F9;
   color: #0B0F19;
-  border: 1px solid #E2E8F0;
+  border: 1.5px solid #E2E8F0;
   padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 11px;
+  border-radius: 12px;
+  font-size: 11.5px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(11, 15, 25, 0.08);
-  z-index: 1000;
-  transition: all 0.2s;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
-.floating-profile-btn:hover {
-  border-color: #FF5A00;
-  color: #FF5A00;
+.login-btn-top:hover {
+  background: #E2E8F0;
+}
+.login-btn-top.logged-in {
+  background: #DCFCE7;
+  color: #15803D;
+  border-color: #BBF7D0;
 }
 
 :root { 
