@@ -4,11 +4,9 @@ const TOTAL_PRICE = 89;
 const COMPANY_GSTIN = "18AASCM6250H1Z1"; 
 const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035";
 
-// Live Razorpay Credentials
 const RAZORPAY_KEY_ID = "rzp_live_TsqVswCcOu6NQS"; 
 const _RZP_SYNC_TOKEN = "cnpwX2xpdmVfVHNxVnN3Q2NPdTZOUVM6UTY2NzkzeEQxSGFkYnRjbnFPWlk0UDVK";
 
-// KYC & VAHAN PRODUCTS API CREDENTIALS
 const KYC_API_CONFIG = {
   environment: "TEST",
   clientId: "6d427278-4cb1-4460-8c2e-c09224552148",
@@ -30,9 +28,6 @@ let alertCallback = null;
 let vahanOtpStore = {};
 let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
 
-// ==========================================================
-// USER AUTHENTICATION SYSTEM (Strictly NO Guest Checkout)
-// ==========================================================
 let loggedInUser = null;
 let loginIntent = false; 
 
@@ -121,8 +116,7 @@ function verifyAuthOTP() {
 }
 
 // ==========================================================
-// NEW SUPERFAST 'CLICK & SCAN' AI NUMBER PLATE ENGINE
-// (Fixes the slow scanning and garbage number detection)
+// IMPROVED NUMBER PLATE SCANNER (SUPPORTS SQUARE & RECTANGLE)
 // ==========================================================
 async function processNumberPlateScan(event, moduleType) {
   const file = event.target.files[0];
@@ -135,29 +129,31 @@ async function processNumberPlateScan(event, moduleType) {
   regInput.placeholder = "📷 Analyzing...";
   showUiAlert("⏳", "Processing Photo", "Scanning number plate instantly...");
   
-  // Compress image to make AI extremely fast
   const img = new Image();
   img.src = URL.createObjectURL(file);
   img.onload = async () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const MAX_WIDTH = 800; // Small width for fast processing
+    const MAX_WIDTH = 1000;
     let width = img.width; let height = img.height;
     
     if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
     canvas.width = width; canvas.height = height;
     
-    // Convert to grayscale for better contrast and accuracy
-    ctx.filter = 'grayscale(100%) contrast(1.5)';
+    // Improved preprocessing for multiline (square) plates
+    ctx.filter = 'grayscale(100%) contrast(2)'; 
     ctx.drawImage(img, 0, 0, width, height);
     
     try {
-      // Fast single-pass OCR
-      const result = await Tesseract.recognize(canvas, 'eng');
-      let text = result.data.text;
+      const result = await Tesseract.recognize(canvas, 'eng', {
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+      });
       
-      // Strict Indian Number Plate Regex (e.g. AS01AB1234 or AS011234)
-      let cleanText = text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      // Remove all spaces and newlines to combine lines of square plates
+      let text = result.data.text.toUpperCase().replace(/\s+/g, ''); 
+      let cleanText = text.replace(/[^A-Z0-9]/g, '');
+      
+      // Regex for Indian Number Plates (e.g., AS01EU4882)
       let match = cleanText.match(/[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}/);
       
       closeUiAlert();
@@ -174,11 +170,11 @@ async function processNumberPlateScan(event, moduleType) {
       showUiAlert("❌", "Scanner Error", "Please type manually.");
     }
   };
-  event.target.value = ""; // Reset for next scan
+  event.target.value = "";
 }
 
 // ==========================================================
-// REST OF THE EXISTING LOGIC (VAHAN, MAPS, PDF, RAZORPAY)
+// REST OF THE LOGIC
 // ==========================================================
 const BOTTOM_LEGAL_DATA = {
   privacy: {
