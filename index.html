@@ -11,17 +11,93 @@
   <!-- FAVICON -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%23FF5A00' stroke-width='14'/><circle cx='50' cy='50' r='36' fill='none' stroke='%23CBD5E1' stroke-width='2' stroke-dasharray='4 4'/><path d='M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19' stroke='%230B0F19' stroke-width='5'/><circle cx='50' cy='50' r='9' fill='%23FF5A00'/><circle cx='50' cy='50' r='3.5' fill='%23FFFFFF'/></svg>">
   
-  <!-- External Libraries (Loaded Safely) -->
+  <!-- External Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Google Identity API for One Tap Login -->
+  <!-- Google Identity API -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
-  <!-- CONNECTING EXTERNAL CSS FILE -->
+  <!-- EXTERNAL CSS -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- ========================================================== -->
+  <!-- GPAY STYLE LIVE SCANNER CSS (Added Inline for safety)      -->
+  <!-- ========================================================== -->
+  <style>
+    /* GPay Style Live Scanner Overlay */
+    .scanner-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(10px);
+      z-index: 99999999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden; transition: all 0.3s ease;
+    }
+    .scanner-overlay.show { opacity: 1; visibility: visible; }
+    
+    .scanner-header-text {
+      position: absolute; top: 40px; width: 100%; text-align: center;
+      color: #FFFFFF; font-size: 18px; font-weight: 800; letter-spacing: 0.5px;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 10;
+    }
+    
+    .scanner-video-container {
+      position: relative; width: 85vw; max-width: 380px; height: 85vw; max-height: 380px;
+      border-radius: 32px; overflow: hidden;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 20px 50px rgba(0,0,0,0.5);
+      background: #000;
+    }
+    .scanner-video {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    
+    /* The Square Focus Box */
+    .scanner-frame-square {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 75%; height: 75%;
+      border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 16px;
+      box-shadow: 0 0 0 4000px rgba(0,0,0,0.65); /* Darkens everything outside the square */
+      z-index: 2; pointer-events: none; overflow: hidden;
+    }
+    
+    /* Corner Brackets for GPay Feel */
+    .scanner-frame-square::before, .scanner-frame-square::after {
+      content: ''; position: absolute; width: 30px; height: 30px; border-color: #10B981; border-style: solid;
+    }
+    .scanner-frame-square::before { top: -3px; left: -3px; border-width: 4px 0 0 4px; border-top-left-radius: 16px; }
+    .scanner-frame-square::after { bottom: -3px; right: -3px; border-width: 0 4px 4px 0; border-bottom-right-radius: 16px; }
+
+    /* Left-to-Right Animated Laser Scanning Line */
+    .scanner-laser {
+      position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.6), transparent);
+      z-index: 3;
+      animation: scanLeftRight 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    @keyframes scanLeftRight {
+      0% { left: -50%; }
+      50% { left: 100%; }
+      100% { left: -50%; }
+    }
+
+    .scanner-cancel-btn {
+      position: absolute; bottom: 50px; background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 14px 32px; border-radius: 16px; font-size: 15px; font-weight: 800;
+      cursor: pointer; backdrop-filter: blur(5px); z-index: 10;
+    }
+    .scanner-cancel-btn:active { background: rgba(255, 255, 255, 0.2); }
+
+    /* Beautiful Camera Icon Button inside Input Row */
+    .cam-icon-btn {
+      background: #E2E8F0; color: #0B0F19; border: none; border-radius: 10px;
+      padding: 0 14px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: 0.2s; box-shadow: inset 0 0 0 1px #CBD5E1;
+    }
+    .cam-icon-btn:hover { background: #CBD5E1; }
+    .cam-icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
+  </style>
 </head>
 <body>
 
@@ -30,7 +106,7 @@
   <!-- CUSTOMER BOOKING FORM -->
   <div class="card" id="bookingForm" style="position: relative;">
     
-    <!-- PREMIUM APP-STYLE LOGIN BUTTON (Top Right Inside Card) -->
+    <!-- PREMIUM LOGIN BUTTON -->
     <div style="position: absolute; top: 18px; right: 22px; z-index: 50;">
       <button class="login-btn-top" id="topLoginBtn" onclick="openAuthModal()">👤 Login / Sign Up</button>
     </div>
@@ -110,9 +186,10 @@
             <div class="vahan-input-row">
               <input type="text" id="reg-insurance" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
               
-              <!-- THE MISSING CAMERA BUTTON IS BACK -->
-              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-insurance" onchange="processNumberPlateScan(event, 'insurance')">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-insurance').click()" title="Scan Bike Number Plate">📷</button>
+              <!-- BEAUTIFUL CAMERA ICON BUTTON (Triggers Live Scanner) -->
+              <button type="button" class="cam-icon-btn" onclick="startLiveScanner('insurance')" title="Live Scan">
+                <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
+              </button>
               
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('insurance')">📲 Send WA OTP</button>
             </div>
@@ -124,7 +201,6 @@
                 <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('insurance')">✅ Verify & Check</button>
               </div>
             </div>
-
             <div id="res-box-insurance" class="vahan-result-card"></div>
           </div>
         </div>
@@ -145,9 +221,10 @@
             <div class="vahan-input-row">
               <input type="text" id="reg-puc" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
               
-              <!-- THE MISSING CAMERA BUTTON IS BACK -->
-              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-puc" onchange="processNumberPlateScan(event, 'puc')">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-puc').click()" title="Scan Bike Number Plate">📷</button>
+              <!-- BEAUTIFUL CAMERA ICON BUTTON -->
+              <button type="button" class="cam-icon-btn" onclick="startLiveScanner('puc')" title="Live Scan">
+                <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
+              </button>
               
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('puc')">📲 Send WA OTP</button>
             </div>
@@ -159,7 +236,6 @@
                 <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('puc')">✅ Verify & Check</button>
               </div>
             </div>
-
             <div id="res-box-puc" class="vahan-result-card"></div>
           </div>
         </div>
@@ -180,9 +256,10 @@
             <div class="vahan-input-row">
               <input type="text" id="reg-echallan" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
               
-              <!-- THE MISSING CAMERA BUTTON IS BACK -->
-              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-echallan" onchange="processNumberPlateScan(event, 'echallan')">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-echallan').click()" title="Scan Bike Number Plate">📷</button>
+              <!-- BEAUTIFUL CAMERA ICON BUTTON -->
+              <button type="button" class="cam-icon-btn" onclick="startLiveScanner('echallan')" title="Live Scan">
+                <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
+              </button>
               
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('echallan')">📲 Send WA OTP</button>
             </div>
@@ -194,42 +271,22 @@
                 <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('echallan')">✅ Verify & Check</button>
               </div>
             </div>
-
             <div id="res-box-echallan" class="vahan-result-card"></div>
           </div>
         </div>
       </div>
 
-      <!-- SERVICE 6: PUNCTURE & EMERGENCY SERVICES -->
+      <!-- SERVICE 6 & 7: EMERGENCY & MMC (UNCHANGED) -->
       <div class="service-accordion-item disabled" id="item-emergency">
         <div class="service-header-row" onclick="toggleService('emergency', 'Puncture & Emergency Services', 0)">
-          <div class="service-info">
-            <div class="s-title">🚨 Puncture & Emergency Services</div>
-            <div class="s-desc">Expert Care & Assistance</div>
-          </div>
-          <div class="s-badge">COMING SOON</div>
-        </div>
-        <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
-          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
+          <div class="service-info"><div class="s-title">🚨 Puncture & Emergency Services</div><div class="s-desc">Expert Care & Assistance</div></div><div class="s-badge">COMING SOON</div>
         </div>
       </div>
-
-      <!-- SERVICE 7: MONTHLY MAINTENANCE (MMC) -->
       <div class="service-accordion-item disabled" id="item-mmc">
         <div class="service-header-row" onclick="toggleService('mmc', 'Monthly Maintenance (MMC)', 0)">
-          <div class="service-info">
-            <div class="s-title">🤝 Monthly Maintenance (MMC)</div>
-            <div class="s-desc">Whole month maintenance contract</div>
-          </div>
-          <div class="s-badge">COMING SOON</div>
-        </div>
-        <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
-          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
+          <div class="service-info"><div class="s-title">🤝 Monthly Maintenance (MMC)</div><div class="s-desc">Whole month maintenance contract</div></div><div class="s-badge">COMING SOON</div>
         </div>
       </div>
-
     </div>
 
     <div class="loc-header">
@@ -252,69 +309,32 @@
     </div>
   </div>
 
-  <!-- LOADING SCREEN -->
+  <!-- SCREENS & LEGAL (UNCHANGED) -->
   <div class="card" id="loadingScreen">
-    <div class="loader"></div>
-    <h3 style="margin:0 0 8px; font-size:20px;">Processing Booking...</h3>
-    <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating documents.</p>
+    <div class="loader"></div><h3 style="margin:0 0 8px; font-size:20px;">Processing Booking...</h3><p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating documents.</p>
   </div>
-
-  <!-- SUCCESS SCREEN -->
   <div class="card" id="successScreen">
-    <div style="font-size:56px; margin-bottom:12px;">✅</div>
-    <h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;" id="successHeading">Submitted Successfully!</h2>
-    <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will connect with you.</p>
-    
+    <div style="font-size:56px; margin-bottom:12px;">✅</div><h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;" id="successHeading">Submitted Successfully!</h2><p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will connect with you.</p>
     <div id="qrSection" class="official-qr-box" style="display:none;">
-      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;" id="qrPriceTitle">Scan & Pay ₹89 Securely</p>
-      <p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Private Limited</p>
+      <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;" id="qrPriceTitle">Scan & Pay ₹89 Securely</p><p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Private Limited</p>
       <img src="1001243382.jpg" alt="Mankiniamma QR" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=mankiniamma@okhdfcbank%26pn=Mankiniamma%20Technologies%20Pvt%20Ltd%26am=89.00%26cu=INR&margin=10';">
       <p style="font-size:12px; color:#475569; margin-top:8px; font-weight:700;">UPI ID: <span style="color:#0B0F19;">mankiniamma@okhdfcbank</span></p>
-      
-      <!-- Razorpay Auto-Invoice Ready Button -->
       <button type="button" class="btn-main" id="instantPayBtn" style="background:#0284C7; margin-top:12px; padding:13px; font-size:14px;" onclick="triggerRazorpayPayment()">⚡ Pay ₹89 Instant (Auto-Generate Invoice)</button>
-
-      <div class="utr-box">
-        <label>Or Enter UPI UTR / Transaction ID (For Paid Tax Invoice):</label>
-        <input type="text" id="customerUtr" placeholder="e.g. 429381928312" style="padding: 12px; font-size: 14px;" oninput="handleCustomerUtrInput()">
-      </div>
+      <div class="utr-box"><label>Or Enter UPI UTR / Transaction ID (For Paid Tax Invoice):</label><input type="text" id="customerUtr" placeholder="e.g. 429381928312" style="padding: 12px; font-size: 14px;" oninput="handleCustomerUtrInput()"></div>
     </div>
-
     <button class="btn-main" type="button" id="pdfDownloadBtn" style="background:#0F172A;" onclick="previewCurrentBookingDoc()">👁️ View & Download Document (A4 PDF)</button>
     <a id="waBtn" href="#" target="_blank" class="btn-main" style="background:#25D366; text-decoration:none;">💬 Send Details on WhatsApp</a>
     <button class="btn-outline" type="button" onclick="location.reload()">Book Another Service</button>
   </div>
-
-  <!-- MANDATORY BOTTOM LEGAL -->
+  
   <footer class="bottom-legal-structure">
-    <div class="bls-top-bar">
-      <div>
-        <div class="bls-company-title">MoGo Total Bike Care</div>
-        <div class="bls-company-sub">Mankiniamma Technologies Private Limited</div>
-      </div>
-      <div class="bls-verified-tag">✔ GST & API Verified</div>
-    </div>
+    <div class="bls-top-bar"><div><div class="bls-company-title">MoGo Total Bike Care</div><div class="bls-company-sub">Mankiniamma Technologies Private Limited</div></div><div class="bls-verified-tag">✔ GST & API Verified</div></div>
     <div class="bls-policy-stack">
-      <div class="bls-policy-row">
-        <div class="bls-policy-info"><div class="bls-p-title">🛡️ Privacy Policy & Data Protection</div><div class="bls-p-desc">Article 21, Indian DPDP Act 2023 & GDPR</div></div>
-        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('privacy')">👁️ View</button>
-      </div>
-      <div class="bls-policy-row">
-        <div class="bls-policy-info"><div class="bls-p-title">📜 Terms & Conditions (Service Logic)</div><div class="bls-p-desc">Indian Contract Act 1872 & WhatsApp Opt-In</div></div>
-        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('terms')">👁️ View</button>
-      </div>
-      <div class="bls-policy-row">
-        <div class="bls-policy-info"><div class="bls-p-title">⚖️ Legal & Constitutional Compliance</div><div class="bls-p-desc">Constitution of India Art. 19(1)(g) & IT Act</div></div>
-        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('legal')">👁️ View</button>
-      </div>
-      <div class="bls-policy-row">
-        <div class="bls-policy-info"><div class="bls-p-title">💳 Refund & Cancellation</div><div class="bls-p-desc">Consumer Protection Act 2019</div></div>
-        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('refund')">👁️ View</button>
-      </div>
-      <div class="bls-policy-row">
-        <div class="bls-policy-info"><div class="bls-p-title">🏢 Contact & Grievance Redressal</div><div class="bls-p-desc">Official Helpdesk & Registered Office</div></div>
-        <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('contact')">👁️ View</button>
-      </div>
+      <div class="bls-policy-row"><div class="bls-policy-info"><div class="bls-p-title">🛡️ Privacy Policy & Data Protection</div><div class="bls-p-desc">Article 21, Indian DPDP Act 2023 & GDPR</div></div><button type="button" class="bls-view-btn" onclick="openBottomLegalModal('privacy')">👁️ View</button></div>
+      <div class="bls-policy-row"><div class="bls-policy-info"><div class="bls-p-title">📜 Terms & Conditions (Service Logic)</div><div class="bls-p-desc">Indian Contract Act 1872 & WhatsApp Opt-In</div></div><button type="button" class="bls-view-btn" onclick="openBottomLegalModal('terms')">👁️ View</button></div>
+      <div class="bls-policy-row"><div class="bls-policy-info"><div class="bls-p-title">⚖️ Legal & Constitutional Compliance</div><div class="bls-p-desc">Constitution of India Art. 19(1)(g) & IT Act</div></div><button type="button" class="bls-view-btn" onclick="openBottomLegalModal('legal')">👁️ View</button></div>
+      <div class="bls-policy-row"><div class="bls-policy-info"><div class="bls-p-title">💳 Refund & Cancellation</div><div class="bls-p-desc">Consumer Protection Act 2019</div></div><button type="button" class="bls-view-btn" onclick="openBottomLegalModal('refund')">👁️ View</button></div>
+      <div class="bls-policy-row"><div class="bls-policy-info"><div class="bls-p-title">🏢 Contact & Grievance Redressal</div><div class="bls-p-desc">Official Helpdesk & Registered Office</div></div><button type="button" class="bls-view-btn" onclick="openBottomLegalModal('contact')">👁️ View</button></div>
     </div>
     <div class="bls-contact-box">
       <div><strong>📧 Official Help Email:</strong> <a href="mailto:help@mogototalbikecare.in">help@mogototalbikecare.in</a></div>
@@ -324,12 +344,29 @@
     </div>
     <div class="bls-copyright">© 2024–2026 Mankiniamma Technologies Private Limited. All Rights Reserved.</div>
   </footer>
-
 </div>
 
 <!-- ========================================== -->
-<!-- MODALS -->
+<!-- MODALS & OVERLAYS -->
 <!-- ========================================== -->
+
+<!-- NEW GPAY-STYLE LIVE SCANNER OVERLAY -->
+<div class="scanner-overlay" id="gpayScannerOverlay">
+  <div class="scanner-header-text" id="scannerStatusText">Scan Bike Number Plate</div>
+  
+  <div class="scanner-video-container">
+    <video class="scanner-video" id="scannerVideoElement" autoplay playsinline></video>
+    
+    <!-- Focus Box with Corners -->
+    <div class="scanner-frame-square">
+      <!-- Animated Left-to-Right Laser -->
+      <div class="scanner-laser"></div>
+    </div>
+  </div>
+  
+  <button class="scanner-cancel-btn" onclick="stopLiveScanner()">Cancel</button>
+  <canvas id="hiddenScannerCanvas" style="display:none;"></canvas>
+</div>
 
 <!-- STRICT LOGIN / SIGN UP MODAL -->
 <div class="ui-modal-overlay" id="authModal" onclick="if(event.target === this) closeAuthModal()">
@@ -337,24 +374,12 @@
     <h3 style="margin: 0 0 10px; font-size: 22px; font-weight: 900; color: #0B0F19;">Login / Sign Up</h3>
     <p style="margin: 0 0 24px; font-size: 13px; color: #64748B;">Authentication is required to confirm your booking.</p>
     
-    <!-- Google OAuth / Gmail Login Button -->
-    <div class="g_id_signin"
-         data-type="standard"
-         data-shape="rectangular"
-         data-theme="outline"
-         data-text="continue_with"
-         data-size="large"
-         data-logo_alignment="center"
-         style="width: 100%; display: flex; justify-content: center; margin-bottom: 16px;">
-    </div>
+    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="continue_with" data-size="large" data-logo_alignment="center" style="width: 100%; display: flex; justify-content: center; margin-bottom: 16px;"></div>
     
     <div style="display:flex; align-items:center; margin: 20px 0; color:#94A3B8; font-size:12px; font-weight:700;">
-      <hr style="flex:1; border:none; border-top:1px solid #E2E8F0;">
-      <span style="padding: 0 10px;">OR WHATSAPP LOGIN</span>
-      <hr style="flex:1; border:none; border-top:1px solid #E2E8F0;">
+      <hr style="flex:1; border:none; border-top:1px solid #E2E8F0;"><span style="padding: 0 10px;">OR WHATSAPP LOGIN</span><hr style="flex:1; border:none; border-top:1px solid #E2E8F0;">
     </div>
 
-    <!-- WhatsApp Login Section -->
     <input type="tel" id="authPhone" placeholder="Enter Mobile Number" maxlength="10" style="margin-bottom: 12px; text-align:center; font-weight:800; font-size:16px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
     <button class="btn-main" type="button" style="margin-top:0; background:#25D366; box-shadow:0 8px 20px rgba(37, 211, 102, 0.25);" onclick="sendAuthOTP()">📲 Get WhatsApp OTP</button>
 
@@ -363,12 +388,11 @@
       <input type="text" id="authOtp" placeholder="••••" maxlength="4" style="text-align:center; letter-spacing:10px; font-size:20px; font-weight:900; margin-bottom:12px;">
       <button class="btn-main" type="button" style="margin-top:0; background:#0B0F19;" onclick="verifyAuthOTP()">✅ Secure Login</button>
     </div>
-
     <button class="btn-outline" type="button" style="border:none; margin-top:16px; font-size:13px;" onclick="closeAuthModal()">Close</button>
   </div>
 </div>
 
-<!-- BOTTOM LEGAL & LOGIC VIEW MODAL -->
+<!-- BOTTOM LEGAL VIEW MODAL -->
 <div class="ui-modal-overlay" id="bottomLegalModal" onclick="if(event.target === this) closeBottomLegalModal()">
   <div class="ui-modal-box" style="max-width: 450px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #E2E8F0; padding-bottom:10px;">
@@ -380,62 +404,38 @@
   </div>
 </div>
 
-<!-- ADMIN PORTAL (ALL 3 TABS: JOB CARDS, INVOICES, + GENERATE) -->
+<!-- ADMIN PORTAL -->
 <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
   <div class="ui-modal-box">
     <div id="adminPinSection">
-      <div class="portal-header-title">Admin Portal</div>
-      <div class="portal-header-subtitle">Secure Access Required</div>
+      <div class="portal-header-title">Admin Portal</div><div class="portal-header-subtitle">Secure Access Required</div>
       <label style="margin-top:0;">Enter Admin PIN:</label>
       <input type="password" id="adminPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
       <button class="btn-main" type="button" onclick="verifyAdminPin()" style="margin-top:0;">Unlock Portal</button>
       <button class="btn-outline" type="button" onclick="closeAdminPortal()">Cancel</button>
     </div>
     <div id="adminDashboard" style="display: none;">
-      <div class="portal-header-title">Admin Portal</div>
-      <div class="portal-header-subtitle">Job Sheets, Paid Invoices & Manual Generation</div>
-      <div class="sync-status-bar">
-        <span id="adminSyncStatus">🟢 Syncing Razorpay & Cloud...</span>
-        <div style="display:flex; gap:4px;">
-          <button type="button" class="sync-btn" onclick="restoreAndSyncAllData()">🔄 Sync & Restore All</button>
-        </div>
-      </div>
+      <div class="portal-header-title">Admin Portal</div><div class="portal-header-subtitle">Job Sheets, Paid Invoices & Manual Generation</div>
+      <div class="sync-status-bar"><span id="adminSyncStatus">🟢 Syncing Razorpay & Cloud...</span><button type="button" class="sync-btn" onclick="restoreAndSyncAllData()">🔄 Sync All</button></div>
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards <span id="count-jc"></span></div>
         <div class="db-tab" id="tab-inv" onclick="switchAdminTab('inv')">Invoices <span id="count-inv"></span></div>
         <div class="db-tab" id="tab-gen" onclick="switchAdminTab('gen')">+ Generate</div>
       </div>
-      <div id="view-jc" class="db-list"></div>
-      <div id="view-inv" class="db-list" style="display: none;"></div>
+      <div id="view-jc" class="db-list"></div><div id="view-inv" class="db-list" style="display: none;"></div>
       <div id="view-gen" style="display: none;">
-        <label style="margin-top:0;">Customer Name</label>
-        <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
-        <label style="margin-top:8px;">Mobile Number</label>
-        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <label style="margin-top:0;">Customer Name</label><input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
+        <label style="margin-top:8px;">Mobile Number</label><input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10">
         <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <div style="flex:1;">
-            <label style="margin-top:4px;">Vehicle</label>
-            <select id="admVehicle" style="padding:12px;">
-              <option value="Bike">Bike</option>
-              <option value="Scooty">Scooty</option>
-            </select>
-          </div>
-          <div style="flex:1;">
-            <label style="margin-top:4px;">Document</label>
-            <select id="admDocType" style="padding:12px;" onchange="toggleAdminUtrRequirement()">
-              <option value="JOB_CARD" selected>Job Sheet / Card</option>
-              <option value="TAX_INVOICE">Paid Tax Invoice</option>
-            </select>
-          </div>
+          <div style="flex:1;"><label style="margin-top:4px;">Vehicle</label><select id="admVehicle" style="padding:12px;"><option value="Bike">Bike</option><option value="Scooty">Scooty</option></select></div>
+          <div style="flex:1;"><label style="margin-top:4px;">Document</label><select id="admDocType" style="padding:12px;" onchange="toggleAdminUtrRequirement()"><option value="JOB_CARD" selected>Job Sheet</option><option value="TAX_INVOICE">Tax Invoice</option></select></div>
         </div>
-        <label style="margin-top:4px;">Address</label>
-        <input type="text" id="admAddr" placeholder="Customer Doorstep / GPS Address, Guwahati" style="margin-bottom:10px; padding:12px;">
+        <label style="margin-top:4px;">Address</label><input type="text" id="admAddr" placeholder="Customer Doorstep Address" style="margin-bottom:10px; padding:12px;">
         <div id="admUtrBox" style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
-          <label style="color:var(--text-main); margin-top:0; font-size:11px;" id="admUtrLabel">UTR / Payment Proof (Optional for Job Card):</label>
-          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;">
-          <input type="text" id="admUtr" placeholder="Enter UPI UTR / Transaction Ref" style="padding:10px; font-size:13px; background:#FFF;">
+          <label style="color:var(--text-main); margin-top:0; font-size:11px;" id="admUtrLabel">UTR / Payment Proof (Optional):</label>
+          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;"><input type="text" id="admUtr" placeholder="Enter UPI UTR" style="padding:10px; font-size:13px; background:#FFF;">
         </div>
-        <button class="btn-main" type="button" onclick="processAdminForm()" style="margin-top:0; background:#16A34A; box-shadow:0 8px 20px rgba(22,163,74,0.25);">Generate & View A4 Sheet</button>
+        <button class="btn-main" type="button" onclick="processAdminForm()" style="margin-top:0; background:#16A34A;">Generate A4 Sheet</button>
       </div>
       <button class="btn-outline" type="button" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
@@ -446,32 +446,26 @@
 <div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
   <div class="ui-modal-box">
     <div id="mechPinSection">
-      <div class="portal-header-title" style="color:#0284C7;">Mechanic Portal</div>
-      <div class="portal-header-subtitle">Secure Access Required</div>
-      <label style="margin-top:0;">Enter Mechanic PIN:</label>
-      <input type="password" id="mechPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
+      <div class="portal-header-title" style="color:#0284C7;">Mechanic Portal</div><div class="portal-header-subtitle">Secure Access Required</div>
+      <label style="margin-top:0;">Enter Mechanic PIN:</label><input type="password" id="mechPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
       <button class="btn-main" type="button" style="background:#0284C7;" onclick="verifyMechPin()">Unlock Portal</button>
       <button class="btn-outline" type="button" onclick="closeMechanicPortal()">Cancel</button>
     </div>
     <div id="mechDashboard" style="display: none;">
-      <div class="portal-header-title" style="color:#0284C7;">Assigned Job Cards</div>
-      <div class="portal-header-subtitle">Tap 'View Job Sheet' to open full A4 Sheet & Download PDF</div>
-      <div class="sync-status-bar">
-        <span id="mechSyncStatus">🟢 Syncing Live Job Cards...</span>
-        <button type="button" class="sync-btn" style="background:#0284C7;" onclick="restoreAndSyncAllData()">🔄 Sync & Restore Jobs</button>
-      </div>
+      <div class="portal-header-title" style="color:#0284C7;">Assigned Job Cards</div><div class="portal-header-subtitle">Tap 'View Job Sheet' to open A4 Sheet</div>
+      <div class="sync-status-bar"><span id="mechSyncStatus">🟢 Syncing...</span><button type="button" class="sync-btn" style="background:#0284C7;" onclick="restoreAndSyncAllData()">🔄 Refresh</button></div>
       <div id="mechJobList" class="db-list"></div>
       <button class="btn-outline" type="button" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
   </div>
 </div>
 
-<!-- FULL A4 SHEET PREVIEW MODAL -->
+<!-- A4 SHEET PREVIEW MODAL -->
 <div class="ui-modal-overlay" id="viewCardModal" onclick="if(event.target === this) closeViewCard()">
   <div class="ui-modal-box" style="max-width: 450px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3 style="margin:0; font-size:17px; font-weight:900;" id="previewModalTitle">A4 Document Preview</h3>
-      <button type="button" onclick="closeViewCard()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer; color:#0B0F19;">✕</button>
+      <button type="button" onclick="closeViewCard()" style="background:none; border:none; font-size:20px; font-weight:900; cursor:pointer;">✕</button>
     </div>
     <div id="viewCardContent" class="a4-sheet-preview"></div>
     <button class="btn-main" type="button" id="modalDownloadPdfBtn" style="margin-top:0; background:#16A34A;">📥 Download Official A4 PDF</button>
@@ -479,12 +473,11 @@
   </div>
 </div>
 
-<!-- UNIVERSAL ALERT / CONFIRM MODAL -->
+<!-- UNIVERSAL ALERT MODAL -->
 <div class="ui-modal-overlay" id="uiAlertModal" onclick="if(event.target === this) closeUiAlert()">
   <div class="ui-modal-box" style="text-align: center; max-width: 340px;">
     <div class="ui-modal-icon" id="uiAlertIcon">⚠️</div>
-    <h3 class="ui-modal-title" id="uiAlertTitle">Alert</h3>
-    <p class="ui-modal-msg" id="uiAlertMsg">Message</p>
+    <h3 class="ui-modal-title" id="uiAlertTitle">Alert</h3><p class="ui-modal-msg" id="uiAlertMsg">Message</p>
     <div id="alertActionButtons" style="display: none; gap: 10px; margin-bottom: 10px;">
       <button class="btn-sm" type="button" style="flex:1; padding:12px; background:#E2E8F0; color:#0B0F19;" onclick="closeUiAlert()">Cancel</button>
       <button class="btn-sm" type="button" style="flex:1; padding:12px; background:#EF4444; color:#fff;" id="alertConfirmBtn">Delete</button>
@@ -493,10 +486,10 @@
   </div>
 </div>
 
-<!-- CUSTOM PROMPT MODAL FOR UTR ENTRY -->
+<!-- CUSTOM UTR PROMPT MODAL -->
 <div class="ui-modal-overlay" id="customAlertModal" onclick="if(event.target === this) closeCustomAlert(false)">
   <div class="ui-modal-box" style="text-align: center; max-width: 350px;">
-    <h3 id="customAlertTitle" style="margin:0 0 8px; font-size:18px; font-weight:900; color:var(--text-main);">Enter UTR</h3>
+    <h3 id="customAlertTitle" style="margin:0 0 8px; font-size:18px; font-weight:900;">Enter UTR</h3>
     <p id="customAlertMsg" style="margin:0 0 18px; font-size:13.5px; color:var(--text-muted); line-height:1.4;">Message</p>
     <div id="customAlertInputContainer" style="margin-bottom:16px; display:none;">
       <input type="text" id="customAlertInput" placeholder="Enter UPI UTR / Ref No." style="padding:12px; font-size:14px;">
@@ -508,15 +501,7 @@
   </div>
 </div>
 
-<!-- Google One Tap Hidden Element (Needs to be at bottom so it doesn't block UI) -->
-<div id="g_id_onload"
-     data-client_id="426325718260-ke510kvp7qu19abh7f85j5nen02fesvp.apps.googleusercontent.com"
-     data-context="signin"
-     data-ux_mode="popup"
-     data-callback="handleGoogleCredentialResponse"
-     data-auto_prompt="true"
-     style="position: absolute; z-index: -1; pointer-events: none;">
-</div>
+<div id="g_id_onload" data-client_id="426325718260-ke510kvp7qu19abh7f85j5nen02fesvp.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="handleGoogleCredentialResponse" data-auto_prompt="true" style="position: absolute; z-index: -1; pointer-events: none;"></div>
 
 <script src="script.js"></script>
 
