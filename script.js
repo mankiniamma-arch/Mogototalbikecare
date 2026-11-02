@@ -102,72 +102,7 @@ function verifyAuthOTP() {
 }
 
 // ==========================================================
-// GPAY-STYLE MAGIC AR SCANNER
-// ==========================================================
-let scannerStream = null;
-let scanningInterval = null;
-let currentScannerTarget = "";
-
-async function startLiveScanner(moduleType) {
-  currentScannerTarget = 'reg-' + moduleType;
-  const overlay = document.getElementById('gpayScannerOverlay');
-  const video = document.getElementById('scannerVideoElement');
-  const statusText = document.getElementById('scannerStatusText');
-  
-  statusText.innerText = "Align Number Plate in Box";
-  statusText.style.color = "#FFFFFF";
-  overlay.classList.add('show');
-  
-  try {
-    scannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    video.srcObject = scannerStream;
-    scanningInterval = setInterval(() => captureAndScanFrame(video), 800);
-  } catch (err) {
-    stopLiveScanner();
-    showUiAlert("❌", "Camera Error", "Could not access the camera. Please type manually.");
-  }
-}
-
-async function captureAndScanFrame(video) {
-  if (video.videoWidth === 0) return;
-  const canvas = document.getElementById('hiddenScannerCanvas');
-  const ctx = canvas.getContext('2d');
-  const scale = Math.min(600 / video.videoWidth, 1);
-  canvas.width = video.videoWidth * scale;
-  canvas.height = video.videoHeight * scale;
-  ctx.filter = 'grayscale(100%) contrast(1.5)';
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  
-  try {
-    const result = await Tesseract.recognize(canvas, 'eng');
-    let text = result.data.text.toUpperCase().replace(/\s+/g, '').replace(/[^A-Z0-9]/g, '');
-    let match = text.match(/[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}/);
-    
-    if (match && match[0]) {
-      if (navigator.vibrate) { navigator.vibrate([100, 50, 100]); }
-      
-      let targetInput = document.getElementById(currentScannerTarget);
-      targetInput.value = match[0];
-      formatVehicleNumber(targetInput); // AUTO FORMAT AFTER SCAN
-      
-      const statusText = document.getElementById('scannerStatusText');
-      statusText.innerText = "✅ Plate Detected: " + targetInput.value;
-      statusText.style.color = "#10B981";
-      
-      clearInterval(scanningInterval);
-      setTimeout(stopLiveScanner, 1000);
-    }
-  } catch (e) {}
-}
-
-function stopLiveScanner() {
-  if (scanningInterval) clearInterval(scanningInterval);
-  if (scannerStream) { scannerStream.getTracks().forEach(track => track.stop()); scannerStream = null; }
-  document.getElementById('gpayScannerOverlay').classList.remove('show');
-}
-
-// ==========================================================
-// REST OF THE EXISTING LOGIC
+// REST OF THE EXISTING LOGIC (VAHAN, MAPS, PDF, RAZORPAY)
 // ==========================================================
 const BOTTOM_LEGAL_DATA = {
   privacy: { title: "🛡️ Privacy Policy (Indian & International Law)", html: `<h4>1. Constitutional & Statutory Mandate</h4><ul><li><strong>Constitution of India (Article 21):</strong> Upholds the Fundamental Right to Privacy.</li><li><strong>DPDP Act, 2023 & IT Act, 2000:</strong> Customer data is collected strictly with lawful consent.</li></ul>` },
@@ -233,7 +168,7 @@ function toggleService(key, name, price) {
 
 function submitBooking() {
   let name = document.getElementById('cName').value.trim(), phone = document.getElementById('cPhone').value.trim(), addr = document.getElementById('cAddr').value.trim();
-  let vNo = document.getElementById('cVehicleNo').value.trim(); // Get new vehicle No
+  let vNo = document.getElementById('cVehicleNo').value.trim(); 
 
   if (!name || !/^[0-9]{10}$/.test(phone) || !vNo || !addr) return showUiAlert("⚠️", "Missing Details", "Please fill name, phone, vehicle number, and address.");
   if (selectedServiceKey !== 'wash') return showUiAlert("🔒", "Feature Locked", "Select Premium Foam Wash or use Vahan module.");
@@ -253,7 +188,6 @@ function processFinalBooking() {
   let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
   let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
   let subtotal = TOTAL_PRICE / 1.18;
-  
   let finalVehicleStr = vehicleType + (vNo ? " (" + vNo + ")" : "");
   
   globalBookingData = {
