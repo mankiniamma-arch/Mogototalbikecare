@@ -119,59 +119,60 @@ function verifyAuthOTP() {
 }
 
 // ==========================================================
-// MAGIC LIVE CAMERA SCANNER (QR-CODE STYLE)
+// NEW SUPERFAST 'CLICK & SCAN' AI NUMBER PLATE ENGINE
+// (Replaces the slow live video with instant photo processing)
 // ==========================================================
-let scannerStream = null;
-let scanningInterval = null;
+async function processNumberPlateScan(event, moduleType) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-async function openLiveScanner(moduleType) {
-  const overlay = document.getElementById('liveScannerOverlay');
-  const video = document.getElementById('scannerVideo');
-  const statusText = document.getElementById('scannerStatusText');
   const regInput = document.getElementById('reg-' + moduleType);
+  const originalPlaceholder = regInput.placeholder;
   
-  statusText.innerText = "Align Number Plate in the Box";
-  overlay.classList.add('show');
+  regInput.value = "";
+  regInput.placeholder = "📷 Analyzing...";
+  showUiAlert("⏳", "Processing Photo", "Scanning number plate instantly...");
   
-  try {
-    scannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    video.srcObject = scannerStream;
+  // Compress image to make AI extremely fast
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  img.onload = async () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const MAX_WIDTH = 800; // Small width for fast processing
+    let width = img.width; let height = img.height;
     
-    scanningInterval = setInterval(() => processLiveFrame(video, regInput, overlay), 1000);
-  } catch (err) {
-    closeLiveScanner();
-    showUiAlert("❌", "Camera Error", "Could not access the camera. Please type manually.");
-  }
-}
-
-async function processLiveFrame(video, inputEl, overlay) {
-  if (video.videoWidth === 0) return;
-  
-  const canvas = document.getElementById('scannerCanvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  
-  try {
-    const result = await Tesseract.recognize(canvas, 'eng');
-    let text = result.data.text.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    let match = text.match(/[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}/);
+    if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+    canvas.width = width; canvas.height = height;
     
-    if (match && match[0]) {
-      inputEl.value = match[0];
-      document.getElementById('scannerStatusText').innerText = "✅ Plate Detected: " + match[0];
-      document.getElementById('scannerStatusText').style.color = "#00FF00";
-      setTimeout(closeLiveScanner, 1000);
+    // Convert to grayscale for better contrast and accuracy
+    ctx.filter = 'grayscale(100%) contrast(1.5)';
+    ctx.drawImage(img, 0, 0, width, height);
+    
+    try {
+      // Fast single-pass OCR
+      const result = await Tesseract.recognize(canvas, 'eng');
+      let text = result.data.text;
+      
+      // Strict Indian Number Plate Regex (e.g. AS01AB1234 or AS011234)
+      let cleanText = text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      let match = cleanText.match(/[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}/);
+      
+      closeUiAlert();
+      if (match && match[0]) {
+        regInput.value = match[0];
+        showUiAlert("✅", "Magic Scan Successful", "Number " + match[0] + " detected! Tap 'Send WA OTP'.");
+      } else {
+        regInput.placeholder = originalPlaceholder;
+        showUiAlert("⚠️", "Could Not Read", "Photo wasn't clear enough. Please type your vehicle number manually.");
+      }
+    } catch (err) {
+      closeUiAlert();
+      regInput.placeholder = originalPlaceholder;
+      showUiAlert("❌", "Scanner Error", "Please type manually.");
     }
-  } catch (e) {}
-}
-
-function closeLiveScanner() {
-  if (scanningInterval) clearInterval(scanningInterval);
-  if (scannerStream) { scannerStream.getTracks().forEach(track => track.stop()); }
-  document.getElementById('liveScannerOverlay').classList.remove('show');
-  document.getElementById('scannerStatusText').style.color = "#FFF";
+  };
+  event.target.value = ""; // Reset for next scan
 }
 
 // ==========================================================
@@ -288,6 +289,7 @@ function proceedVahanPaymentOrBooking(actionType, regNo, customAmount) {
   document.getElementById('qrSection').style.display = "block";
 }
 
+// 3-LAYER GPS LOCATOR
 async function fillAddressFromCoords(lat, lon) {
   const addrInput = document.getElementById('cAddr');
   const locBtn = document.getElementById('locBtn');
@@ -295,6 +297,7 @@ async function fillAddressFromCoords(lat, lon) {
   locBtn.disabled = false; locBtn.innerHTML = "✅ GPS Locked"; locBtn.style.background = "#DCFCE7"; locBtn.style.color = "#15803D";
   
   addrInput.value = "Fetching exact street address...";
+  
   try {
     let res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
     if (res.ok) {
@@ -312,6 +315,7 @@ function getLocation() {
   let btn = document.getElementById('locBtn');
   clearError('cAddr');
   if (customerCoords && customerCoords.lat) { fillAddressFromCoords(customerCoords.lat, customerCoords.lon); return; }
+  
   btn.disabled = true; btn.innerHTML = "⏳ Locating...";
   navigator.geolocation.getCurrentPosition(
     pos => fillAddressFromCoords(pos.coords.latitude, pos.coords.longitude),
@@ -343,16 +347,21 @@ function toggleService(key, name, price) {
   }
 }
 
+// MAIN BOOKING FUNCTION WITH STRICT AUTH CHECK
 function submitBooking() {
   let name = document.getElementById('cName').value.trim(), phone = document.getElementById('cPhone').value.trim(), addr = document.getElementById('cAddr').value.trim();
+  
   if (!name || !/^[0-9]{10}$/.test(phone) || !addr) return showUiAlert("⚠️", "Missing Details", "Please fill name, phone, and address.");
   if (selectedServiceKey !== 'wash') return showUiAlert("🔒", "Feature Locked", "Select Premium Foam Wash or use Vahan module.");
 
+  // FORCE LOGIN IF NOT LOGGED IN
   if (!loggedInUser) {
     showUiAlert("🔒", "Authentication Required", "Please Login or Sign Up to confirm your booking.");
-    setTimeout(function() { openAuthModal(true); }, 1500); 
+    setTimeout(function() { openAuthModal(true); }, 1500); // true indicates it was opened from checkout
     return; 
   }
+
+  // If logged in, proceed
   processFinalBooking();
 }
 
@@ -361,14 +370,17 @@ function processFinalBooking() {
   let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
   let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
   let subtotal = TOTAL_PRICE / 1.18;
+
   globalBookingData = {
     id: id, date: new Date().toLocaleDateString('en-IN'), name: name, phone: phone, vehicle: vehicleType, serviceName: "Premium Foam Wash",
     grandTotal: TOTAL_PRICE, address: addr, paymentType: paymentType, status: "BOOKED", forceType: "JOB_CARD", utr: ""
   };
+  
   insertRecord(globalBookingData);
   document.getElementById('bookingForm').style.display = "none";
   document.getElementById('successScreen').style.display = "block";
   document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
+  
   if (paymentType === "Pay Now") setTimeout(triggerRazorpayPayment, 400);
 }
 
