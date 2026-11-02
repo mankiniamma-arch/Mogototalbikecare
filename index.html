@@ -11,23 +11,20 @@
   <!-- FAVICON -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='44' fill='none' stroke='%23FF5A00' stroke-width='14'/><circle cx='50' cy='50' r='36' fill='none' stroke='%23CBD5E1' stroke-width='2' stroke-dasharray='4 4'/><path d='M50 6 L50 94 M6 50 L94 50 M19 19 L81 81 M19 81 L81 19' stroke='%230B0F19' stroke-width='5'/><circle cx='50' cy='50' r='9' fill='%23FF5A00'/><circle cx='50' cy='50' r='3.5' fill='%23FFFFFF'/></svg>">
   
-  <!-- External Libraries (Loaded Safely) -->
+  <!-- External Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Google Identity API for One Tap Login -->
+  <!-- Google Identity API -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
-  <!-- CONNECTING EXTERNAL CSS FILE -->
+  <!-- EXTERNAL CSS -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- ========================================================== -->
-  <!-- GPAY STYLE LIVE SCANNER CSS (Added Inline for safety)      -->
-  <!-- ========================================================== -->
+  <!-- GPAY STYLE LIVE SCANNER CSS -->
   <style>
-    /* GPay Style Live Scanner Overlay */
     .scanner-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(11, 15, 25, 0.95); backdrop-filter: blur(10px);
@@ -48,11 +45,8 @@
       box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 20px 50px rgba(0,0,0,0.5);
       background: #000;
     }
-    .scanner-video {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-    }
+    .scanner-video { width: 100%; height: 100%; object-fit: cover; display: block; }
     
-    /* The Square Focus Box */
     .scanner-frame-square {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       width: 75%; height: 75%;
@@ -61,25 +55,17 @@
       z-index: 2; pointer-events: none; overflow: hidden;
     }
     
-    /* Corner Brackets for GPay Feel */
-    .scanner-frame-square::before, .scanner-frame-square::after {
-      content: ''; position: absolute; width: 30px; height: 30px; border-color: #10B981; border-style: solid;
-    }
+    .scanner-frame-square::before, .scanner-frame-square::after { content: ''; position: absolute; width: 30px; height: 30px; border-color: #10B981; border-style: solid; }
     .scanner-frame-square::before { top: -3px; left: -3px; border-width: 4px 0 0 4px; border-top-left-radius: 16px; }
     .scanner-frame-square::after { bottom: -3px; right: -3px; border-width: 0 4px 4px 0; border-bottom-right-radius: 16px; }
 
-    /* Left-to-Right Animated Laser Scanning Line */
     .scanner-laser {
       position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
       background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.6), transparent);
       z-index: 3;
       animation: scanLeftRight 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
-    @keyframes scanLeftRight {
-      0% { left: -50%; }
-      50% { left: 100%; }
-      100% { left: -50%; }
-    }
+    @keyframes scanLeftRight { 0% { left: -50%; } 50% { left: 100%; } 100% { left: -50%; } }
 
     .scanner-cancel-btn {
       position: absolute; bottom: 50px; background: rgba(255, 255, 255, 0.1);
@@ -89,7 +75,6 @@
     }
     .scanner-cancel-btn:active { background: rgba(255, 255, 255, 0.2); }
 
-    /* Beautiful Camera Icon Button inside Input Row */
     .cam-icon-btn {
       background: #E2E8F0; color: #0B0F19; border: none; border-radius: 10px;
       padding: 0 14px; display: flex; align-items: center; justify-content: center;
@@ -103,10 +88,8 @@
 
 <div class="app-container">
   
-  <!-- CUSTOMER BOOKING FORM -->
   <div class="card" id="bookingForm" style="position: relative;">
     
-    <!-- PREMIUM APP-STYLE LOGIN BUTTON (Top Right Inside Card) -->
     <div style="position: absolute; top: 18px; right: 22px; z-index: 50;">
       <button class="login-btn-top" id="topLoginBtn" onclick="openAuthModal()">👤 Login / Sign Up</button>
     </div>
@@ -129,18 +112,17 @@
     </div>
 
     <label>Customer Details</label>
-    <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
+    <!-- AUTO-CAPITALIZE FULL NAME -->
+    <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="this.value = this.value.toUpperCase(); clearError('cName')">
     <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
     
-    <!-- NEW VEHICLE NUMBER FIELD ADDED HERE -->
-    <input type="text" id="cVehicleNo" placeholder="Bike / Scooty Number (e.g. AS01AB1234)" style="margin-top: 12px; text-transform: uppercase;" oninput="clearError('cVehicleNo')">
-    
-    <input type="email" id="cEmail" placeholder="Email Address (Optional)" style="display:none; margin-top:12px;">
+    <!-- AUTO-SPACE VEHICLE NUMBER -->
+    <input type="text" id="cVehicleNo" placeholder="Vehicle Number (e.g. AS 01 AB 1234)" maxlength="14" style="margin-top: 12px; font-weight:800; color:var(--primary);" oninput="formatVehicleNumber(this)">
 
     <label>Select Service</label>
     <div class="services-stack">
       
-      <!-- SERVICE 1: PREMIUM FOAM WASH -->
+      <!-- SERVICE 1 -->
       <div class="service-accordion-item active" id="item-wash">
         <div class="service-header-row" onclick="toggleService('wash', 'Premium Foam Wash', 89)">
           <div class="service-info">
@@ -160,7 +142,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 2: GENERAL SERVICING -->
+      <!-- SERVICE 2 -->
       <div class="service-accordion-item disabled" id="item-general">
         <div class="service-header-row" onclick="toggleService('general', 'General Servicing', 0)">
           <div class="service-info">
@@ -169,13 +151,9 @@
           </div>
           <div class="s-badge">COMING SOON</div>
         </div>
-        <div class="embedded-slot-box">
-          <label style="font-size:10px; margin:4px 0 6px; color:#EF4444;">Coming Soon - Feature Locked</label>
-          <input type="text" placeholder="Service Currently Unavailable" disabled style="padding:12px; font-size:13px; background:#E2E8F0; opacity:0.6; cursor:not-allowed; width: 100%;">
-        </div>
       </div>
 
-      <!-- SERVICE 3: BIKE INSURANCE RENEWAL -->
+      <!-- SERVICE 3 -->
       <div class="service-accordion-item" id="item-insurance">
         <div class="service-header-row" onclick="toggleService('insurance', 'Bike Insurance Renewal', 714)">
           <div class="service-info">
@@ -188,16 +166,12 @@
           <div class="vahan-module-box">
             <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (KYC API Check):</label>
             <div class="vahan-input-row">
-              <input type="text" id="reg-insurance" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              
-              <!-- BEAUTIFUL CAMERA ICON BUTTON (Triggers Live Scanner) -->
+              <input type="text" id="reg-insurance" class="vahan-reg-input" placeholder="e.g. AS 01 AB 1234" maxlength="14" oninput="formatVehicleNumber(this)">
               <button type="button" class="cam-icon-btn" onclick="startLiveScanner('insurance')" title="Live Scan">
                 <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
               </button>
-              
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('insurance')">📲 Send WA OTP</button>
             </div>
-
             <div id="otp-box-insurance" class="otp-verify-box">
               <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-insurance">WhatsApp OTP Sent!</div>
               <div class="vahan-input-row" style="margin-bottom:0;">
@@ -210,7 +184,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 4: POLLUTION CHECK (PUC) -->
+      <!-- SERVICE 4 -->
       <div class="service-accordion-item" id="item-puc">
         <div class="service-header-row" onclick="toggleService('puc', 'Pollution Check (PUC)', 149)">
           <div class="service-info">
@@ -223,15 +197,12 @@
           <div class="vahan-module-box">
             <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (PUC Status Check):</label>
             <div class="vahan-input-row">
-              <input type="text" id="reg-puc" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              
+              <input type="text" id="reg-puc" class="vahan-reg-input" placeholder="e.g. AS 01 AB 1234" maxlength="14" oninput="formatVehicleNumber(this)">
               <button type="button" class="cam-icon-btn" onclick="startLiveScanner('puc')" title="Live Scan">
                 <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
               </button>
-              
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('puc')">📲 Send WA OTP</button>
             </div>
-
             <div id="otp-box-puc" class="otp-verify-box">
               <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-puc">WhatsApp OTP Sent!</div>
               <div class="vahan-input-row" style="margin-bottom:0;">
@@ -244,7 +215,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 5: E-CHALLAN CHECK & PAY -->
+      <!-- SERVICE 5 -->
       <div class="service-accordion-item" id="item-echallan">
         <div class="service-header-row" onclick="toggleService('echallan', 'e-Challan Check & Pay', 500)">
           <div class="service-info">
@@ -257,15 +228,12 @@
           <div class="vahan-module-box">
             <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (e-Challan Lookup):</label>
             <div class="vahan-input-row">
-              <input type="text" id="reg-echallan" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              
+              <input type="text" id="reg-echallan" class="vahan-reg-input" placeholder="e.g. AS 01 AB 1234" maxlength="14" oninput="formatVehicleNumber(this)">
               <button type="button" class="cam-icon-btn" onclick="startLiveScanner('echallan')" title="Live Scan">
                 <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
               </button>
-              
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('echallan')">📲 Send WA OTP</button>
             </div>
-
             <div id="otp-box-echallan" class="otp-verify-box">
               <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-echallan">WhatsApp OTP Sent!</div>
               <div class="vahan-input-row" style="margin-bottom:0;">
@@ -278,7 +246,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 6 & 7: EMERGENCY & MMC -->
+      <!-- SERVICE 6 & 7 -->
       <div class="service-accordion-item disabled" id="item-emergency">
         <div class="service-header-row" onclick="toggleService('emergency', 'Puncture & Emergency Services', 0)">
           <div class="service-info"><div class="s-title">🚨 Puncture & Emergency Services</div><div class="s-desc">Expert Care & Assistance</div></div><div class="s-badge">COMING SOON</div>
@@ -311,13 +279,11 @@
     </div>
   </div>
 
-  <!-- LOADING SCREEN -->
-  <div class="card" id="loadingScreen">
+  <!-- SCREENS & LEGAL -->
+  <div class="card" id="loadingScreen" style="display:none;">
     <div class="loader"></div><h3 style="margin:0 0 8px; font-size:20px;">Processing Booking...</h3><p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating documents.</p>
   </div>
-
-  <!-- SUCCESS SCREEN -->
-  <div class="card" id="successScreen">
+  <div class="card" id="successScreen" style="display:none;">
     <div style="font-size:56px; margin-bottom:12px;">✅</div><h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;" id="successHeading">Submitted Successfully!</h2><p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will connect with you.</p>
     <div id="qrSection" class="official-qr-box" style="display:none;">
       <p style="font-size:16px; font-weight:900; color:#0B0F19; margin:0 0 4px;" id="qrPriceTitle">Scan & Pay ₹89 Securely</p><p style="font-size:13px; font-weight:800; color:#FF5A00; margin:0 0 12px;">Mankiniamma Technologies Private Limited</p>
@@ -354,9 +320,9 @@
 <!-- MODALS & OVERLAYS -->
 <!-- ========================================== -->
 
-<!-- NEW GPAY-STYLE LIVE SCANNER OVERLAY -->
+<!-- GPAY-STYLE LIVE SCANNER OVERLAY -->
 <div class="scanner-overlay" id="gpayScannerOverlay">
-  <div class="scanner-header-text" id="scannerStatusText">Scan Bike Number Plate</div>
+  <div class="scanner-header-text" id="scannerStatusText">Align Number Plate in Box</div>
   
   <div class="scanner-video-container">
     <video class="scanner-video" id="scannerVideoElement" autoplay playsinline></video>
@@ -428,7 +394,7 @@
       </div>
       <div id="view-jc" class="db-list"></div><div id="view-inv" class="db-list" style="display: none;"></div>
       <div id="view-gen" style="display: none;">
-        <label style="margin-top:0;">Customer Name</label><input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
+        <label style="margin-top:0;">Customer Name</label><input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;" oninput="this.value = this.value.toUpperCase()">
         <label style="margin-top:8px;">Mobile Number</label><input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10">
         <div style="display:flex; gap:8px; margin-bottom:8px;">
           <div style="flex:1;"><label style="margin-top:4px;">Vehicle</label><select id="admVehicle" style="padding:12px;"><option value="Bike">Bike</option><option value="Scooty">Scooty</option></select></div>
