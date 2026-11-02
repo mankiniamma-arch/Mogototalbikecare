@@ -13,9 +13,6 @@ let paymentType = "Pay Now", vehicleType = "Bike", selectedServiceKey = "wash", 
 let globalBookingData = {}, customerCoords = null, fieldToFocus = null, alertCallback = null, vahanOtpStore = {};
 let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
 
-// ==========================================================
-// USER AUTHENTICATION SYSTEM
-// ==========================================================
 let loggedInUser = null;
 let loginIntent = false; 
 
@@ -38,7 +35,12 @@ function updateProfileUI() {
   }
 }
 
-function logoutUser() { loggedInUser = null; localStorage.removeItem('mogo_user'); updateProfileUI(); document.getElementById('cName').value = ""; document.getElementById('cPhone').value = ""; showUiAlert("🔒", "Logged Out", "You have been securely logged out."); }
+function logoutUser() {
+  loggedInUser = null; localStorage.removeItem('mogo_user'); updateProfileUI(); 
+  document.getElementById('cName').value = ""; document.getElementById('cPhone').value = ""; 
+  document.getElementById('cVehicleNo').value = ""; // NEW: Clear vehicle number on logout
+  showUiAlert("🔒", "Logged Out", "You have been securely logged out."); 
+}
 function openAuthModal(fromBooking = false) { loginIntent = fromBooking; document.getElementById('authOtpSection').style.display = "none"; document.getElementById('authPhone').value = ""; document.getElementById('authOtp').value = ""; document.getElementById('authModal').classList.add('show'); }
 function closeAuthModal() { document.getElementById('authModal').classList.remove('show'); }
 
@@ -71,9 +73,6 @@ function verifyAuthOTP() {
   if (loginIntent) { processFinalBooking(); } else { showUiAlert("✅", "Login Successful", "You are now logged in with " + phone + "."); }
 }
 
-// ==========================================================
-// GPAY-STYLE MAGIC AR SCANNER (WITH VIBRATION)
-// ==========================================================
 let scannerStream = null;
 let scanningInterval = null;
 let currentScannerTarget = "";
@@ -89,11 +88,8 @@ async function startLiveScanner(moduleType) {
   overlay.classList.add('show');
   
   try {
-    // Try to get Rear Camera
     scannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
     video.srcObject = scannerStream;
-    
-    // Scan frame every 800ms to avoid freezing the browser
     scanningInterval = setInterval(() => captureAndScanFrame(video), 800);
   } catch (err) {
     stopLiveScanner();
@@ -103,16 +99,11 @@ async function startLiveScanner(moduleType) {
 
 async function captureAndScanFrame(video) {
   if (video.videoWidth === 0) return;
-  
   const canvas = document.getElementById('hiddenScannerCanvas');
   const ctx = canvas.getContext('2d');
-  
-  // Downscale image for extremely fast AI processing
   const scale = Math.min(600 / video.videoWidth, 1);
   canvas.width = video.videoWidth * scale;
   canvas.height = video.videoHeight * scale;
-  
-  // Increase contrast to help OCR read plates better
   ctx.filter = 'grayscale(100%) contrast(1.5)';
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   
@@ -122,19 +113,12 @@ async function captureAndScanFrame(video) {
     let match = text.match(/[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}/);
     
     if (match && match[0]) {
-      // HAPTIC VIBRATION (Magic Feel!)
       if (navigator.vibrate) { navigator.vibrate([100, 50, 100]); }
-      
       document.getElementById(currentScannerTarget).value = match[0];
-      
       const statusText = document.getElementById('scannerStatusText');
       statusText.innerText = "✅ Plate Detected: " + match[0];
-      statusText.style.color = "#10B981"; // Green Success Color
-      
-      // Stop scanning instantly
+      statusText.style.color = "#10B981";
       clearInterval(scanningInterval);
-      
-      // Close overlay after 1 second so user sees the success message
       setTimeout(stopLiveScanner, 1000);
     }
   } catch (e) {}
@@ -146,9 +130,6 @@ function stopLiveScanner() {
   document.getElementById('gpayScannerOverlay').classList.remove('show');
 }
 
-// ==========================================================
-// REST OF THE LOGIC
-// ==========================================================
 const BOTTOM_LEGAL_DATA = {
   privacy: { title: "🛡️ Privacy Policy (Indian & International Law)", html: `<h4>1. Constitutional & Statutory Mandate</h4><ul><li><strong>Constitution of India (Article 21):</strong> Upholds the Fundamental Right to Privacy.</li><li><strong>DPDP Act, 2023 & IT Act, 2000:</strong> Customer data is collected strictly with lawful consent.</li></ul>` },
   terms: { title: "📜 Terms & Conditions & Service Logic", html: `<h4>1. Legal Contract (Indian Contract Act, 1872)</h4><ul><li>All bookings constitute a valid electronic contract.</li><li><strong>Promotional Pricing Logic:</strong> Premium Foam Wash is offered at a special price of ₹89.00 (inclusive of 18% GST).</li></ul>` },
@@ -211,23 +192,58 @@ function toggleService(key, name, price) {
   if (!isOpen) { document.getElementById('item-' + key).classList.add('active'); if (['insurance', 'puc', 'echallan'].includes(key)) { selectedServiceKey = key; selectedServiceName = name; currentServicePrice = price || TOTAL_PRICE; setTimeout(() => document.getElementById('reg-' + key)?.focus(), 300); } else { selectedServiceKey = key; selectedServiceName = name; currentServicePrice = 0; } } else { document.getElementById('item-wash').classList.add('active'); selectedServiceKey = 'wash'; }
 }
 
+// MAIN BOOKING FUNCTION (NEW VALIDATION FOR VEHICLE NO)
 function submitBooking() {
   let name = document.getElementById('cName').value.trim(), phone = document.getElementById('cPhone').value.trim(), addr = document.getElementById('cAddr').value.trim();
-  if (!name || !/^[0-9]{10}$/.test(phone) || !addr) return showUiAlert("⚠️", "Missing Details", "Please fill name, phone, and address.");
+  let vNo = document.getElementById('cVehicleNo').value.trim(); // NEW
+
+  if (!name || !/^[0-9]{10}$/.test(phone) || !vNo || !addr) return showUiAlert("⚠️", "Missing Details", "Please fill name, phone, vehicle number, and address.");
   if (selectedServiceKey !== 'wash') return showUiAlert("🔒", "Feature Locked", "Select Premium Foam Wash or use Vahan module.");
-  if (!loggedInUser) { showUiAlert("🔒", "Authentication Required", "Please Login or Sign Up to confirm your booking."); setTimeout(function() { openAuthModal(true); }, 1500); return; }
+
+  if (!loggedInUser) {
+    showUiAlert("🔒", "Authentication Required", "Please Login or Sign Up to confirm your booking.");
+    setTimeout(function() { openAuthModal(true); }, 1500); 
+    return; 
+  }
   processFinalBooking();
 }
 
 function processFinalBooking() {
-  let name = document.getElementById('cName').value.trim(), phone = document.getElementById('cPhone').value.trim(), addr = document.getElementById('cAddr').value.trim(); let id = "MOGO" + Math.floor(1000 + Math.random() * 9000); let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : ""; let subtotal = TOTAL_PRICE / 1.18;
-  globalBookingData = { id: id, date: new Date().toLocaleDateString('en-IN'), name: name, phone: phone, vehicle: vehicleType, serviceName: "Premium Foam Wash", grandTotal: TOTAL_PRICE, address: addr, paymentType: paymentType, status: "BOOKED", forceType: "JOB_CARD", utr: "" };
-  insertRecord(globalBookingData); document.getElementById('bookingForm').style.display = "none"; document.getElementById('successScreen').style.display = "block"; document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
+  let name = document.getElementById('cName').value.trim(), phone = document.getElementById('cPhone').value.trim(), addr = document.getElementById('cAddr').value.trim();
+  let vNo = document.getElementById('cVehicleNo').value.trim().toUpperCase(); // NEW
+  
+  let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
+  let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
+  let subtotal = TOTAL_PRICE / 1.18;
+  
+  // Combine Vehicle Type and Number
+  let finalVehicleStr = vehicleType + (vNo ? " (" + vNo + ")" : "");
+  
+  globalBookingData = {
+    id: id, date: new Date().toLocaleDateString('en-IN'), name: name, phone: phone, vehicle: finalVehicleStr, serviceName: "Premium Foam Wash",
+    grandTotal: TOTAL_PRICE, address: addr, paymentType: paymentType, status: "BOOKED", forceType: "JOB_CARD", utr: ""
+  };
+  insertRecord(globalBookingData);
+  document.getElementById('bookingForm').style.display = "none";
+  document.getElementById('successScreen').style.display = "block";
+  document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
   if (paymentType === "Pay Now") setTimeout(triggerRazorpayPayment, 400);
 }
 
 function triggerRazorpayPayment() {
-  if (!globalBookingData.id) return; let rzp = new window.Razorpay({ key: RAZORPAY_KEY_ID, amount: globalBookingData.grandTotal * 100, currency: "INR", name: "Mankiniamma Technologies", description: globalBookingData.serviceName, handler: function (res) { globalBookingData.utr = res.razorpay_payment_id; globalBookingData.forceType = 'TAX_INVOICE'; globalBookingData.status = 'INVOICE_GENERATED'; updateRecord(globalBookingData.id, { utr: res.razorpay_payment_id, forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED' }); document.getElementById('successHeading').innerText = "Payment Verified! ✅"; generatePDFFromDB(globalBookingData.id, true); }, prefill: { contact: globalBookingData.phone }, theme: { color: "#FF5A00" } }); rzp.open();
+  if (!globalBookingData.id) return;
+  let rzp = new window.Razorpay({
+    key: RAZORPAY_KEY_ID, amount: globalBookingData.grandTotal * 100, currency: "INR",
+    name: "Mankiniamma Technologies", description: globalBookingData.serviceName,
+    handler: function (res) {
+      globalBookingData.utr = res.razorpay_payment_id; globalBookingData.forceType = 'TAX_INVOICE'; globalBookingData.status = 'INVOICE_GENERATED';
+      updateRecord(globalBookingData.id, { utr: res.razorpay_payment_id, forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED' });
+      document.getElementById('successHeading').innerText = "Payment Verified! ✅";
+      generatePDFFromDB(globalBookingData.id, true);
+    },
+    prefill: { contact: globalBookingData.phone }, theme: { color: "#FF5A00" }
+  });
+  rzp.open();
 }
 
 function handleCustomerUtrInput() { let utr = document.getElementById('customerUtr')?.value.trim(); if (utr.length >= 4) { globalBookingData.utr = utr; globalBookingData.forceType = 'TAX_INVOICE'; globalBookingData.status = 'INVOICE_GENERATED'; updateRecord(globalBookingData.id, { utr: utr, forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED' }); document.getElementById('pdfDownloadBtn').innerText = "👁️ View & Download Paid Tax Invoice (PDF)"; document.getElementById('pdfDownloadBtn').style.background = "#16A34A"; } }
