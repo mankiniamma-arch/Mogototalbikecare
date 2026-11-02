@@ -6,12 +6,60 @@ const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta
 const RAZORPAY_KEY_ID = "rzp_live_TsqVswCcOu6NQS"; 
 const _RZP_SYNC_TOKEN = "cnpwX2xpdmVfVHNxVnN3Q2NPdTZOUVM6UTY2NzkzeEQxSGFkYnRjbnFPWlk0UDVK";
 const KYC_API_CONFIG = { environment: "TEST", clientId: "6d427278-4cb1-4460-8c2e-c09224552148", clientSecret: "KuPVrzLE8jta6TTemdR1F78MdRcD7EwJ", baseUrl: "https://sandbox.kyc-api.in/v1/vahan" };
-const WHATSAPP_API_URL = ""; 
-const WHATSAPP_API_KEY = "";
+
+// ==========================================================
+// OFFICIAL META WHATSAPP CLOUD API CONFIGURATION
+// ==========================================================
+const WHATSAPP_API_KEY = "EAAdt66Ozx5UBSZCxNm8K9c8h6xMvYPRsgpcg4x3VDqmH9scKxf3xr8zROjJNRFo6lBrsWEFWSKuGmLGyzWbQ19uBMWSoTJbwcu5Hq1iG5ZCqEZAi7VBbEgTxAMIjlFXDXTT0UOBbIZAfgwfsoyHWs9NvYHp77iS19HtlqkJctncrg6DxXZBJq4kd3M9czVr52AwZDZD"; 
+const WHATSAPP_API_URL = "https://graph.facebook.com/v17.0/1358291930706909/messages"; 
 
 let paymentType = "Pay Now", vehicleType = "Bike", selectedServiceKey = "wash", selectedServiceName = "Premium Foam Wash";
 let globalBookingData = {}, customerCoords = null, fieldToFocus = null, alertCallback = null, vahanOtpStore = {};
 let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
+
+// ==========================================================
+// WHATSAPP API HELPER FUNCTIONS (META GRAPH API)
+// ==========================================================
+function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
+  if (!WHATSAPP_API_URL) return;
+  let cleanPhone = "91" + toPhone.replace(/[^0-9]/g, '').slice(-10);
+  let parameters = paramsArray.map(p => ({ type: "text", text: String(p) }));
+  
+  let payload = {
+    messaging_product: "whatsapp",
+    to: cleanPhone,
+    type: "template",
+    template: {
+      name: templateName,
+      language: { code: "en" },
+      components: [
+        { type: "body", parameters: parameters }
+      ]
+    }
+  };
+
+  fetch(WHATSAPP_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + WHATSAPP_API_KEY },
+    body: JSON.stringify(payload)
+  }).catch(e => console.error("WA Template Error:", e));
+}
+
+function sendMetaTextMsg(toPhone, textMsg) {
+  if (!WHATSAPP_API_URL) return;
+  let cleanPhone = "91" + toPhone.replace(/[^0-9]/g, '').slice(-10);
+  let payload = {
+    messaging_product: "whatsapp",
+    to: cleanPhone,
+    type: "text",
+    text: { body: textMsg }
+  };
+  fetch(WHATSAPP_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + WHATSAPP_API_KEY },
+    body: JSON.stringify(payload)
+  }).catch(e=>{});
+}
 
 // ==========================================================
 // SMART NUMBER PLATE FORMATTER (AS 01 AB 1234)
@@ -19,14 +67,12 @@ let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agenc
 function formatVehicleNumber(input) {
   let val = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
   let formatted = '';
-  
   if (val.length > 0) formatted += val.substring(0, 2); 
   if (val.length > 2) formatted += ' ' + val.substring(2, 4); 
   if (val.length > 4) {
     let rest = val.substring(4);
     let letters = rest.match(/^[A-Z]+/);
     let nums = rest.replace(/^[A-Z]+/, '');
-    
     if (letters) {
       formatted += ' ' + letters[0].substring(0, 3); 
       nums = rest.substring(letters[0].length);
@@ -89,7 +135,8 @@ function sendAuthOTP() {
   if (!/^[0-9]{10}$/.test(phone)) return showUiAlert("📱", "Invalid Number", "Please enter a valid 10-digit mobile number.", "authPhone");
   authGeneratedOtp = String(Math.floor(1000 + Math.random() * 9000));
   document.getElementById('authOtpSection').style.display = "block"; document.getElementById('authOtp').value = authGeneratedOtp; 
-  if (WHATSAPP_API_URL) { fetch(WHATSAPP_API_URL, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": WHATSAPP_API_KEY ? ("Bearer " + WHATSAPP_API_KEY) : "" }, body: JSON.stringify({ to: "91"+phone, phone: "91"+phone, message: "🔐 *MoGo Login OTP*\nYour login OTP is *" + authGeneratedOtp + "*." }) }).catch(e=>{}); }
+  let msg = "🔐 *MoGo Login OTP*\nYour login OTP is *" + authGeneratedOtp + "*. Do not share this with anyone.";
+  sendMetaTextMsg(phone, msg);
 }
 
 function verifyAuthOTP() {
@@ -99,6 +146,70 @@ function verifyAuthOTP() {
   loggedInUser = { name: "", email: "", phone: phone, method: "WhatsApp" };
   localStorage.setItem('mogo_user', JSON.stringify(loggedInUser)); updateProfileUI(); closeAuthModal();
   if (loginIntent) { processFinalBooking(); } else { showUiAlert("✅", "Login Successful", "You are now logged in with " + phone + "."); }
+}
+
+// ==========================================================
+// GPAY-STYLE MAGIC AR SCANNER WITH HAPTIC VIBRATION
+// ==========================================================
+let scannerStream = null;
+let scanningInterval = null;
+let currentScannerTarget = "";
+
+async function startLiveScanner(moduleType) {
+  currentScannerTarget = 'reg-' + moduleType;
+  const overlay = document.getElementById('gpayScannerOverlay');
+  const video = document.getElementById('scannerVideoElement');
+  const statusText = document.getElementById('scannerStatusText');
+  
+  statusText.innerText = "Align Number Plate in Box";
+  statusText.style.color = "#FFFFFF";
+  overlay.classList.add('show');
+  
+  try {
+    scannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    video.srcObject = scannerStream;
+    scanningInterval = setInterval(() => captureAndScanFrame(video), 800);
+  } catch (err) {
+    stopLiveScanner();
+    showUiAlert("❌", "Camera Error", "Could not access the camera. Please type manually.");
+  }
+}
+
+async function captureAndScanFrame(video) {
+  if (video.videoWidth === 0) return;
+  const canvas = document.getElementById('hiddenScannerCanvas');
+  const ctx = canvas.getContext('2d');
+  const scale = Math.min(600 / video.videoWidth, 1);
+  canvas.width = video.videoWidth * scale;
+  canvas.height = video.videoHeight * scale;
+  ctx.filter = 'grayscale(100%) contrast(1.5)';
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+  try {
+    const result = await Tesseract.recognize(canvas, 'eng');
+    let text = result.data.text.toUpperCase().replace(/\s+/g, '').replace(/[^A-Z0-9]/g, '');
+    let match = text.match(/[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}/);
+    
+    if (match && match[0]) {
+      if (navigator.vibrate) { navigator.vibrate([100, 50, 100]); }
+      let targetInput = document.getElementById(currentScannerTarget);
+      targetInput.value = match[0];
+      formatVehicleNumber(targetInput);
+      
+      const statusText = document.getElementById('scannerStatusText');
+      statusText.innerText = "✅ Plate Detected: " + targetInput.value;
+      statusText.style.color = "#10B981";
+      
+      clearInterval(scanningInterval);
+      setTimeout(stopLiveScanner, 1000);
+    }
+  } catch (e) {}
+}
+
+function stopLiveScanner() {
+  if (scanningInterval) clearInterval(scanningInterval);
+  if (scannerStream) { scannerStream.getTracks().forEach(track => track.stop()); scannerStream = null; }
+  document.getElementById('gpayScannerOverlay').classList.remove('show');
 }
 
 // ==========================================================
@@ -119,9 +230,13 @@ function sendVahanWhatsAppOTP(moduleType) {
   let regEl = document.getElementById('reg-' + moduleType); let regNo = regEl ? regEl.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '') : ""; if (regEl) regEl.value = regNo;
   if (regNo.length < 6) return showUiAlert("🏍️", "Vehicle Number Required", "Please enter a valid Registration Number.");
   let cPhone = document.getElementById('cPhone').value.trim(); if (!/^[0-9]{10}$/.test(cPhone)) return showUiAlert("📱", "Mobile Number Required", "Enter 10-digit mobile number above.");
+
   let generatedOtp = String(Math.floor(1000 + Math.random() * 9000)); vahanOtpStore[moduleType] = { otp: generatedOtp, regNo: regNo, phone: cPhone };
   let otpBox = document.getElementById('otp-box-' + moduleType); let otpInput = document.getElementById('otp-input-' + moduleType); if (otpBox) otpBox.style.display = "block";
   document.getElementById('otp-msg-' + moduleType).innerText = "✅ WhatsApp OTP Sent! (Demo: " + generatedOtp + ")"; if (otpInput) { otpInput.value = generatedOtp; otpInput.focus(); }
+  
+  let msg = "🔐 *MoGo Vahan Check OTP*\nYour verification OTP for vehicle *" + regNo + "* is *" + generatedOtp + "*.";
+  sendMetaTextMsg(cPhone, msg);
 }
 
 async function verifyVahanOTPAndFetch(moduleType) {
@@ -194,10 +309,17 @@ function processFinalBooking() {
     id: id, date: new Date().toLocaleDateString('en-IN'), name: name, phone: phone, vehicle: finalVehicleStr, serviceName: "Premium Foam Wash",
     grandTotal: TOTAL_PRICE, address: addr, paymentType: paymentType, status: "BOOKED", forceType: "JOB_CARD", utr: ""
   };
+  
   insertRecord(globalBookingData);
   document.getElementById('bookingForm').style.display = "none";
   document.getElementById('successScreen').style.display = "block";
   document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
+  
+  // SEND META WHATSAPP JOB CARD TEMPLATE
+  if (paymentType !== "Pay Now") {
+    sendWhatsAppTemplate(phone, "job_card", [name]);
+  }
+  
   if (paymentType === "Pay Now") setTimeout(triggerRazorpayPayment, 400);
 }
 
@@ -211,14 +333,27 @@ function triggerRazorpayPayment() {
       updateRecord(globalBookingData.id, { utr: res.razorpay_payment_id, forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED' });
       document.getElementById('successHeading').innerText = "Payment Verified! ✅";
       generatePDFFromDB(globalBookingData.id, true);
+      
+      // SEND META WHATSAPP TAX INVOICE TEMPLATE
+      sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
     },
     prefill: { contact: globalBookingData.phone }, theme: { color: "#FF5A00" }
   });
   rzp.open();
 }
 
-function handleCustomerUtrInput() { let utr = document.getElementById('customerUtr')?.value.trim(); if (utr.length >= 4) { globalBookingData.utr = utr; globalBookingData.forceType = 'TAX_INVOICE'; globalBookingData.status = 'INVOICE_GENERATED'; updateRecord(globalBookingData.id, { utr: utr, forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED' }); document.getElementById('pdfDownloadBtn').innerText = "👁️ View & Download Paid Tax Invoice (PDF)"; document.getElementById('pdfDownloadBtn').style.background = "#16A34A"; } }
+function handleCustomerUtrInput() {
+  let utr = document.getElementById('customerUtr')?.value.trim();
+  if (utr.length >= 4) {
+    globalBookingData.utr = utr; globalBookingData.forceType = 'TAX_INVOICE'; globalBookingData.status = 'INVOICE_GENERATED';
+    updateRecord(globalBookingData.id, { utr: utr, forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED' });
+    document.getElementById('pdfDownloadBtn').innerText = "👁️ View & Download Paid Tax Invoice (PDF)";
+    document.getElementById('pdfDownloadBtn').style.background = "#16A34A";
+    sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
+  }
+}
 
+// Database & UI Sync
 const HISTORICAL_RECORDS_SEED = [ { id: "MOGO8841", date: "28/10/2026", name: "SHANKAR BISWAS", phone: "9864012345", vehicle: "Bike", serviceName: "Premium Foam Wash", slot: "Standard Doorstep Service", address: "Guwahati, Assam", paymentType: "Pay Now", status: "INVOICE_GENERATED", utr: "pay_RZP_SHANKAR89", forceType: "TAX_INVOICE" }, { id: "MOGO4618", date: "26/10/2026", name: "Mankini Amma", phone: "6000631014", vehicle: "Bike", serviceName: "Premium Foam Wash", slot: "Standard Doorstep Service", address: "Central Gotanagar Railway Qtr No 312/B Maligaon Guwahati", paymentType: "Pay Now", status: "INVOICE_GENERATED", utr: "HFIEHFIBSKBZ", forceType: "TAX_INVOICE" }, { id: "MOGO2966", date: "25/10/2026", name: "KODA RAJESH", phone: "6000631014", vehicle: "Bike", serviceName: "Premium Foam Wash", slot: "Standard Doorstep Service", address: "Railway Colony, Maligaon, Guwahati, Kamrup Metropolitan, Assam, 781011", paymentType: "Pay Now", status: "INVOICE_GENERATED", utr: "R57392694HDBSKSG", forceType: "TAX_INVOICE" } ];
 function getDB() { try { let db = localStorage.getItem('mogo_local_db'); let parsed = db ? JSON.parse(db) : []; return Array.isArray(parsed) ? parsed : []; } catch(e) { return []; } }
 function saveDB(db) { try { localStorage.setItem('mogo_local_db', JSON.stringify(db)); } catch(e) {} }
