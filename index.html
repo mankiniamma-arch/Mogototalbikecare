@@ -22,17 +22,6 @@
   
   <!-- CONNECTING EXTERNAL CSS FILE -->
   <link rel="stylesheet" href="style.css">
-  
-  <!-- SCANNER SPECIFIC CSS (Added inline so it doesn't disturb your main style.css) -->
-  <style>
-    .scanner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 99999999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; }
-    .scanner-overlay.show { opacity: 1; visibility: visible; }
-    .scanner-video-container { position: relative; width: 90%; max-width: 400px; border-radius: 20px; overflow: hidden; border: 3px solid #FF5A00; box-shadow: 0 0 20px rgba(255,90,0,0.4); }
-    .scanner-video { width: 100%; height: auto; display: block; background: #000; }
-    .scanner-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 75%; height: 60px; border: 2px dashed #00FF00; box-shadow: 0 0 0 4000px rgba(0,0,0,0.5); z-index: 2; pointer-events: none; }
-    .scanner-text { position: absolute; top: 20px; left: 0; width: 100%; text-align: center; color: #FFF; font-weight: 800; font-size: 16px; z-index: 3; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-    .scanner-close { position: absolute; bottom: 30px; background: #EF4444; color: #FFF; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 800; cursor: pointer; z-index: 3; }
-  </style>
 </head>
 <body>
 
@@ -117,10 +106,14 @@
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (KYC API Check):</label>
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
             <div class="vahan-input-row">
               <input type="text" id="reg-insurance" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="openLiveScanner('insurance')" title="Live Scan Plate">📷</button>
+              
+              <!-- THE MISSING CAMERA BUTTON IS BACK -->
+              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-insurance" onchange="processNumberPlateScan(event, 'insurance')">
+              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-insurance').click()" title="Scan Bike Number Plate">📷</button>
+              
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('insurance')">📲 Send WA OTP</button>
             </div>
 
@@ -148,10 +141,14 @@
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (PUC Status Check):</label>
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
             <div class="vahan-input-row">
               <input type="text" id="reg-puc" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="openLiveScanner('puc')" title="Live Scan Plate">📷</button>
+              
+              <!-- THE MISSING CAMERA BUTTON IS BACK -->
+              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-puc" onchange="processNumberPlateScan(event, 'puc')">
+              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-puc').click()" title="Scan Bike Number Plate">📷</button>
+              
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('puc')">📲 Send WA OTP</button>
             </div>
 
@@ -179,10 +176,14 @@
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (e-Challan Lookup):</label>
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
             <div class="vahan-input-row">
               <input type="text" id="reg-echallan" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="openLiveScanner('echallan')" title="Live Scan Plate">📷</button>
+              
+              <!-- THE MISSING CAMERA BUTTON IS BACK -->
+              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-echallan" onchange="processNumberPlateScan(event, 'echallan')">
+              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-echallan').click()" title="Scan Bike Number Plate">📷</button>
+              
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('echallan')">📲 Send WA OTP</button>
             </div>
 
@@ -330,23 +331,13 @@
 <!-- MODALS -->
 <!-- ========================================== -->
 
-<!-- LIVE CAMERA SCANNER OVERLAY -->
-<div class="scanner-overlay" id="liveScannerOverlay">
-  <div class="scanner-text" id="scannerStatusText">Align Number Plate in the Box</div>
-  <div class="scanner-video-container">
-    <video class="scanner-video" id="scannerVideo" autoplay playsinline></video>
-    <div class="scanner-frame"></div>
-  </div>
-  <button class="scanner-close" onclick="closeLiveScanner()">✕ Cancel Scan</button>
-  <canvas id="scannerCanvas" style="display:none;"></canvas>
-</div>
-
 <!-- STRICT LOGIN / SIGN UP MODAL -->
 <div class="ui-modal-overlay" id="authModal" onclick="if(event.target === this) closeAuthModal()">
   <div class="ui-modal-box" style="text-align: center; max-width: 380px;">
     <h3 style="margin: 0 0 10px; font-size: 22px; font-weight: 900; color: #0B0F19;">Login / Sign Up</h3>
     <p style="margin: 0 0 24px; font-size: 13px; color: #64748B;">Authentication is required to confirm your booking.</p>
     
+    <!-- Google OAuth / Gmail Login Button -->
     <div class="g_id_signin"
          data-type="standard"
          data-shape="rectangular"
@@ -363,6 +354,7 @@
       <hr style="flex:1; border:none; border-top:1px solid #E2E8F0;">
     </div>
 
+    <!-- WhatsApp Login Section -->
     <input type="tel" id="authPhone" placeholder="Enter Mobile Number" maxlength="10" style="margin-bottom: 12px; text-align:center; font-weight:800; font-size:16px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
     <button class="btn-main" type="button" style="margin-top:0; background:#25D366; box-shadow:0 8px 20px rgba(37, 211, 102, 0.25);" onclick="sendAuthOTP()">📲 Get WhatsApp OTP</button>
 
@@ -388,7 +380,7 @@
   </div>
 </div>
 
-<!-- ADMIN PORTAL -->
+<!-- ADMIN PORTAL (ALL 3 TABS: JOB CARDS, INVOICES, + GENERATE) -->
 <div class="ui-modal-overlay" id="adminModal" onclick="if(event.target === this) closeAdminPortal()">
   <div class="ui-modal-box">
     <div id="adminPinSection">
@@ -438,7 +430,6 @@
         </div>
         <label style="margin-top:4px;">Address</label>
         <input type="text" id="admAddr" placeholder="Customer Doorstep / GPS Address, Guwahati" style="margin-bottom:10px; padding:12px;">
-        
         <div id="admUtrBox" style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
           <label style="color:var(--text-main); margin-top:0; font-size:11px;" id="admUtrLabel">UTR / Payment Proof (Optional for Job Card):</label>
           <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;">
@@ -499,6 +490,21 @@
       <button class="btn-sm" type="button" style="flex:1; padding:12px; background:#EF4444; color:#fff;" id="alertConfirmBtn">Delete</button>
     </div>
     <button class="ui-modal-btn" type="button" id="alertOkBtn" onclick="closeUiAlert()">Got It</button>
+  </div>
+</div>
+
+<!-- CUSTOM PROMPT MODAL FOR UTR ENTRY -->
+<div class="ui-modal-overlay" id="customAlertModal" onclick="if(event.target === this) closeCustomAlert(false)">
+  <div class="ui-modal-box" style="text-align: center; max-width: 350px;">
+    <h3 id="customAlertTitle" style="margin:0 0 8px; font-size:18px; font-weight:900; color:var(--text-main);">Enter UTR</h3>
+    <p id="customAlertMsg" style="margin:0 0 18px; font-size:13.5px; color:var(--text-muted); line-height:1.4;">Message</p>
+    <div id="customAlertInputContainer" style="margin-bottom:16px; display:none;">
+      <input type="text" id="customAlertInput" placeholder="Enter UPI UTR / Ref No." style="padding:12px; font-size:14px;">
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-sm" type="button" id="customAlertBtnCancel" style="margin-top:0; padding:12px; background:#E2E8F0; display:none;" onclick="closeCustomAlert(false)">Cancel</button>
+      <button class="btn-main" type="button" id="customAlertBtnOk" style="margin-top:0; padding:12px;" onclick="closeCustomAlert(true)">Verify & Generate Invoice</button>
+    </div>
   </div>
 </div>
 
