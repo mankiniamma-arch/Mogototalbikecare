@@ -13,6 +13,35 @@ let paymentType = "Pay Now", vehicleType = "Bike", selectedServiceKey = "wash", 
 let globalBookingData = {}, customerCoords = null, fieldToFocus = null, alertCallback = null, vahanOtpStore = {};
 let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
 
+// ==========================================================
+// SMART NUMBER PLATE FORMATTER (AS 01 AB 1234)
+// ==========================================================
+function formatVehicleNumber(input) {
+  let val = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  let formatted = '';
+  
+  if (val.length > 0) formatted += val.substring(0, 2); 
+  if (val.length > 2) formatted += ' ' + val.substring(2, 4); 
+  if (val.length > 4) {
+    let rest = val.substring(4);
+    let letters = rest.match(/^[A-Z]+/);
+    let nums = rest.replace(/^[A-Z]+/, '');
+    
+    if (letters) {
+      formatted += ' ' + letters[0].substring(0, 3); 
+      nums = rest.substring(letters[0].length);
+      if (nums) formatted += ' ' + nums.substring(0, 4); 
+    } else {
+      if (nums) formatted += ' ' + nums.substring(0, 4);
+    }
+  }
+  input.value = formatted;
+  clearError(input.id);
+}
+
+// ==========================================================
+// USER AUTHENTICATION SYSTEM
+// ==========================================================
 let loggedInUser = null;
 let loginIntent = false; 
 
@@ -26,7 +55,7 @@ function updateProfileUI() {
     let shortName = loggedInUser.name ? loggedInUser.name.split(" ")[0] : "User";
     topBtn.innerText = "👤 " + shortName + " (Logout)";
     topBtn.classList.add('logged-in'); topBtn.onclick = logoutUser;
-    if(loggedInUser.name) document.getElementById('cName').value = loggedInUser.name;
+    if(loggedInUser.name) document.getElementById('cName').value = loggedInUser.name.toUpperCase();
     if(loggedInUser.phone) document.getElementById('cPhone').value = loggedInUser.phone;
     if(loggedInUser.email) document.getElementById('cEmail').value = loggedInUser.email;
   } else {
@@ -37,8 +66,7 @@ function updateProfileUI() {
 
 function logoutUser() {
   loggedInUser = null; localStorage.removeItem('mogo_user'); updateProfileUI(); 
-  document.getElementById('cName').value = ""; document.getElementById('cPhone').value = ""; 
-  document.getElementById('cVehicleNo').value = ""; // NEW: Clear vehicle number on logout
+  document.getElementById('cName').value = ""; document.getElementById('cPhone').value = ""; document.getElementById('cVehicleNo').value = "";
   showUiAlert("🔒", "Logged Out", "You have been securely logged out."); 
 }
 function openAuthModal(fromBooking = false) { loginIntent = fromBooking; document.getElementById('authOtpSection').style.display = "none"; document.getElementById('authPhone').value = ""; document.getElementById('authOtp').value = ""; document.getElementById('authModal').classList.add('show'); }
@@ -73,6 +101,9 @@ function verifyAuthOTP() {
   if (loginIntent) { processFinalBooking(); } else { showUiAlert("✅", "Login Successful", "You are now logged in with " + phone + "."); }
 }
 
+// ==========================================================
+// GPAY-STYLE MAGIC AR SCANNER
+// ==========================================================
 let scannerStream = null;
 let scanningInterval = null;
 let currentScannerTarget = "";
@@ -114,10 +145,15 @@ async function captureAndScanFrame(video) {
     
     if (match && match[0]) {
       if (navigator.vibrate) { navigator.vibrate([100, 50, 100]); }
-      document.getElementById(currentScannerTarget).value = match[0];
+      
+      let targetInput = document.getElementById(currentScannerTarget);
+      targetInput.value = match[0];
+      formatVehicleNumber(targetInput); // AUTO FORMAT AFTER SCAN
+      
       const statusText = document.getElementById('scannerStatusText');
-      statusText.innerText = "✅ Plate Detected: " + match[0];
+      statusText.innerText = "✅ Plate Detected: " + targetInput.value;
       statusText.style.color = "#10B981";
+      
       clearInterval(scanningInterval);
       setTimeout(stopLiveScanner, 1000);
     }
@@ -130,6 +166,9 @@ function stopLiveScanner() {
   document.getElementById('gpayScannerOverlay').classList.remove('show');
 }
 
+// ==========================================================
+// REST OF THE EXISTING LOGIC
+// ==========================================================
 const BOTTOM_LEGAL_DATA = {
   privacy: { title: "🛡️ Privacy Policy (Indian & International Law)", html: `<h4>1. Constitutional & Statutory Mandate</h4><ul><li><strong>Constitution of India (Article 21):</strong> Upholds the Fundamental Right to Privacy.</li><li><strong>DPDP Act, 2023 & IT Act, 2000:</strong> Customer data is collected strictly with lawful consent.</li></ul>` },
   terms: { title: "📜 Terms & Conditions & Service Logic", html: `<h4>1. Legal Contract (Indian Contract Act, 1872)</h4><ul><li>All bookings constitute a valid electronic contract.</li><li><strong>Promotional Pricing Logic:</strong> Premium Foam Wash is offered at a special price of ₹89.00 (inclusive of 18% GST).</li></ul>` },
@@ -192,10 +231,9 @@ function toggleService(key, name, price) {
   if (!isOpen) { document.getElementById('item-' + key).classList.add('active'); if (['insurance', 'puc', 'echallan'].includes(key)) { selectedServiceKey = key; selectedServiceName = name; currentServicePrice = price || TOTAL_PRICE; setTimeout(() => document.getElementById('reg-' + key)?.focus(), 300); } else { selectedServiceKey = key; selectedServiceName = name; currentServicePrice = 0; } } else { document.getElementById('item-wash').classList.add('active'); selectedServiceKey = 'wash'; }
 }
 
-// MAIN BOOKING FUNCTION (NEW VALIDATION FOR VEHICLE NO)
 function submitBooking() {
   let name = document.getElementById('cName').value.trim(), phone = document.getElementById('cPhone').value.trim(), addr = document.getElementById('cAddr').value.trim();
-  let vNo = document.getElementById('cVehicleNo').value.trim(); // NEW
+  let vNo = document.getElementById('cVehicleNo').value.trim(); // Get new vehicle No
 
   if (!name || !/^[0-9]{10}$/.test(phone) || !vNo || !addr) return showUiAlert("⚠️", "Missing Details", "Please fill name, phone, vehicle number, and address.");
   if (selectedServiceKey !== 'wash') return showUiAlert("🔒", "Feature Locked", "Select Premium Foam Wash or use Vahan module.");
@@ -210,13 +248,12 @@ function submitBooking() {
 
 function processFinalBooking() {
   let name = document.getElementById('cName').value.trim(), phone = document.getElementById('cPhone').value.trim(), addr = document.getElementById('cAddr').value.trim();
-  let vNo = document.getElementById('cVehicleNo').value.trim().toUpperCase(); // NEW
+  let vNo = document.getElementById('cVehicleNo').value.trim().toUpperCase(); 
   
   let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
   let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
   let subtotal = TOTAL_PRICE / 1.18;
   
-  // Combine Vehicle Type and Number
   let finalVehicleStr = vehicleType + (vNo ? " (" + vNo + ")" : "");
   
   globalBookingData = {
