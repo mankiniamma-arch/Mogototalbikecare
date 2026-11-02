@@ -4,11 +4,9 @@ const TOTAL_PRICE = 89;
 const COMPANY_GSTIN = "18AASCM6250H1Z1"; 
 const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035";
 
-// Live Razorpay Credentials
 const RAZORPAY_KEY_ID = "rzp_live_TsqVswCcOu6NQS"; 
 const _RZP_SYNC_TOKEN = "cnpwX2xpdmVfVHNxVnN3Q2NPdTZOUVM6UTY2NzkzeEQxSGFkYnRjbnFPWlk0UDVK";
 
-// KYC & VAHAN PRODUCTS API CREDENTIALS
 const KYC_API_CONFIG = {
   environment: "TEST",
   clientId: "6d427278-4cb1-4460-8c2e-c09224552148",
@@ -27,7 +25,6 @@ let globalBookingData = {};
 let customerCoords = null;
 let fieldToFocus = null;
 let alertCallback = null;
-
 let vahanOtpStore = {};
 let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
 
@@ -83,34 +80,25 @@ function openAuthModal(fromBooking = false) {
 }
 function closeAuthModal() { document.getElementById('authModal').classList.remove('show'); }
 
-// Google (Gmail) One-Tap Login Flow
-function parseJwt(token) {
-  try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; }
-}
-
+function parseJwt(token) { try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; } }
 function handleGoogleCredentialResponse(response) {
   const payload = parseJwt(response.credential);
   if (payload) {
     loggedInUser = { name: payload.name, email: payload.email, phone: "", method: "Google" };
     localStorage.setItem('mogo_user', JSON.stringify(loggedInUser));
-    updateProfileUI();
-    closeAuthModal();
+    updateProfileUI(); closeAuthModal();
     showUiAlert("✅", "Login Successful", "Welcome back, " + payload.name + "!");
-    
     if (loginIntent) { setTimeout(processFinalBooking, 1000); }
   }
 }
 
-// WhatsApp OTP Login Flow
 let authGeneratedOtp = "";
 function sendAuthOTP() {
   let phone = document.getElementById('authPhone').value.trim();
   if (!/^[0-9]{10}$/.test(phone)) return showUiAlert("📱", "Invalid Number", "Please enter a valid 10-digit mobile number.", "authPhone");
-  
   authGeneratedOtp = String(Math.floor(1000 + Math.random() * 9000));
   document.getElementById('authOtpSection').style.display = "block";
   document.getElementById('authOtp').value = authGeneratedOtp; 
-  
   let msg = "🔐 *MoGo Login OTP*\nYour login OTP is *" + authGeneratedOtp + "*. Do not share this with anyone.";
   if (WHATSAPP_API_URL) {
     fetch(WHATSAPP_API_URL, {
@@ -123,67 +111,67 @@ function sendAuthOTP() {
 function verifyAuthOTP() {
   let enteredOtp = document.getElementById('authOtp').value.trim();
   if (enteredOtp !== authGeneratedOtp || !enteredOtp) return showUiAlert("🔐", "Invalid OTP", "Please enter the correct 4-digit OTP.");
-  
   let phone = document.getElementById('authPhone').value.trim();
   loggedInUser = { name: "", email: "", phone: phone, method: "WhatsApp" };
   localStorage.setItem('mogo_user', JSON.stringify(loggedInUser));
-  updateProfileUI();
-  closeAuthModal();
-  
-  if (loginIntent) {
-    processFinalBooking();
-  } else {
-    showUiAlert("✅", "Login Successful", "You are now logged in with " + phone + ".");
-  }
+  updateProfileUI(); closeAuthModal();
+  if (loginIntent) { processFinalBooking(); } else { showUiAlert("✅", "Login Successful", "You are now logged in with " + phone + "."); }
 }
 
 // ==========================================================
-// AI NUMBER PLATE SCANNER (FAST COMPRESSED OCR)
+// MAGIC LIVE CAMERA SCANNER (QR-CODE STYLE)
 // ==========================================================
-async function processNumberPlateScan(event, moduleType) {
-  const file = event.target.files[0];
-  if (!file) return;
+let scannerStream = null;
+let scanningInterval = null;
 
+async function openLiveScanner(moduleType) {
+  const overlay = document.getElementById('liveScannerOverlay');
+  const video = document.getElementById('scannerVideo');
+  const statusText = document.getElementById('scannerStatusText');
   const regInput = document.getElementById('reg-' + moduleType);
-  const originalPlaceholder = regInput.placeholder;
   
-  regInput.value = "";
-  regInput.placeholder = "📷 Scanning Plate...";
-  showUiAlert("⏳", "Scanning Photo", "AI is reading the number plate...");
+  statusText.innerText = "Align Number Plate in the Box";
+  overlay.classList.add('show');
   
-  const img = new Image();
-  img.src = URL.createObjectURL(file);
-  img.onload = async () => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const MAX_WIDTH = 800;
-    let width = img.width; let height = img.height;
+  try {
+    scannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    video.srcObject = scannerStream;
     
-    if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-    canvas.width = width; canvas.height = height;
-    ctx.drawImage(img, 0, 0, width, height);
+    scanningInterval = setInterval(() => processLiveFrame(video, regInput, overlay), 1000);
+  } catch (err) {
+    closeLiveScanner();
+    showUiAlert("❌", "Camera Error", "Could not access the camera. Please type manually.");
+  }
+}
+
+async function processLiveFrame(video, inputEl, overlay) {
+  if (video.videoWidth === 0) return;
+  
+  const canvas = document.getElementById('scannerCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+  try {
+    const result = await Tesseract.recognize(canvas, 'eng');
+    let text = result.data.text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    let match = text.match(/[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}/);
     
-    try {
-      const result = await Tesseract.recognize(canvas, 'eng');
-      let text = result.data.text;
-      let cleanText = text.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      let match = cleanText.match(/[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}/);
-      
-      closeUiAlert();
-      if (match && match[0]) {
-        regInput.value = match[0];
-        showUiAlert("✅", "Scan Successful", "Vehicle number " + match[0] + " detected! Tap 'Send WA OTP' to continue.");
-      } else {
-        regInput.placeholder = originalPlaceholder;
-        showUiAlert("⚠️", "Scan Failed", "Could not perfectly read the vehicle number from the photo. Please type it manually.");
-      }
-    } catch (err) {
-      closeUiAlert();
-      regInput.placeholder = originalPlaceholder;
-      showUiAlert("❌", "Scanner Error", "Please type manually.");
+    if (match && match[0]) {
+      inputEl.value = match[0];
+      document.getElementById('scannerStatusText').innerText = "✅ Plate Detected: " + match[0];
+      document.getElementById('scannerStatusText').style.color = "#00FF00";
+      setTimeout(closeLiveScanner, 1000);
     }
-  };
-  event.target.value = "";
+  } catch (e) {}
+}
+
+function closeLiveScanner() {
+  if (scanningInterval) clearInterval(scanningInterval);
+  if (scannerStream) { scannerStream.getTracks().forEach(track => track.stop()); }
+  document.getElementById('liveScannerOverlay').classList.remove('show');
+  document.getElementById('scannerStatusText').style.color = "#FFF";
 }
 
 // ==========================================================
@@ -300,7 +288,6 @@ function proceedVahanPaymentOrBooking(actionType, regNo, customAmount) {
   document.getElementById('qrSection').style.display = "block";
 }
 
-// 3-LAYER GPS LOCATOR
 async function fillAddressFromCoords(lat, lon) {
   const addrInput = document.getElementById('cAddr');
   const locBtn = document.getElementById('locBtn');
@@ -308,7 +295,6 @@ async function fillAddressFromCoords(lat, lon) {
   locBtn.disabled = false; locBtn.innerHTML = "✅ GPS Locked"; locBtn.style.background = "#DCFCE7"; locBtn.style.color = "#15803D";
   
   addrInput.value = "Fetching exact street address...";
-  
   try {
     let res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
     if (res.ok) {
@@ -326,7 +312,6 @@ function getLocation() {
   let btn = document.getElementById('locBtn');
   clearError('cAddr');
   if (customerCoords && customerCoords.lat) { fillAddressFromCoords(customerCoords.lat, customerCoords.lon); return; }
-  
   btn.disabled = true; btn.innerHTML = "⏳ Locating...";
   navigator.geolocation.getCurrentPosition(
     pos => fillAddressFromCoords(pos.coords.latitude, pos.coords.longitude),
@@ -358,21 +343,16 @@ function toggleService(key, name, price) {
   }
 }
 
-// MAIN BOOKING FUNCTION WITH STRICT AUTH CHECK
 function submitBooking() {
   let name = document.getElementById('cName').value.trim(), phone = document.getElementById('cPhone').value.trim(), addr = document.getElementById('cAddr').value.trim();
-  
   if (!name || !/^[0-9]{10}$/.test(phone) || !addr) return showUiAlert("⚠️", "Missing Details", "Please fill name, phone, and address.");
   if (selectedServiceKey !== 'wash') return showUiAlert("🔒", "Feature Locked", "Select Premium Foam Wash or use Vahan module.");
 
-  // FORCE LOGIN IF NOT LOGGED IN
   if (!loggedInUser) {
     showUiAlert("🔒", "Authentication Required", "Please Login or Sign Up to confirm your booking.");
-    setTimeout(function() { openAuthModal(true); }, 1500); // true indicates it was opened from checkout
+    setTimeout(function() { openAuthModal(true); }, 1500); 
     return; 
   }
-
-  // If logged in, proceed
   processFinalBooking();
 }
 
@@ -381,17 +361,14 @@ function processFinalBooking() {
   let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
   let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
   let subtotal = TOTAL_PRICE / 1.18;
-
   globalBookingData = {
     id: id, date: new Date().toLocaleDateString('en-IN'), name: name, phone: phone, vehicle: vehicleType, serviceName: "Premium Foam Wash",
     grandTotal: TOTAL_PRICE, address: addr, paymentType: paymentType, status: "BOOKED", forceType: "JOB_CARD", utr: ""
   };
-  
   insertRecord(globalBookingData);
   document.getElementById('bookingForm').style.display = "none";
   document.getElementById('successScreen').style.display = "block";
   document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
-  
   if (paymentType === "Pay Now") setTimeout(triggerRazorpayPayment, 400);
 }
 
@@ -421,81 +398,46 @@ function handleCustomerUtrInput() {
   }
 }
 
-// ==========================================================
-// DATABASE & SYNC LOGIC (RESTORED COMPLETELY)
-// ==========================================================
+// Database & UI Sync
 const HISTORICAL_RECORDS_SEED = [
   { id: "MOGO8841", date: "28/10/2026", name: "SHANKAR BISWAS", phone: "9864012345", vehicle: "Bike", serviceName: "Premium Foam Wash", slot: "Standard Doorstep Service", address: "Guwahati, Assam", paymentType: "Pay Now", status: "INVOICE_GENERATED", utr: "pay_RZP_SHANKAR89", forceType: "TAX_INVOICE" },
   { id: "MOGO4618", date: "26/10/2026", name: "Mankini Amma", phone: "6000631014", vehicle: "Bike", serviceName: "Premium Foam Wash", slot: "Standard Doorstep Service", address: "Central Gotanagar Railway Qtr No 312/B Maligaon Guwahati", paymentType: "Pay Now", status: "INVOICE_GENERATED", utr: "HFIEHFIBSKBZ", forceType: "TAX_INVOICE" },
-  { id: "MOGO2966", date: "25/10/2026", name: "KODA RAJESH", phone: "6000631014", vehicle: "Bike", serviceName: "Premium Foam Wash", slot: "Standard Doorstep Service", address: "Railway Colony, Maligaon, Guwahati, Kamrup Metropolitan, Assam, 781011", paymentType: "Pay Now", status: "INVOICE_GENERATED", utr: "R57392694HDBSKSG", forceType: "TAX_INVOICE" },
-  { id: "MOGO7570", date: "27/10/2026", name: "KODA RAJESH", phone: "9703726125", vehicle: "Bike", serviceName: "Premium Foam Wash", slot: "Standard Doorstep Service", address: "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon", paymentType: "Pay After Service", status: "BOOKED", utr: "", forceType: "JOB_CARD" },
-  { id: "MOGO6781", date: "27/10/2026", name: "KODA RAJESH", phone: "9703726125", vehicle: "Bike", serviceName: "Premium Foam Wash", slot: "Standard Doorstep Service", address: "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon", paymentType: "Pay After Service", status: "BOOKED", utr: "", forceType: "JOB_CARD" }
+  { id: "MOGO2966", date: "25/10/2026", name: "KODA RAJESH", phone: "6000631014", vehicle: "Bike", serviceName: "Premium Foam Wash", slot: "Standard Doorstep Service", address: "Railway Colony, Maligaon, Guwahati, Kamrup Metropolitan, Assam, 781011", paymentType: "Pay Now", status: "INVOICE_GENERATED", utr: "R57392694HDBSKSG", forceType: "TAX_INVOICE" }
 ];
 
 function getDB() { try { let db = localStorage.getItem('mogo_local_db'); let parsed = db ? JSON.parse(db) : []; return Array.isArray(parsed) ? parsed : []; } catch(e) { return []; } }
 function saveDB(db) { try { localStorage.setItem('mogo_local_db', JSON.stringify(db)); } catch(e) {} }
 function getDeletedIds() { try { let raw = localStorage.getItem('mogo_deleted_ids'); return Array.isArray(JSON.parse(raw)) ? JSON.parse(raw) : []; } catch (e) { return []; } }
 function markIdDeleted(id) { try { let arr = getDeletedIds(); if (arr.indexOf(id) === -1) arr.push(id); localStorage.setItem('mogo_deleted_ids', JSON.stringify(arr)); } catch (e) {} }
-
-function insertRecord(data) {
-  let db = getDB(); let existingIdx = db.findIndex(function(x) { return x.id === data.id; });
-  if (existingIdx !== -1) { db[existingIdx] = Object.assign({}, db[existingIdx], data); } else { db.unshift(data); }
-  saveDB(db); renderAdminDB(); renderMechanicJobs();
-}
+function insertRecord(data) { let db = getDB(); let existingIdx = db.findIndex(function(x) { return x.id === data.id; }); if (existingIdx !== -1) { db[existingIdx] = Object.assign({}, db[existingIdx], data); } else { db.unshift(data); } saveDB(db); renderAdminDB(); renderMechanicJobs(); }
 function getRecord(id) { return getDB().find(function(x) { return x.id === id; }); }
-function updateRecord(id, updates) {
-  let db = getDB(); let found = false;
-  for (let i = 0; i < db.length; i++) { if (db[i].id === id) { db[i] = Object.assign({}, db[i], updates); found = true; break; } }
-  if (!found && globalBookingData && globalBookingData.id === id) { db.unshift(Object.assign({}, globalBookingData, updates)); }
-  saveDB(db); renderAdminDB(); renderMechanicJobs();
-}
-function deleteRecord(id) {
-  document.getElementById('alertActionButtons').style.display = 'none'; document.getElementById('alertOkBtn').style.display = 'block';
-  markIdDeleted(id); let db = getDB().filter(function(item) { return item.id !== id; }); saveDB(db); renderAdminDB(); renderMechanicJobs(); closeUiAlert();
-}
-
+function updateRecord(id, updates) { let db = getDB(); let found = false; for (let i = 0; i < db.length; i++) { if (db[i].id === id) { db[i] = Object.assign({}, db[i], updates); found = true; break; } } if (!found && globalBookingData && globalBookingData.id === id) { db.unshift(Object.assign({}, globalBookingData, updates)); } saveDB(db); renderAdminDB(); renderMechanicJobs(); }
+function deleteRecord(id) { document.getElementById('alertActionButtons').style.display = 'none'; document.getElementById('alertOkBtn').style.display = 'block'; markIdDeleted(id); let db = getDB().filter(function(item) { return item.id !== id; }); saveDB(db); renderAdminDB(); renderMechanicJobs(); closeUiAlert(); }
 function mergeIncomingRowsIntoDB(rows, ignoreDeleted) {
   if (!Array.isArray(rows) || rows.length === 0) return;
   let localDb = getDB(), deletedIds = ignoreDeleted ? [] : getDeletedIds(), mapById = {};
   localDb.forEach(function(item) { if (item && item.id) mapById[item.id] = item; });
-
   rows.forEach(function(r) {
-    if (!r) return;
-    let rId = String(r.id || r.bookingId || r.booking_id || r.ID || r['Booking ID'] || "").trim();
-    let rUtr = String(r.utr || r.UTR || r.transactionId || r.payment_id || "").trim();
+    if (!r) return; let rId = String(r.id || r.bookingId || "").trim(); let rUtr = String(r.utr || "").trim();
     if (!rId && rUtr) rId = "MOGO" + rUtr.slice(-4).toUpperCase();
     if (!rId || deletedIds.indexOf(rId) !== -1) return;
-
-    let rName = String(r.name || r.customerName || r.customer_name || r.Name || "Valued Customer").trim();
+    let rName = String(r.name || r.customerName || "Customer").trim();
     if (/shankar\s*biswas/i.test(rName) && mapById["MOGO8841"] && rId !== "MOGO8841") delete mapById["MOGO8841"];
-
     let rForce = (r.forceType === 'TAX_INVOICE' || r.status === 'INVOICE_GENERATED' || r.status === 'captured' || rUtr.length >= 4) ? 'TAX_INVOICE' : 'JOB_CARD';
     let rAmt = (r.isVahanService && r.grandTotal) ? Number(r.grandTotal) : TOTAL_PRICE;
     let sub = rAmt / 1.18;
-
     let existing = mapById[rId];
     if (!existing) {
-      mapById[rId] = {
-        id: rId, date: String(r.date || r.Date || new Date().toLocaleDateString('en-IN')), name: rName, phone: String(r.phone || r.mobile || r.contact || r.customer_phone || r.Phone || "").replace(/^\+91/, ''),
-        vehicle: String(r.vehicle || r.Vehicle || "Bike"), serviceName: String(r.serviceName || "Premium Foam Wash"), slot: String(r.slot || "Standard Doorstep Service"),
-        total: sub, cgst: sub * 0.09, sgst: sub * 0.09, grandTotal: rAmt, address: String(r.address || r.service_address || r.Address || "Guwahati, Assam"),
-        paymentType: String(r.paymentType || (rForce === 'TAX_INVOICE' ? "Pay Now" : "Pay After Service")), status: rForce === 'TAX_INVOICE' ? "INVOICE_GENERATED" : "BOOKED",
-        utr: rUtr || (rForce === 'TAX_INVOICE' ? "VERIFIED" : ""), forceType: rForce, isVahanService: Boolean(r.isVahanService), gpsImage: null
-      };
+      mapById[rId] = { id: rId, date: String(r.date || new Date().toLocaleDateString('en-IN')), name: rName, phone: String(r.phone || "").replace(/^\+91/, ''), vehicle: String(r.vehicle || "Bike"), serviceName: String(r.serviceName || "Premium Foam Wash"), slot: String(r.slot || "Standard Doorstep Service"), total: sub, cgst: sub * 0.09, sgst: sub * 0.09, grandTotal: rAmt, address: String(r.address || "Guwahati, Assam"), paymentType: String(r.paymentType || (rForce === 'TAX_INVOICE' ? "Pay Now" : "Pay After Service")), status: rForce === 'TAX_INVOICE' ? "INVOICE_GENERATED" : "BOOKED", utr: rUtr || (rForce === 'TAX_INVOICE' ? "VERIFIED" : ""), forceType: rForce, isVahanService: Boolean(r.isVahanService), gpsImage: null };
     } else {
       if (rForce === 'TAX_INVOICE') { existing.forceType = 'TAX_INVOICE'; existing.status = 'INVOICE_GENERATED'; }
       if (rUtr && (!existing.utr || existing.utr === "VERIFIED" || existing.utr === "pay_RZP_SHANKAR89")) existing.utr = rUtr;
-      if (r.phone && (!existing.phone || existing.phone === "9864012345")) existing.phone = String(r.phone).replace(/^\+91/, '');
-      if (r.address && existing.address === "Guwahati, Assam") existing.address = String(r.address);
     }
   });
   saveDB(Object.keys(mapById).map(function(k) { return mapById[k]; }));
 }
-
 async function fetchLiveRazorpayPayments(ignoreDeleted) {
-  const rzpUrl = "https://api.razorpay.com/v1/payments?count=50";
-  const proxyUrls = [ rzpUrl, "https://corsproxy.io/?" + encodeURIComponent(rzpUrl), "https://api.allorigins.win/raw?url=" + encodeURIComponent(rzpUrl) ];
-
+  const proxyUrls = [ "https://api.razorpay.com/v1/payments?count=50" ];
   for (let i = 0; i < proxyUrls.length; i++) {
     try {
       let res = await fetch(proxyUrls[i], { method: "GET", headers: { "Authorization": "Basic " + _RZP_SYNC_TOKEN } });
@@ -505,132 +447,49 @@ async function fetchLiveRazorpayPayments(ignoreDeleted) {
           let mapped = [];
           data.items.forEach(function(p) {
             if (p && (p.status === 'captured' || p.status === 'authorized')) {
-              let notes = p.notes || {};
-              let bId = notes.booking_id || notes.bookingId || "";
+              let notes = p.notes || {}; let bId = notes.booking_id || "";
               if (!bId && p.description && p.description.indexOf("MOGO") !== -1) { let m = p.description.match(/MOGO\d+/); if (m) bId = m[0]; }
               if (!bId) bId = "MOGO" + String(p.id).slice(-4).toUpperCase();
-              mapped.push({
-                id: bId, date: p.created_at ? new Date(p.created_at * 1000).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN'),
-                name: notes.customer_name || notes.name || p.Card?.name || (p.email ? p.email.split('@')[0] : "Paid Customer"),
-                phone: String(notes.customer_phone || p.contact || "").replace(/[^0-9]/g, '').slice(-10),
-                vehicle: notes.vehicle || "Bike", address: notes.service_address || notes.address || "Guwahati, Assam",
-                utr: p.id, status: "INVOICE_GENERATED", forceType: "TAX_INVOICE"
-              });
+              mapped.push({ id: bId, date: p.created_at ? new Date(p.created_at * 1000).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN'), name: notes.customer_name || "Paid Customer", phone: String(notes.customer_phone || "").replace(/[^0-9]/g, '').slice(-10), vehicle: notes.vehicle || "Bike", address: notes.service_address || "Guwahati, Assam", utr: p.id, status: "INVOICE_GENERATED", forceType: "TAX_INVOICE" });
             }
           });
           if (mapped.length > 0) { mergeIncomingRowsIntoDB(mapped, ignoreDeleted); return true; }
         }
       }
     } catch (e) {}
-  }
-  return false;
+  } return false;
 }
-
 async function syncCloudDatabase(showFeedback, ignoreDeleted) {
   let admStat = document.getElementById('adminSyncStatus'), mechStat = document.getElementById('mechSyncStatus');
-  if (showFeedback) {
-    if (admStat) admStat.innerText = "⏳ Syncing Razorpay & Cloud DB...";
-    if (mechStat) mechStat.innerText = "⏳ Syncing Live Job Cards...";
-  }
+  if (showFeedback) { if (admStat) admStat.innerText = "⏳ Syncing Razorpay & Cloud DB..."; if (mechStat) mechStat.innerText = "⏳ Syncing Live Job Cards..."; }
   mergeIncomingRowsIntoDB(HISTORICAL_RECORDS_SEED, ignoreDeleted);
   await fetchLiveRazorpayPayments(ignoreDeleted);
   try {
     let res = await fetch(SCRIPT_URL + "?action=getBookings&t=" + Date.now());
-    if (res.ok) {
-      let cloudData = await res.json();
-      let rows = Array.isArray(cloudData) ? cloudData : (cloudData && Array.isArray(cloudData.data) ? cloudData.data : []);
-      if (rows.length > 0) mergeIncomingRowsIntoDB(rows, ignoreDeleted);
-    }
+    if (res.ok) { let cloudData = await res.json(); let rows = Array.isArray(cloudData) ? cloudData : (cloudData && Array.isArray(cloudData.data) ? cloudData.data : []); if (rows.length > 0) mergeIncomingRowsIntoDB(rows, ignoreDeleted); }
   } catch (e) {}
   renderAdminDB(); renderMechanicJobs();
   if (admStat) admStat.innerText = "🟢 All Paid Invoices & Job Cards Synced";
   if (mechStat) mechStat.innerText = "🟢 All Assigned Job Cards Synced";
 }
+function restoreAndSyncAllData() { try { localStorage.removeItem('mogo_deleted_ids'); } catch (e) {} syncCloudDatabase(true, true); }
 
-function restoreAndSyncAllData() {
-  try { localStorage.removeItem('mogo_deleted_ids'); } catch (e) {}
-  syncCloudDatabase(true, true);
-}
-
-// ==========================================================
-// PORTALS AND ALERTS
-// ==========================================================
 function clearError(id) { let el = document.getElementById(id); if (el) el.classList.remove('input-error'); }
-function showUiAlert(icon, title, message, inputId) {
-  document.getElementById('uiAlertIcon').innerHTML = icon || "⚠️"; document.getElementById('uiAlertTitle').innerText = title || "Notice"; document.getElementById('uiAlertMsg').innerText = message || "";
-  fieldToFocus = inputId || null; if (inputId) { let el = document.getElementById(inputId); if (el) el.classList.add('input-error'); }
-  document.getElementById('alertActionButtons').style.display = 'none'; document.getElementById('alertOkBtn').style.display = 'block'; document.getElementById('uiAlertModal').classList.add('show');
-}
-function showConfirmAlert(icon, title, message, confirmCallback) {
-  document.getElementById('uiAlertIcon').innerHTML = icon || "🗑️"; document.getElementById('uiAlertTitle').innerText = title || "Confirm"; document.getElementById('uiAlertMsg').innerText = message || "";
-  document.getElementById('alertOkBtn').style.display = 'none'; document.getElementById('alertActionButtons').style.display = 'flex'; document.getElementById('alertConfirmBtn').onclick = confirmCallback; document.getElementById('uiAlertModal').classList.add('show');
-}
+function showUiAlert(icon, title, message, inputId) { document.getElementById('uiAlertIcon').innerHTML = icon || "⚠️"; document.getElementById('uiAlertTitle').innerText = title || "Notice"; document.getElementById('uiAlertMsg').innerText = message || ""; fieldToFocus = inputId || null; if (inputId) { let el = document.getElementById(inputId); if (el) el.classList.add('input-error'); } document.getElementById('alertActionButtons').style.display = 'none'; document.getElementById('alertOkBtn').style.display = 'block'; document.getElementById('uiAlertModal').classList.add('show'); }
+function showConfirmAlert(icon, title, message, confirmCallback) { document.getElementById('uiAlertIcon').innerHTML = icon || "🗑️"; document.getElementById('uiAlertTitle').innerText = title || "Confirm"; document.getElementById('uiAlertMsg').innerText = message || ""; document.getElementById('alertOkBtn').style.display = 'none'; document.getElementById('alertActionButtons').style.display = 'flex'; document.getElementById('alertConfirmBtn').onclick = confirmCallback; document.getElementById('uiAlertModal').classList.add('show'); }
 function closeUiAlert() { document.getElementById('uiAlertModal').classList.remove('show'); if (fieldToFocus) { let el = document.getElementById(fieldToFocus); if (el) setTimeout(function() { el.focus(); }, 150); fieldToFocus = null; } }
-
-function showCustomAlert(title, message, isPrompt, callback) {
-  document.getElementById('customAlertTitle').innerText = title; document.getElementById('customAlertMsg').innerText = message; alertCallback = callback || null;
-  let inputContainer = document.getElementById('customAlertInputContainer'), inputField = document.getElementById('customAlertInput'), cancelBtn = document.getElementById('customAlertBtnCancel');
-  if (isPrompt) { inputContainer.style.display = 'block'; inputField.value = ''; cancelBtn.style.display = 'block'; } else { inputContainer.style.display = 'none'; cancelBtn.style.display = 'none'; }
-  document.getElementById('customAlertModal').classList.add('show'); if (isPrompt) setTimeout(function() { inputField.focus(); }, 100);
-}
-function closeCustomAlert(isOk) {
-  document.getElementById('customAlertModal').classList.remove('show'); let inputField = document.getElementById('customAlertInput'); let val = inputField ? inputField.value.trim() : "";
-  if (alertCallback) { let cb = alertCallback; alertCallback = null; if (document.getElementById('customAlertInputContainer').style.display === 'block') { cb(isOk ? val : null); } else { cb(isOk); } }
-}
-
+function showCustomAlert(title, message, isPrompt, callback) { document.getElementById('customAlertTitle').innerText = title; document.getElementById('customAlertMsg').innerText = message; alertCallback = callback || null; let inputContainer = document.getElementById('customAlertInputContainer'), inputField = document.getElementById('customAlertInput'), cancelBtn = document.getElementById('customAlertBtnCancel'); if (isPrompt) { inputContainer.style.display = 'block'; inputField.value = ''; cancelBtn.style.display = 'block'; } else { inputContainer.style.display = 'none'; cancelBtn.style.display = 'none'; } document.getElementById('customAlertModal').classList.add('show'); if (isPrompt) setTimeout(function() { inputField.focus(); }, 100); }
+function closeCustomAlert(isOk) { document.getElementById('customAlertModal').classList.remove('show'); let inputField = document.getElementById('customAlertInput'); let val = inputField ? inputField.value.trim() : ""; if (alertCallback) { let cb = alertCallback; alertCallback = null; if (document.getElementById('customAlertInputContainer').style.display === 'block') { cb(isOk ? val : null); } else { cb(isOk); } } }
 function openAdminPortal() { document.getElementById('adminModal').classList.add('show'); document.getElementById('adminPinSection').style.display = 'block'; document.getElementById('adminDashboard').style.display = 'none'; }
 function closeAdminPortal() { document.getElementById('adminModal').classList.remove('show'); }
-function verifyAdminPin() {
-  if (document.getElementById('adminPinInput').value === "4882") {
-    document.getElementById('adminPinSection').style.display = 'none'; document.getElementById('adminDashboard').style.display = 'block'; renderAdminDB(); switchAdminTab('jc');
-  } else showUiAlert("🔐", "Error", "Invalid Admin PIN");
-}
-
+function verifyAdminPin() { if (document.getElementById('adminPinInput').value === "4882") { document.getElementById('adminPinSection').style.display = 'none'; document.getElementById('adminDashboard').style.display = 'block'; renderAdminDB(); switchAdminTab('jc'); } else showUiAlert("🔐", "Error", "Invalid Admin PIN"); }
 function openMechanicPortal() { document.getElementById('mechanicModal').classList.add('show'); document.getElementById('mechPinSection').style.display = 'block'; document.getElementById('mechDashboard').style.display = 'none'; }
 function closeMechanicPortal() { document.getElementById('mechanicModal').classList.remove('show'); }
-function verifyMechPin() {
-  if (document.getElementById('mechPinInput').value === "7788") {
-    document.getElementById('mechPinSection').style.display = 'none'; document.getElementById('mechDashboard').style.display = 'block'; renderMechanicJobs();
-  } else showUiAlert("🔐", "Error", "Invalid Technician PIN");
-}
-
-function switchAdminTab(tab) {
-  ['jc', 'inv', 'gen'].forEach(t => document.getElementById('tab-' + t).classList.toggle('active', t === tab));
-  document.getElementById('view-jc').style.display = tab === 'jc' ? 'flex' : 'none';
-  document.getElementById('view-inv').style.display = tab === 'inv' ? 'flex' : 'none';
-  document.getElementById('view-gen').style.display = tab === 'gen' ? 'block' : 'none';
-}
-function toggleAdminUtrRequirement() {
-  let docType = document.getElementById('admDocType').value; let lbl = document.getElementById('admUtrLabel');
-  if (docType === 'TAX_INVOICE') { lbl.innerText = "UTR / Payment Proof (Mandatory for Tax Invoice):"; lbl.style.color = "#DC2626"; } else { lbl.innerText = "UTR / Payment Proof (Optional for Job Card):"; lbl.style.color = "#0B0F19"; }
-}
-
-function renderMechanicJobs() {
-  let db = getDB(), html = "";
-  db.forEach(function(item) {
-    let amt = (item.isVahanService && item.grandTotal) ? item.grandTotal : TOTAL_PRICE;
-    html += `<div class="db-item"><div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Sheet</span></div><div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName} (₹${amt})<br>📍 ${item.address}</div><div class="db-action"><button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet (A4)</button><a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">📞 Call Customer</a></div></div>`;
-  });
-  document.getElementById('mechJobList').innerHTML = html || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No assigned jobs yet.</p>';
-}
-
-function renderAdminDB() {
-  let db = getDB(), jcHTML = "", invHTML = "", jcCount = 0, invCount = 0;
-  db.forEach(function(item) {
-    let hasValidUtr = item.utr && item.utr.trim().length >= 4, isInv = (item.forceType === 'TAX_INVOICE' || item.status === 'INVOICE_GENERATED' || hasValidUtr || Boolean(item.gpsImage)), jcBadge = isInv ? '<span class="badge b-ready">✅ Job Sheet (Paid)</span>' : '<span class="badge b-booked">⏳ Job Sheet (Unpaid)</span>', amt = (item.isVahanService && item.grandTotal) ? item.grandTotal : TOTAL_PRICE;
-    jcCount++;
-    let jcActions = `<button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet</button>${!isInv ? `<button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">✅ Enter UTR & Make Invoice</button>` : `<button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="viewJobCardModal('${item.id}', false)">🧾 View Invoice</button>`}`;
-    jcHTML += `<div class="db-item"><div class="db-header"><span class="db-id">${item.id}</span> ${jcBadge}</div><div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.serviceName} (₹${amt}) | ${item.date}<br>📍 ${item.address}</div><div class="db-action">${jcActions}<button class="btn-del" type="button" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button></div></div>`;
-    if (isInv) {
-      invCount++;
-      invHTML += `<div class="db-item"><div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-ready">🟢 Paid Tax Invoice</span></div><div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.serviceName} (₹${amt}) | UTR: ${item.utr || 'VERIFIED'}<br>📍 ${item.address}</div><div class="db-action"><button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="viewJobCardModal('${item.id}', false)">👁️ View Tax Invoice</button><button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">📋 Job Sheet</button><button class="btn-del" type="button" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button></div></div>`;
-    }
-  });
-  let cJcEl = document.getElementById('count-jc'), cInvEl = document.getElementById('count-inv');
-  if (cJcEl) cJcEl.innerText = "(" + jcCount + ")"; if (cInvEl) cInvEl.innerText = "(" + invCount + ")";
-  document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Job Cards yet.</p>';
-  document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Paid Invoices yet. Enter UTR on a Job Card to generate Invoice.</p>';
-}
+function verifyMechPin() { if (document.getElementById('mechPinInput').value === "7788") { document.getElementById('mechPinSection').style.display = 'none'; document.getElementById('mechDashboard').style.display = 'block'; renderMechanicJobs(); } else showUiAlert("🔐", "Error", "Invalid Technician PIN"); }
+function switchAdminTab(tab) { ['jc', 'inv', 'gen'].forEach(t => document.getElementById('tab-' + t).classList.toggle('active', t === tab)); document.getElementById('view-jc').style.display = tab === 'jc' ? 'flex' : 'none'; document.getElementById('view-inv').style.display = tab === 'inv' ? 'flex' : 'none'; document.getElementById('view-gen').style.display = tab === 'gen' ? 'block' : 'none'; }
+function toggleAdminUtrRequirement() { let docType = document.getElementById('admDocType').value; let lbl = document.getElementById('admUtrLabel'); if (docType === 'TAX_INVOICE') { lbl.innerText = "UTR / Payment Proof (Mandatory for Tax Invoice):"; lbl.style.color = "#DC2626"; } else { lbl.innerText = "UTR / Payment Proof (Optional for Job Card):"; lbl.style.color = "#0B0F19"; } }
+function renderMechanicJobs() { let db = getDB(), html = ""; db.forEach(function(item) { let amt = (item.isVahanService && item.grandTotal) ? item.grandTotal : TOTAL_PRICE; html += `<div class="db-item"><div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-booked">Job Sheet</span></div><div class="db-info"><strong>${item.name}</strong> (${item.phone})<br>Vehicle: ${item.vehicle} | ${item.serviceName} (₹${amt})<br>📍 ${item.address}</div><div class="db-action"><button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet (A4)</button><a href="tel:${item.phone}" class="btn-sm" style="background:#16A34A; color:#fff; text-decoration:none; display:flex; align-items:center; justify-content:center;">📞 Call Customer</a></div></div>`; }); document.getElementById('mechJobList').innerHTML = html || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No assigned jobs yet.</p>'; }
+function renderAdminDB() { let db = getDB(), jcHTML = "", invHTML = "", jcCount = 0, invCount = 0; db.forEach(function(item) { let hasValidUtr = item.utr && item.utr.trim().length >= 4, isInv = (item.forceType === 'TAX_INVOICE' || item.status === 'INVOICE_GENERATED' || hasValidUtr || Boolean(item.gpsImage)), jcBadge = isInv ? '<span class="badge b-ready">✅ Job Sheet (Paid)</span>' : '<span class="badge b-booked">⏳ Job Sheet (Unpaid)</span>', amt = (item.isVahanService && item.grandTotal) ? item.grandTotal : TOTAL_PRICE; jcCount++; let jcActions = `<button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">👁️ View Job Sheet</button>${!isInv ? `<button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="promptConvertToInvoice('${item.id}')">✅ Enter UTR & Make Invoice</button>` : `<button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="viewJobCardModal('${item.id}', false)">🧾 View Invoice</button>`}`; jcHTML += `<div class="db-item"><div class="db-header"><span class="db-id">${item.id}</span> ${jcBadge}</div><div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.serviceName} (₹${amt}) | ${item.date}<br>📍 ${item.address}</div><div class="db-action">${jcActions}<button class="btn-del" type="button" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button></div></div>`; if (isInv) { invCount++; invHTML += `<div class="db-item"><div class="db-header"><span class="db-id">${item.id}</span> <span class="badge b-ready">🟢 Paid Tax Invoice</span></div><div class="db-info"><strong>${item.name}</strong> | ${item.phone}<br>${item.serviceName} (₹${amt}) | UTR: ${item.utr || 'VERIFIED'}<br>📍 ${item.address}</div><div class="db-action"><button class="btn-sm" type="button" style="background:#16A34A; color:#fff;" onclick="viewJobCardModal('${item.id}', false)">👁️ View Tax Invoice</button><button class="btn-sm" type="button" style="background:#0284C7; color:#fff;" onclick="viewJobCardModal('${item.id}', true)">📋 Job Sheet</button><button class="btn-del" type="button" onclick="showConfirmAlert('🗑️', 'Delete Record?', 'Permanently delete ${item.id}?', function(){deleteRecord('${item.id}')})">✖</button></div></div>`; } }); let cJcEl = document.getElementById('count-jc'), cInvEl = document.getElementById('count-inv'); if (cJcEl) cJcEl.innerText = "(" + jcCount + ")"; if (cInvEl) cInvEl.innerText = "(" + invCount + ")"; document.getElementById('view-jc').innerHTML = jcHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Job Cards yet.</p>'; document.getElementById('view-inv').innerHTML = invHTML || '<p style="text-align:center; font-size:12px; color:#94A3B8; padding:20px;">No Paid Invoices yet. Enter UTR on a Job Card to generate Invoice.</p>'; }
 
 function processAdminForm() {
   let name = document.getElementById('admName').value.trim(), phone = document.getElementById('admPhone').value.trim(), vehicle = document.getElementById('admVehicle').value || "Bike", addr = document.getElementById('admAddr').value.trim() || "Guwahati, Assam", docType = document.getElementById('admDocType').value, utr = document.getElementById('admUtr').value.trim(), fileInput = document.getElementById('admGpsImg');
@@ -654,9 +513,7 @@ function processAdminForm() {
 function promptConvertToInvoice(id) { showCustomAlert("Enter Payment UTR", "Tax Invoice requires a valid UPI UTR / Transaction ID (minimum 4 characters):", true, function(utr) { if (utr === null) return; if (!utr || utr.trim().length < 4) { showUiAlert("⚠️", "UTR Required", "Cannot generate Tax Invoice without a valid UTR / Transaction ID."); return; } convertToInvoice(id, utr.trim()); }); }
 function convertToInvoice(id, utr) { updateRecord(id, { forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED', utr: utr }); renderAdminDB(); renderMechanicJobs(); switchAdminTab('inv'); viewJobCardModal(id, false); }
 
-// ==========================================================
-// PDF GENERATION (LOGO, STAMP, SIGNATURE)
-// ==========================================================
+// PDF GENERATION
 function viewJobCardModal(id, forceJobCard) {
   let rec = getRecord(id); if (!rec && globalBookingData && globalBookingData.id === id) { rec = globalBookingData; }
   if (!rec) return showUiAlert("⚠️", "Record Not Found", "Could not load this record. Please tap Sync & Restore All.");
