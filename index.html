@@ -14,12 +14,19 @@
   <!-- External Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <!-- Google Identity API for Gmail Login -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- USER PROFILE TOP BAR -->
+<div class="user-top-bar" id="userTopBar">
+  <div class="user-greeting" id="userGreeting">👋 Hello, Guest!</div>
+  <button class="login-btn-top" id="topLoginBtn" onclick="openAuthModal(false)">👤 Login / Sign Up</button>
+</div>
 
 <div class="app-container">
   
@@ -45,6 +52,7 @@
     <label>Customer Details</label>
     <input type="text" id="cName" placeholder="Full Name" style="margin-bottom: 12px;" oninput="clearError('cName')">
     <input type="tel" id="cPhone" placeholder="10-Digit Mobile Number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, ''); clearError('cPhone')">
+    <input type="email" id="cEmail" placeholder="Email Address (Optional)" style="display:none; margin-bottom:12px;">
 
     <label>Select Service</label>
     <div class="services-stack">
@@ -91,18 +99,16 @@
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (KYC API Check):</label>
             <div class="vahan-input-row">
               <input type="text" id="reg-insurance" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-insurance" onchange="processNumberPlateScan(event, 'insurance')">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-insurance').click()" title="Scan Bike Number Plate">📷</button>
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('insurance')">📲 Send WA OTP</button>
             </div>
             <div id="otp-box-insurance" class="otp-verify-box">
               <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-insurance">WhatsApp OTP Sent!</div>
               <div class="vahan-input-row" style="margin-bottom:0;">
                 <input type="text" id="otp-input-insurance" placeholder="Enter 4-Digit OTP" maxlength="4" style="padding:10px; font-size:13px; background:#FFF;">
-                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('insurance')">✅ Verify</button>
+                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('insurance')">✅ Verify & Check</button>
               </div>
             </div>
             <div id="res-box-insurance" class="vahan-result-card"></div>
@@ -121,18 +127,16 @@
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (PUC Status Check):</label>
             <div class="vahan-input-row">
               <input type="text" id="reg-puc" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-puc" onchange="processNumberPlateScan(event, 'puc')">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-puc').click()" title="Scan Bike Number Plate">📷</button>
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('puc')">📲 Send WA OTP</button>
             </div>
             <div id="otp-box-puc" class="otp-verify-box">
               <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-puc">WhatsApp OTP Sent!</div>
               <div class="vahan-input-row" style="margin-bottom:0;">
                 <input type="text" id="otp-input-puc" placeholder="Enter 4-Digit OTP" maxlength="4" style="padding:10px; font-size:13px; background:#FFF;">
-                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('puc')">✅ Verify</button>
+                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('puc')">✅ Verify & Check</button>
               </div>
             </div>
             <div id="res-box-puc" class="vahan-result-card"></div>
@@ -151,18 +155,16 @@
         </div>
         <div class="embedded-slot-box" onclick="event.stopPropagation()">
           <div class="vahan-module-box">
-            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter or Scan Vehicle Number:</label>
+            <label style="margin:0 0 6px; font-size:10px; color:var(--primary);">Enter Vehicle Number (e-Challan Lookup):</label>
             <div class="vahan-input-row">
               <input type="text" id="reg-echallan" class="vahan-reg-input" placeholder="e.g. AS01AB1234" maxlength="12">
-              <input type="file" accept="image/*" capture="environment" style="display:none" id="cam-echallan" onchange="processNumberPlateScan(event, 'echallan')">
-              <button type="button" class="vahan-btn-sm" style="background:#334155; padding:0 12px; font-size:16px;" onclick="document.getElementById('cam-echallan').click()" title="Scan Bike Number Plate">📷</button>
               <button type="button" class="vahan-btn-sm" onclick="sendVahanWhatsAppOTP('echallan')">📲 Send WA OTP</button>
             </div>
             <div id="otp-box-echallan" class="otp-verify-box">
               <div style="font-size:11px; font-weight:800; color:#15803D; margin-bottom:6px;" id="otp-msg-echallan">WhatsApp OTP Sent!</div>
               <div class="vahan-input-row" style="margin-bottom:0;">
                 <input type="text" id="otp-input-echallan" placeholder="Enter 4-Digit OTP" maxlength="4" style="padding:10px; font-size:13px; background:#FFF;">
-                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('echallan')">✅ Verify</button>
+                <button type="button" class="vahan-btn-sm" style="background:#16A34A;" onclick="verifyVahanOTPAndFetch('echallan')">✅ Verify & Check</button>
               </div>
             </div>
             <div id="res-box-echallan" class="vahan-result-card"></div>
@@ -170,7 +172,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 6: PUNCTURE & EMERGENCY -->
+      <!-- SERVICE 6: PUNCTURE & EMERGENCY SERVICES -->
       <div class="service-accordion-item disabled" id="item-emergency">
         <div class="service-header-row" onclick="toggleService('emergency', 'Puncture & Emergency Services', 0)">
           <div class="service-info">
@@ -181,7 +183,7 @@
         </div>
       </div>
 
-      <!-- SERVICE 7: MONTHLY MAINTENANCE -->
+      <!-- SERVICE 7: MONTHLY MAINTENANCE (MMC) -->
       <div class="service-accordion-item disabled" id="item-mmc">
         <div class="service-header-row" onclick="toggleService('mmc', 'Monthly Maintenance (MMC)', 0)">
           <div class="service-info">
@@ -206,23 +208,24 @@
       <div class="seg-btn" id="opt-after" onclick="selectPayType('Pay After Service')">💵 Pay After <span>Cash / UPI</span></div>
     </div>
 
-    <button class="btn-main" type="button" onclick="submitBooking()">Confirm Booking 🚀</button>
+    <!-- Booking Button handles Login Check -->
+    <button class="btn-main" type="button" onclick="handleBookingIntent()">Confirm Booking 🚀</button>
     
-    <div class="portal-links" style="position: relative; z-index: 10;">
-      <span class="portal-link" onclick="openAdminPortal()" style="padding: 10px;">🔐 Admin Portal</span>
-      <span class="portal-link" style="color:#0284C7; padding: 10px;" onclick="openMechanicPortal()">🔧 Mechanic Portal</span>
+    <div class="portal-links">
+      <span class="portal-link" onclick="openAdminPortal()">🔐 Admin Portal</span>
+      <span class="portal-link" style="color:#0284C7;" onclick="openMechanicPortal()">🔧 Mechanic Portal</span>
     </div>
   </div>
 
   <!-- LOADING SCREEN -->
-  <div class="card" id="loadingScreen" style="display:none;">
+  <div class="card" id="loadingScreen">
     <div class="loader"></div>
     <h3 style="margin:0 0 8px; font-size:20px;">Processing Booking...</h3>
     <p style="color:var(--text-muted); font-size:14px; margin:0;">Syncing with Google Sheets & generating documents.</p>
   </div>
 
   <!-- SUCCESS SCREEN -->
-  <div class="card" id="successScreen" style="display:none;">
+  <div class="card" id="successScreen">
     <div style="font-size:56px; margin-bottom:12px;">✅</div>
     <h2 style="color:#10B981; font-size:24px; font-weight:800; margin:0 0 8px;" id="successHeading">Submitted Successfully!</h2>
     <p style="color:var(--text-muted); font-size:14px; margin:0;" id="successSubtitle">Our expert will connect with you.</p>
@@ -247,7 +250,7 @@
   </div>
 
   <!-- BOTTOM LEGAL FOOTER -->
-  <footer class="bottom-legal-structure" style="position: relative; z-index: 10;">
+  <footer class="bottom-legal-structure">
     <div class="bls-top-bar">
       <div>
         <div class="bls-company-title">MoGo Total Bike Care</div>
@@ -257,35 +260,84 @@
     </div>
     <div class="bls-policy-stack">
       <div class="bls-policy-row">
-        <div class="bls-policy-info"><div class="bls-p-title">🛡️ Privacy Policy & Data Protection</div><div class="bls-p-desc">Article 21, Indian DPDP Act 2023 & International GDPR</div></div>
+        <div class="bls-policy-info"><div class="bls-p-title">🛡️ Privacy Policy & Data Protection</div><div class="bls-p-desc">Article 21, Indian DPDP Act 2023 & GDPR</div></div>
         <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('privacy')">👁️ View</button>
       </div>
       <div class="bls-policy-row">
-        <div class="bls-policy-info"><div class="bls-p-title">📜 Terms & Conditions (Service Logic)</div><div class="bls-p-desc">Indian Contract Act 1872, ₹89 Deal & WhatsApp Opt-In</div></div>
+        <div class="bls-policy-info"><div class="bls-p-title">📜 Terms & Conditions (Service Logic)</div><div class="bls-p-desc">Indian Contract Act 1872 & WhatsApp Opt-In</div></div>
         <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('terms')">👁️ View</button>
       </div>
       <div class="bls-policy-row">
-        <div class="bls-policy-info"><div class="bls-p-title">⚖️ Legal & Constitutional Compliance</div><div class="bls-p-desc">Constitution of India Art. 19(1)(g), IT Act & UNCITRAL</div></div>
+        <div class="bls-policy-info"><div class="bls-p-title">⚖️ Legal & Constitutional Compliance</div><div class="bls-p-desc">Constitution of India Art. 19(1)(g) & IT Act</div></div>
         <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('legal')">👁️ View</button>
       </div>
       <div class="bls-policy-row">
-        <div class="bls-policy-info"><div class="bls-p-title">💳 Refund, Cancellation & Consumer Rights</div><div class="bls-p-desc">Consumer Protection Act 2019 & Payment Gateway Logic</div></div>
+        <div class="bls-policy-info"><div class="bls-p-title">💳 Refund & Cancellation</div><div class="bls-p-desc">Consumer Protection Act 2019</div></div>
         <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('refund')">👁️ View</button>
       </div>
       <div class="bls-policy-row">
-        <div class="bls-policy-info"><div class="bls-p-title">🏢 Contact Us & Grievance Redressal</div><div class="bls-p-desc">Official Helpdesk, Website & Registered Office</div></div>
+        <div class="bls-policy-info"><div class="bls-p-title">🏢 Contact & Grievance Redressal</div><div class="bls-p-desc">Official Helpdesk & Registered Office</div></div>
         <button type="button" class="bls-view-btn" onclick="openBottomLegalModal('contact')">👁️ View</button>
       </div>
     </div>
     <div class="bls-contact-box">
-      <div><strong>📧 Official Help Email:</strong> <a href="mailto:help@totalbikecare.in">help@totalbikecare.in</a> | <a href="mailto:help@mogototalbikecare.in">help@mogototalbikecare.in</a></div>
-      <div><strong>🌐 Official Website:</strong> <a href="https://mogototalbikecare.in" target="_blank" rel="noopener">https://mogototalbikecare.in</a></div>
-      <div><strong>📞 Helpline / WhatsApp:</strong> <a href="tel:+919954924948">+91 99549 24948</a> &nbsp;|&nbsp; <strong>GSTIN:</strong> 18AASCM6250H1Z1</div>
-      <div><strong>📍 Registered Address:</strong> H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Guwahati, Assam, 781035, India</div>
+      <div><strong>📧 Email:</strong> <a href="mailto:help@totalbikecare.in">help@totalbikecare.in</a></div>
+      <div><strong>🌐 Web:</strong> <a href="https://mogototalbikecare.in" target="_blank">mogototalbikecare.in</a></div>
+      <div><strong>📞 WhatsApp:</strong> +91 99549 24948 &nbsp;|&nbsp; <strong>GSTIN:</strong> 18AASCM6250H1Z1</div>
+      <div><strong>📍 Address:</strong> Pub Boragaon, Guwahati, Assam, 781035, India</div>
     </div>
     <div class="bls-copyright">© 2024–2026 Mankiniamma Technologies Private Limited. All Rights Reserved.</div>
   </footer>
 
+</div>
+
+<!-- ========================================== -->
+<!-- MODALS -->
+<!-- ========================================== -->
+
+<!-- LOGIN / SIGN UP MODAL (NEW) -->
+<div class="ui-modal-overlay" id="authModal" onclick="if(event.target === this) closeAuthModal()">
+  <div class="ui-modal-box" style="text-align: center; max-width: 380px;">
+    <h3 style="margin: 0 0 10px; font-size: 22px; font-weight: 900; color: #0B0F19;">Sign In / Register</h3>
+    <p style="margin: 0 0 24px; font-size: 13px; color: #64748B;">Securely access your bookings and vehicles.</p>
+    
+    <!-- Google OAuth / Gmail Login Button -->
+    <div id="g_id_onload"
+         data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com" 
+         data-context="signin"
+         data-ux_mode="popup"
+         data-callback="handleGoogleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="continue_with"
+         data-size="large"
+         data-logo_alignment="center"
+         style="width: 100%; display: flex; justify-content: center; margin-bottom: 16px;">
+    </div>
+    
+    <div style="display:flex; align-items:center; margin: 20px 0; color:#94A3B8; font-size:12px; font-weight:700;">
+      <hr style="flex:1; border:none; border-top:1px solid #E2E8F0;">
+      <span style="padding: 0 10px;">OR WHATSAPP LOGIN</span>
+      <hr style="flex:1; border:none; border-top:1px solid #E2E8F0;">
+    </div>
+
+    <!-- WhatsApp Login Section -->
+    <input type="tel" id="authPhone" placeholder="Enter Mobile Number" maxlength="10" style="margin-bottom: 12px; text-align:center; font-weight:800; font-size:16px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+    <button class="btn-main" type="button" style="margin-top:0; background:#25D366; box-shadow:0 8px 20px rgba(37, 211, 102, 0.25);" onclick="sendAuthOTP()">📲 Get WhatsApp OTP</button>
+
+    <div id="authOtpSection" style="display:none; margin-top:16px; padding-top:16px; border-top:1px dashed #E2E8F0;">
+      <label style="margin-top:0;">Enter 4-Digit OTP</label>
+      <input type="text" id="authOtp" placeholder="••••" maxlength="4" style="text-align:center; letter-spacing:10px; font-size:20px; font-weight:900; margin-bottom:12px;">
+      <button class="btn-main" type="button" style="margin-top:0; background:#0B0F19;" onclick="verifyAuthOTP()">✅ Secure Login</button>
+    </div>
+
+    <button class="btn-outline" type="button" id="guestCheckoutBtn" style="margin-top:20px; display:none;" onclick="continueAsGuest()">Proceed without Login (Guest)</button>
+    <button class="btn-outline" type="button" style="border:none; margin-top:8px; font-size:13px;" onclick="closeAuthModal()">Close</button>
+  </div>
 </div>
 
 <!-- BOTTOM LEGAL & LOGIC VIEW MODAL -->
@@ -313,12 +365,10 @@
     </div>
     <div id="adminDashboard" style="display: none;">
       <div class="portal-header-title">Admin Portal</div>
-      <div class="portal-header-subtitle">Job Sheets, Paid Invoices & Manual Generation</div>
+      <div class="portal-header-subtitle">Job Sheets & Generation</div>
       <div class="sync-status-bar">
-        <span id="adminSyncStatus">🟢 Syncing Razorpay & Cloud...</span>
-        <div style="display:flex; gap:4px;">
-          <button type="button" class="sync-btn" onclick="restoreAndSyncAllData()">🔄 Sync & Restore All</button>
-        </div>
+        <span id="adminSyncStatus">🟢 Syncing Data...</span>
+        <button type="button" class="sync-btn" onclick="restoreAndSyncAllData()">🔄 Force Sync</button>
       </div>
       <div class="db-tab-bar">
         <div class="db-tab active" id="tab-jc" onclick="switchAdminTab('jc')">Job Cards <span id="count-jc"></span></div>
@@ -328,30 +378,10 @@
       <div id="view-jc" class="db-list"></div>
       <div id="view-inv" class="db-list" style="display: none;"></div>
       <div id="view-gen" style="display: none;">
-        <label style="margin-top:0;">Customer Name</label>
+        <!-- Generate Content Same As Before -->
         <input type="text" id="admName" placeholder="Full Name" style="margin-bottom:8px; padding:12px;">
-        <label style="margin-top:8px;">Mobile Number</label>
-        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <div style="flex:1;">
-            <label style="margin-top:4px;">Vehicle</label>
-            <select id="admVehicle" style="padding:12px;"><option value="Bike">Bike</option><option value="Scooty">Scooty</option></select>
-          </div>
-          <div style="flex:1;">
-            <label style="margin-top:4px;">Document</label>
-            <select id="admDocType" style="padding:12px;" onchange="toggleAdminUtrRequirement()">
-              <option value="JOB_CARD" selected>Job Sheet / Card</option><option value="TAX_INVOICE">Paid Tax Invoice</option>
-            </select>
-          </div>
-        </div>
-        <label style="margin-top:4px;">Address</label>
-        <input type="text" id="admAddr" placeholder="Customer Doorstep / GPS Address, Guwahati" style="margin-bottom:10px; padding:12px;">
-        <div id="admUtrBox" style="background:#F1F5F9; padding:12px; border-radius:14px; border:1.5px dashed var(--border); margin-bottom:14px;">
-          <label style="color:var(--text-main); margin-top:0; font-size:11px;" id="admUtrLabel">UTR / Payment Proof (Optional for Job Card):</label>
-          <input type="file" id="admGpsImg" accept="image/*" style="margin-bottom:8px; padding:6px; font-size:12px;">
-          <input type="text" id="admUtr" placeholder="Enter UPI UTR / Transaction Ref" style="padding:10px; font-size:13px; background:#FFF;">
-        </div>
-        <button class="btn-main" type="button" onclick="processAdminForm()" style="margin-top:0; background:#16A34A;">Generate & View A4 Sheet</button>
+        <input type="tel" id="admPhone" placeholder="10-Digit Mobile" style="margin-bottom:8px; padding:12px;" maxlength="10">
+        <button class="btn-main" type="button" onclick="processAdminForm()" style="margin-top:0; background:#16A34A;">Generate A4 Sheet</button>
       </div>
       <button class="btn-outline" type="button" onclick="closeAdminPortal()" style="margin-top: 16px;">Close Portal</button>
     </div>
@@ -362,7 +392,7 @@
 <div class="ui-modal-overlay" id="mechanicModal" onclick="if(event.target === this) closeMechanicPortal()">
   <div class="ui-modal-box">
     <div id="mechPinSection">
-      <div class="portal-header-title" style="color:#0284C7;">Mechanic Portal</div>
+      <div class="portal-header-title">Mechanic Portal</div>
       <div class="portal-header-subtitle">Secure Access Required</div>
       <label style="margin-top:0;">Enter Mechanic PIN:</label>
       <input type="password" id="mechPinInput" placeholder="••••" maxlength="4" style="margin-bottom: 16px; letter-spacing: 6px; text-align: center; font-size: 20px;">
@@ -371,10 +401,9 @@
     </div>
     <div id="mechDashboard" style="display: none;">
       <div class="portal-header-title" style="color:#0284C7;">Assigned Job Cards</div>
-      <div class="portal-header-subtitle">Tap 'View Job Sheet' to open full A4 Sheet & Download PDF</div>
       <div class="sync-status-bar">
-        <span id="mechSyncStatus">🟢 Syncing Live Job Cards...</span>
-        <button type="button" class="sync-btn" style="background:#0284C7;" onclick="restoreAndSyncAllData()">🔄 Sync & Restore Jobs</button>
+        <span id="mechSyncStatus">🟢 Syncing Jobs...</span>
+        <button type="button" class="sync-btn" style="background:#0284C7;" onclick="restoreAndSyncAllData()">🔄 Refresh</button>
       </div>
       <div id="mechJobList" class="db-list"></div>
       <button class="btn-outline" type="button" onclick="closeMechanicPortal()" style="margin-top: 16px;">Close Portal</button>
@@ -409,22 +438,6 @@
   </div>
 </div>
 
-<!-- CUSTOM PROMPT MODAL FOR UTR ENTRY -->
-<div class="ui-modal-overlay" id="customAlertModal" onclick="if(event.target === this) closeCustomAlert(false)">
-  <div class="ui-modal-box" style="text-align: center; max-width: 350px;">
-    <h3 id="customAlertTitle" style="margin:0 0 8px; font-size:18px; font-weight:900; color:var(--text-main);">Enter UTR</h3>
-    <p id="customAlertMsg" style="margin:0 0 18px; font-size:13.5px; color:var(--text-muted); line-height:1.4;">Message</p>
-    <div id="customAlertInputContainer" style="margin-bottom:16px; display:none;">
-      <input type="text" id="customAlertInput" placeholder="Enter UPI UTR / Ref No." style="padding:12px; font-size:14px;">
-    </div>
-    <div style="display:flex; gap:8px;">
-      <button class="btn-sm" type="button" id="customAlertBtnCancel" style="margin-top:0; padding:12px; background:#E2E8F0; display:none;" onclick="closeCustomAlert(false)">Cancel</button>
-      <button class="btn-main" type="button" id="customAlertBtnOk" style="margin-top:0; padding:12px;" onclick="closeCustomAlert(true)">Verify & Generate Invoice</button>
-    </div>
-  </div>
-</div>
-
 <script src="script.js"></script>
-
 </body>
 </html>
