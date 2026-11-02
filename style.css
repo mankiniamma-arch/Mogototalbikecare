@@ -1,35 +1,25 @@
-/* USER PROFILE TOP BAR (NEW) */
-.user-top-bar {
-  background: #0B0F19;
-  color: #FFFFFF;
-  padding: 10px 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-.user-greeting {
-  font-size: 13px;
-  font-weight: 800;
-  color: #F8FAFC;
-}
-.login-btn-top {
-  background: linear-gradient(135deg, #FF5A00 0%, #E65100 100%);
-  color: #FFF;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
+/* FLOATING USER PROFILE BUTTON (Clean & Out of the way) */
+.floating-profile-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #FFFFFF;
+  color: #0B0F19;
+  border: 1px solid #E2E8F0;
+  padding: 8px 14px;
+  border-radius: 20px;
   font-size: 11px;
   font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(11, 15, 25, 0.08);
+  z-index: 1000;
+  transition: all 0.2s;
+}
+.floating-profile-btn:hover {
+  border-color: #FF5A00;
+  color: #FF5A00;
 }
 
-/* ========================================================== */
-/* YOUR ORIGINAL APPROVED STYLE.CSS CODE BELOW                */
-/* ========================================================== */
 :root { 
   --primary: #FF5A00; 
   --primary-dark: #E65100;
@@ -54,10 +44,9 @@ body {
   color: var(--text-main); 
   padding: 15px; 
   display: flex; 
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center; 
+  justify-content: center; 
   min-height: 100vh; 
+  align-items: flex-start; 
 }
 
 .app-container { 
