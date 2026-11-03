@@ -5,7 +5,6 @@ const COMPANY_GSTIN = "18AASCM6250H1Z1";
 const OFFICIAL_ADDRESS = "Building No./Flat No.: H/No.248, Dag No.332, K P Patta No 78, Pub Boragaon, Under Jalukbari Mouza, Guwahati Revenue Circle, Guwahati, Kamrup Metropolitan, Assam, 781035";
 const RAZORPAY_KEY_ID = "rzp_live_TsqVswCcOu6NQS"; 
 const _RZP_SYNC_TOKEN = "cnpwX2xpdmVfVHNxVnN3Q2NPdTZOUVM6UTY2NzkzeEQxSGFkYnRjbnFPWlk0UDVK";
-const KYC_API_CONFIG = { environment: "TEST", clientId: "6d427278-4cb1-4460-8c2e-c09224552148", clientSecret: "KuPVrzLE8jta6TTemdR1F78MdRcD7EwJ", baseUrl: "https://sandbox.kyc-api.in/v1/vahan" };
 
 // ==========================================================
 // OFFICIAL META WHATSAPP CLOUD API CONFIGURATION
@@ -15,15 +14,20 @@ const WHATSAPP_API_URL = "https://graph.facebook.com/v17.0/1358291930706909/mess
 
 let paymentType = "Pay Now", vehicleType = "Bike", selectedServiceKey = "wash", selectedServiceName = "Premium Foam Wash";
 let globalBookingData = {}, customerCoords = null, fieldToFocus = null, alertCallback = null, vahanOtpStore = {};
-let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
 
 // ==========================================================
-// WHATSAPP API HELPER FUNCTIONS (META GRAPH API)
+// WHATSAPP API HELPER FUNCTIONS
 // ==========================================================
 function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
-  if (!WHATSAPP_API_URL) return;
+  if (!WHATSAPP_API_URL || !WHATSAPP_API_KEY) return;
+  
+  // Format phone number to 91XXXXXXXXXX
   let cleanPhone = "91" + toPhone.replace(/[^0-9]/g, '').slice(-10);
-  let parameters = paramsArray.map(p => ({ type: "text", text: String(p) }));
+  
+  // Map our parameters to Meta's expected format
+  let parameters = paramsArray.map(function(p) {
+    return { type: "text", text: String(p) };
+  });
   
   let payload = {
     messaging_product: "whatsapp",
@@ -42,23 +46,7 @@ function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + WHATSAPP_API_KEY },
     body: JSON.stringify(payload)
-  }).catch(e => console.error("WA Template Error:", e));
-}
-
-function sendMetaTextMsg(toPhone, textMsg) {
-  if (!WHATSAPP_API_URL) return;
-  let cleanPhone = "91" + toPhone.replace(/[^0-9]/g, '').slice(-10);
-  let payload = {
-    messaging_product: "whatsapp",
-    to: cleanPhone,
-    type: "text",
-    text: { body: textMsg }
-  };
-  fetch(WHATSAPP_API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + WHATSAPP_API_KEY },
-    body: JSON.stringify(payload)
-  }).catch(e=>{});
+  }).catch(function(e) { console.error("WA API Error:", e); });
 }
 
 // ==========================================================
@@ -115,7 +103,15 @@ function logoutUser() {
   document.getElementById('cName').value = ""; document.getElementById('cPhone').value = ""; document.getElementById('cVehicleNo').value = "";
   showUiAlert("🔒", "Logged Out", "You have been securely logged out."); 
 }
-function openAuthModal(fromBooking = false) { loginIntent = fromBooking; document.getElementById('authOtpSection').style.display = "none"; document.getElementById('authPhone').value = ""; document.getElementById('authOtp').value = ""; document.getElementById('authModal').classList.add('show'); }
+
+function openAuthModal(fromBooking = false) { 
+  loginIntent = fromBooking; 
+  document.getElementById('authOtpSection').style.display = "none"; 
+  document.getElementById('authPhone').value = ""; 
+  document.getElementById('authOtp').value = ""; 
+  document.getElementById('authModal').classList.add('show'); 
+}
+
 function closeAuthModal() { document.getElementById('authModal').classList.remove('show'); }
 
 function parseJwt(token) { try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; } }
@@ -132,85 +128,37 @@ function handleGoogleCredentialResponse(response) {
 let authGeneratedOtp = "";
 function sendAuthOTP() {
   let phone = document.getElementById('authPhone').value.trim();
-  if (!/^[0-9]{10}$/.test(phone)) return showUiAlert("📱", "Invalid Number", "Please enter a valid 10-digit mobile number.", "authPhone");
+  if (!/^[0-9]{10}$/.test(phone)) {
+    showUiAlert("📱", "Invalid Number", "Please enter a valid 10-digit mobile number.", "authPhone");
+    return;
+  }
   authGeneratedOtp = String(Math.floor(1000 + Math.random() * 9000));
-  document.getElementById('authOtpSection').style.display = "block"; document.getElementById('authOtp').value = authGeneratedOtp; 
-  let msg = "🔐 *MoGo Login OTP*\nYour login OTP is *" + authGeneratedOtp + "*. Do not share this with anyone.";
-  sendMetaTextMsg(phone, msg);
+  document.getElementById('authOtpSection').style.display = "block"; 
+  document.getElementById('authOtp').value = authGeneratedOtp; 
+  
+  // SEND OTP VIA WHATSAPP TEMPLATE (Assuming you create a template named 'auth_otp' with {{1}} as parameter)
+  sendWhatsAppTemplate(phone, "auth_otp", [authGeneratedOtp]);
 }
 
 function verifyAuthOTP() {
   let enteredOtp = document.getElementById('authOtp').value.trim();
-  if (enteredOtp !== authGeneratedOtp || !enteredOtp) return showUiAlert("🔐", "Invalid OTP", "Please enter the correct 4-digit OTP.");
+  if (enteredOtp !== authGeneratedOtp || !enteredOtp) {
+    showUiAlert("🔐", "Invalid OTP", "Please enter the correct 4-digit OTP.");
+    return;
+  }
   let phone = document.getElementById('authPhone').value.trim();
   loggedInUser = { name: "", email: "", phone: phone, method: "WhatsApp" };
-  localStorage.setItem('mogo_user', JSON.stringify(loggedInUser)); updateProfileUI(); closeAuthModal();
-  if (loginIntent) { processFinalBooking(); } else { showUiAlert("✅", "Login Successful", "You are now logged in with " + phone + "."); }
-}
-
-// ==========================================================
-// GPAY-STYLE MAGIC AR SCANNER WITH HAPTIC VIBRATION
-// ==========================================================
-let scannerStream = null;
-let scanningInterval = null;
-let currentScannerTarget = "";
-
-async function startLiveScanner(moduleType) {
-  currentScannerTarget = 'reg-' + moduleType;
-  const overlay = document.getElementById('gpayScannerOverlay');
-  const video = document.getElementById('scannerVideoElement');
-  const statusText = document.getElementById('scannerStatusText');
+  localStorage.setItem('mogo_user', JSON.stringify(loggedInUser)); 
+  updateProfileUI(); 
+  closeAuthModal();
   
-  statusText.innerText = "Align Number Plate in Box";
-  statusText.style.color = "#FFFFFF";
-  overlay.classList.add('show');
-  
-  try {
-    scannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    video.srcObject = scannerStream;
-    scanningInterval = setInterval(() => captureAndScanFrame(video), 800);
-  } catch (err) {
-    stopLiveScanner();
-    showUiAlert("❌", "Camera Error", "Could not access the camera. Please type manually.");
+  if (loginIntent) { 
+    processFinalBooking(); 
+  } else { 
+    showUiAlert("✅", "Login Successful", "You are now logged in with " + phone + "."); 
   }
 }
 
-async function captureAndScanFrame(video) {
-  if (video.videoWidth === 0) return;
-  const canvas = document.getElementById('hiddenScannerCanvas');
-  const ctx = canvas.getContext('2d');
-  const scale = Math.min(600 / video.videoWidth, 1);
-  canvas.width = video.videoWidth * scale;
-  canvas.height = video.videoHeight * scale;
-  ctx.filter = 'grayscale(100%) contrast(1.5)';
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  
-  try {
-    const result = await Tesseract.recognize(canvas, 'eng');
-    let text = result.data.text.toUpperCase().replace(/\s+/g, '').replace(/[^A-Z0-9]/g, '');
-    let match = text.match(/[A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{4}/);
-    
-    if (match && match[0]) {
-      if (navigator.vibrate) { navigator.vibrate([100, 50, 100]); }
-      let targetInput = document.getElementById(currentScannerTarget);
-      targetInput.value = match[0];
-      formatVehicleNumber(targetInput);
-      
-      const statusText = document.getElementById('scannerStatusText');
-      statusText.innerText = "✅ Plate Detected: " + targetInput.value;
-      statusText.style.color = "#10B981";
-      
-      clearInterval(scanningInterval);
-      setTimeout(stopLiveScanner, 1000);
-    }
-  } catch (e) {}
-}
-
-function stopLiveScanner() {
-  if (scanningInterval) clearInterval(scanningInterval);
-  if (scannerStream) { scannerStream.getTracks().forEach(track => track.stop()); scannerStream = null; }
-  document.getElementById('gpayScannerOverlay').classList.remove('show');
-}
 
 // ==========================================================
 // REST OF THE EXISTING LOGIC (VAHAN, MAPS, PDF, RAZORPAY)
@@ -235,8 +183,8 @@ function sendVahanWhatsAppOTP(moduleType) {
   let otpBox = document.getElementById('otp-box-' + moduleType); let otpInput = document.getElementById('otp-input-' + moduleType); if (otpBox) otpBox.style.display = "block";
   document.getElementById('otp-msg-' + moduleType).innerText = "✅ WhatsApp OTP Sent! (Demo: " + generatedOtp + ")"; if (otpInput) { otpInput.value = generatedOtp; otpInput.focus(); }
   
-  let msg = "🔐 *MoGo Vahan Check OTP*\nYour verification OTP for vehicle *" + regNo + "* is *" + generatedOtp + "*.";
-  sendMetaTextMsg(cPhone, msg);
+  // SEND OTP VIA WHATSAPP TEMPLATE (Assuming template named 'vahan_otp' with {{1}} and {{2}} parameters)
+  sendWhatsAppTemplate(cPhone, "vahan_otp", [regNo, generatedOtp]);
 }
 
 async function verifyVahanOTPAndFetch(moduleType) {
@@ -301,7 +249,6 @@ function processFinalBooking() {
   let vNo = document.getElementById('cVehicleNo').value.trim().toUpperCase(); 
   
   let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
-  let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
   let subtotal = TOTAL_PRICE / 1.18;
   let finalVehicleStr = vehicleType + (vNo ? " (" + vNo + ")" : "");
   
@@ -315,8 +262,11 @@ function processFinalBooking() {
   document.getElementById('successScreen').style.display = "block";
   document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
   
+  // ==========================================
   // SEND META WHATSAPP JOB CARD TEMPLATE
+  // ==========================================
   if (paymentType !== "Pay Now") {
+    // Sends the job_card template when they choose Pay After Service
     sendWhatsAppTemplate(phone, "job_card", [name]);
   }
   
@@ -334,7 +284,9 @@ function triggerRazorpayPayment() {
       document.getElementById('successHeading').innerText = "Payment Verified! ✅";
       generatePDFFromDB(globalBookingData.id, true);
       
+      // ==========================================
       // SEND META WHATSAPP TAX INVOICE TEMPLATE
+      // ==========================================
       sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
     },
     prefill: { contact: globalBookingData.phone }, theme: { color: "#FF5A00" }
@@ -349,6 +301,8 @@ function handleCustomerUtrInput() {
     updateRecord(globalBookingData.id, { utr: utr, forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED' });
     document.getElementById('pdfDownloadBtn').innerText = "👁️ View & Download Paid Tax Invoice (PDF)";
     document.getElementById('pdfDownloadBtn').style.background = "#16A34A";
+    
+    // Also trigger Tax Invoice WhatsApp if verified manually
     sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
   }
 }
