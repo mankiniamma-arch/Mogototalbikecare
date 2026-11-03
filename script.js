@@ -21,10 +21,8 @@ let globalBookingData = {}, customerCoords = null, fieldToFocus = null, alertCal
 function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
   if (!WHATSAPP_API_URL || !WHATSAPP_API_KEY) return;
   
-  // Format phone number to 91XXXXXXXXXX
   let cleanPhone = "91" + toPhone.replace(/[^0-9]/g, '').slice(-10);
   
-  // Map our parameters to Meta's expected format
   let parameters = paramsArray.map(function(p) {
     return { type: "text", text: String(p) };
   });
@@ -50,7 +48,7 @@ function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
 }
 
 // ==========================================================
-// SMART NUMBER PLATE FORMATTER (AS 01 AB 1234)
+// SMART NUMBER PLATE FORMATTER
 // ==========================================================
 function formatVehicleNumber(input) {
   let val = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
@@ -133,10 +131,13 @@ function sendAuthOTP() {
     return;
   }
   authGeneratedOtp = String(Math.floor(1000 + Math.random() * 9000));
-  document.getElementById('authOtpSection').style.display = "block"; 
-  document.getElementById('authOtp').value = authGeneratedOtp; 
   
-  // SEND OTP VIA WHATSAPP TEMPLATE (Assuming you create a template named 'auth_otp' with {{1}} as parameter)
+  // Show the OTP input section, BUT DO NOT AUTO-FILL IT
+  document.getElementById('authOtpSection').style.display = "block"; 
+  document.getElementById('authOtp').value = ""; // Clear any old OTP
+  document.getElementById('authOtp').focus(); // Prompt user to type
+  
+  // Send the OTP via WhatsApp
   sendWhatsAppTemplate(phone, "auth_otp", [authGeneratedOtp]);
 }
 
@@ -159,7 +160,6 @@ function verifyAuthOTP() {
   }
 }
 
-
 // ==========================================================
 // REST OF THE EXISTING LOGIC (VAHAN, MAPS, PDF, RAZORPAY)
 // ==========================================================
@@ -180,10 +180,15 @@ function sendVahanWhatsAppOTP(moduleType) {
   let cPhone = document.getElementById('cPhone').value.trim(); if (!/^[0-9]{10}$/.test(cPhone)) return showUiAlert("📱", "Mobile Number Required", "Enter 10-digit mobile number above.");
 
   let generatedOtp = String(Math.floor(1000 + Math.random() * 9000)); vahanOtpStore[moduleType] = { otp: generatedOtp, regNo: regNo, phone: cPhone };
-  let otpBox = document.getElementById('otp-box-' + moduleType); let otpInput = document.getElementById('otp-input-' + moduleType); if (otpBox) otpBox.style.display = "block";
-  document.getElementById('otp-msg-' + moduleType).innerText = "✅ WhatsApp OTP Sent! (Demo: " + generatedOtp + ")"; if (otpInput) { otpInput.value = generatedOtp; otpInput.focus(); }
   
-  // SEND OTP VIA WHATSAPP TEMPLATE (Assuming template named 'vahan_otp' with {{1}} and {{2}} parameters)
+  let otpBox = document.getElementById('otp-box-' + moduleType); let otpInput = document.getElementById('otp-input-' + moduleType); 
+  if (otpBox) otpBox.style.display = "block";
+  document.getElementById('otp-msg-' + moduleType).innerText = "WhatsApp OTP Sent! Please check your phone."; 
+  
+  // DO NOT AUTO-FILL VAHAN OTP EITHER
+  if (otpInput) { otpInput.value = ""; otpInput.focus(); }
+  
+  // SEND OTP VIA WHATSAPP TEMPLATE
   sendWhatsAppTemplate(cPhone, "vahan_otp", [regNo, generatedOtp]);
 }
 
@@ -262,11 +267,7 @@ function processFinalBooking() {
   document.getElementById('successScreen').style.display = "block";
   document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
   
-  // ==========================================
-  // SEND META WHATSAPP JOB CARD TEMPLATE
-  // ==========================================
   if (paymentType !== "Pay Now") {
-    // Sends the job_card template when they choose Pay After Service
     sendWhatsAppTemplate(phone, "job_card", [name]);
   }
   
@@ -284,9 +285,6 @@ function triggerRazorpayPayment() {
       document.getElementById('successHeading').innerText = "Payment Verified! ✅";
       generatePDFFromDB(globalBookingData.id, true);
       
-      // ==========================================
-      // SEND META WHATSAPP TAX INVOICE TEMPLATE
-      // ==========================================
       sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
     },
     prefill: { contact: globalBookingData.phone }, theme: { color: "#FF5A00" }
@@ -302,7 +300,6 @@ function handleCustomerUtrInput() {
     document.getElementById('pdfDownloadBtn').innerText = "👁️ View & Download Paid Tax Invoice (PDF)";
     document.getElementById('pdfDownloadBtn').style.background = "#16A34A";
     
-    // Also trigger Tax Invoice WhatsApp if verified manually
     sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
   }
 }
