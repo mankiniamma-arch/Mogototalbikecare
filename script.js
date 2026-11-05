@@ -9,7 +9,7 @@ const _RZP_SYNC_TOKEN = "cnpwX2xpdmVfVHNxVnN3Q2NPdTZOUVM6UTY2NzkzeEQxSGFkYnRjbnF
 // ==========================================================
 // OFFICIAL META WHATSAPP CLOUD API CONFIGURATION
 // ==========================================================
-const WHATSAPP_API_KEY = "EAAdt66Ozx5UBSZCxNm8K9c8h6xMvYPRsgpcg4x3VDqmH9scKxf3xr8zROjJNRFo6lBrsWEFWSKuGmLGyzWbQ19uBMWSoTJbwcu5Hq1iG5ZCqEZAi7VBbEgTxAMIjlFXDXTT0UOBbIZAfgwfsoyHWs9NvYHp77iS19HtlqkJctncrg6DxXZBJq4kd3M9czVr52AwZDZD"; 
+const WHATSAPP_API_KEY = "EAAdt66Ozx5UBS49ZCjckZBrZBfNa8j59l1uJC2NxZC4OvsZCskZC3hNPGXPqNzYZBhIBv6fv7oy1bD7xq54aSEF8IM7flMa0MTagHtWvxaBdUkc9ZAH33l1fUGYPZCIQRU5DnrQWT9ixN9LFUOq7pkEKO5jhLwXFSprObxEsugFpOxuVZAoO46UpsZCA6qPZAb0gqHaEWgZDZD"; 
 const WHATSAPP_API_URL = "https://graph.facebook.com/v17.0/1358291930706909/messages"; 
 
 let paymentType = "Pay Now", vehicleType = "Bike", selectedServiceKey = "wash", selectedServiceName = "Premium Foam Wash";
@@ -157,8 +157,7 @@ function sendAuthOTP() {
   // Try sending as text message first
   sendMetaTextMsg(phone, msg);
   
-  // Also try sending via template (in case text messages are blocked for unverified numbers)
-  // Assumes you have a template named 'auth_otp' with {{1}} parameter
+  // Optional: Also try sending via template
   // sendWhatsAppTemplate(phone, "auth_otp", [authGeneratedOtp]); 
 }
 
@@ -269,9 +268,7 @@ function processFinalBooking() {
   let vNo = document.getElementById('cVehicleNo').value.trim().toUpperCase(); 
   
   let id = "MOGO" + Math.floor(1000 + Math.random() * 9000);
-  let maps = customerCoords ? "https://www.google.com/maps?q=" + customerCoords.lat + "," + customerCoords.lon : "";
   let subtotal = TOTAL_PRICE / 1.18;
-  
   let finalVehicleStr = vehicleType + (vNo ? " (" + vNo + ")" : "");
   
   globalBookingData = {
@@ -285,7 +282,6 @@ function processFinalBooking() {
   document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
   
   if (paymentType !== "Pay Now") {
-    // Send job card template for Cash/Pay After Service
     sendWhatsAppTemplate(phone, "job_card", [name]);
   }
   
@@ -303,7 +299,6 @@ function triggerRazorpayPayment() {
       document.getElementById('successHeading').innerText = "Payment Verified! ✅";
       generatePDFFromDB(globalBookingData.id, true);
       
-      // Send Tax Invoice Template on Successful Online Payment
       sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
     },
     prefill: { contact: globalBookingData.phone }, theme: { color: "#FF5A00" }
@@ -319,7 +314,6 @@ function handleCustomerUtrInput() {
     document.getElementById('pdfDownloadBtn').innerText = "👁️ View & Download Paid Tax Invoice (PDF)";
     document.getElementById('pdfDownloadBtn').style.background = "#16A34A";
     
-    // Trigger Tax Invoice template if UTR is manually verified
     sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
   }
 }
