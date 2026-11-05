@@ -17,58 +17,65 @@ let globalBookingData = {}, customerCoords = null, fieldToFocus = null, alertCal
 let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
 
 // ==========================================================
-// WHATSAPP API HELPER FUNCTIONS (WITH BUTTON OTP FIX)
+// WHATSAPP API HELPER FUNCTIONS (WITH AUTO-FALLBACK SYSTEM)
 // ==========================================================
 function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
   if (!WHATSAPP_API_URL || !WHATSAPP_API_KEY) return;
   
   let cleanPhone = "91" + toPhone.replace(/[^0-9]/g, '').slice(-10);
+  let parameters = paramsArray.map(function(p) { return { type: "text", text: String(p) }; });
   
-  let parameters = paramsArray.map(function(p) {
-    return { type: "text", text: String(p) };
-  });
-  
-  // Body ka parameter
-  let components = [
-    { type: "body", parameters: parameters }
-  ];
-
-  // FIX FOR ERROR 131008: Agar Authentication template hai, toh Button ke liye bhi OTP parameter dena hoga
-  if (templateName === "auth_otp" || templateName === "vahan_otp") {
-    components.push({
-      type: "button",
-      sub_type: "url",
-      index: "0",
-      parameters: [ { type: "text", text: String(paramsArray[0]) } ]
-    });
-  }
-  
-  let payload = {
+  // Basic payload for templates without buttons (like job_card, tax_invoice)
+  let basePayload = {
     messaging_product: "whatsapp",
     to: cleanPhone,
     type: "template",
     template: {
       name: templateName,
       language: { code: "en" },
-      components: components
+      components: [ { type: "body", parameters: parameters } ]
     }
   };
 
-  fetch(WHATSAPP_API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + WHATSAPP_API_KEY },
-    body: JSON.stringify(payload)
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.error) {
-       alert("🚨 META API ERROR: (" + data.error.code + ") " + data.error.message);
-       console.error("Meta Error Details:", data.error);
-    }
-  })
-  .catch(function(e) { 
-    alert("🚨 NETWORK ERROR: " + e.message); 
-  });
+  let payloadsToTry = [ JSON.parse(JSON.stringify(basePayload)) ];
+  
+  // If sending OTP, try multiple button combinations to bypass Error 131008
+  if (templateName === "auth_otp" || templateName === "vahan_otp") {
+    let payloadBtnUrl = JSON.parse(JSON.stringify(basePayload));
+    payloadBtnUrl.template.components.push({ type: "button", sub_type: "url", index: "0", parameters: [{ type: "text", text: String(paramsArray[0]) }] });
+    
+    let payloadNoBtn = JSON.parse(JSON.stringify(basePayload));
+    
+    let payloadBtnCopy = JSON.parse(JSON.stringify(basePayload));
+    payloadBtnCopy.template.components.push({ type: "button", sub_type: "copy_code", index: "0", parameters: [{ type: "text", text: String(paramsArray[0]) }] });
+    
+    payloadsToTry = [payloadBtnUrl, payloadNoBtn, payloadBtnCopy];
+  }
+
+  function attemptFetch(index) {
+    if (index >= payloadsToTry.length) return;
+    fetch(WHATSAPP_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + WHATSAPP_API_KEY },
+      body: JSON.stringify(payloadsToTry[index])
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.error) {
+         if (index < payloadsToTry.length - 1) {
+           attemptFetch(index + 1); // Try the next format automatically
+         } else {
+           alert("🚨 META API ERROR: (" + data.error.code + ") " + data.error.message);
+           console.error("Meta Error:", data.error);
+         }
+      }
+    })
+    .catch(function(e) { 
+      if (index === payloadsToTry.length - 1) alert("🚨 NETWORK ERROR: " + e.message); 
+    });
+  }
+  
+  attemptFetch(0);
 }
 
 // ==========================================================
