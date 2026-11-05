@@ -9,6 +9,7 @@ const _RZP_SYNC_TOKEN = "cnpwX2xpdmVfVHNxVnN3Q2NPdTZOUVM6UTY2NzkzeEQxSGFkYnRjbnF
 // ==========================================================
 // OFFICIAL META WHATSAPP CLOUD API CONFIGURATION
 // ==========================================================
+// नया टोकन यहाँ सेट कर दिया गया है
 const WHATSAPP_API_KEY = "EAAdt66Ozx5UBS49ZCjckZBrZBfNa8j59l1uJC2NxZC4OvsZCskZC3hNPGXPqNzYZBhIBv6fv7oy1bD7xq54aSEF8IM7flMa0MTagHtWvxaBdUkc9ZAH33l1fUGYPZCIQRU5DnrQWT9ixN9LFUOq7pkEKO5jhLwXFSprObxEsugFpOxuVZAoO46UpsZCA6qPZAb0gqHaEWgZDZD"; 
 const WHATSAPP_API_URL = "https://graph.facebook.com/v17.0/1358291930706909/messages"; 
 
@@ -73,7 +74,7 @@ function formatVehicleNumber(input) {
 }
 
 // ==========================================================
-// USER AUTHENTICATION SYSTEM
+// USER AUTHENTICATION SYSTEM (LOGIN OTP)
 // ==========================================================
 let loggedInUser = null;
 let loginIntent = false; 
@@ -102,6 +103,7 @@ function logoutUser() {
   document.getElementById('cName').value = ""; document.getElementById('cPhone').value = ""; document.getElementById('cVehicleNo').value = "";
   showUiAlert("🔒", "Logged Out", "You have been securely logged out."); 
 }
+
 function openAuthModal(fromBooking = false) { 
   loginIntent = fromBooking; 
   document.getElementById('authOtpSection').style.display = "none"; 
@@ -109,6 +111,7 @@ function openAuthModal(fromBooking = false) {
   document.getElementById('authOtp').value = ""; 
   document.getElementById('authModal').classList.add('show'); 
 }
+
 function closeAuthModal() { document.getElementById('authModal').classList.remove('show'); }
 
 function parseJwt(token) { try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; } }
@@ -122,6 +125,7 @@ function handleGoogleCredentialResponse(response) {
   }
 }
 
+// नया auth_otp टेम्पलेट यहाँ सेट किया गया है
 let authGeneratedOtp = "";
 function sendAuthOTP() {
   let phone = document.getElementById('authPhone').value.trim();
@@ -131,12 +135,12 @@ function sendAuthOTP() {
   }
   authGeneratedOtp = String(Math.floor(1000 + Math.random() * 9000));
   
-  // Show OTP section, leave the box EMPTY for the user to type
+  // OTP बॉक्स दिखाएगा लेकिन ऑटो-फिल नहीं करेगा
   document.getElementById('authOtpSection').style.display = "block"; 
   document.getElementById('authOtp').value = ""; 
   document.getElementById('authOtp').focus();
   
-  // SEND OTP VIA APPROVED TEMPLATE (Requires 'auth_otp' template in Meta Dashboard)
+  // नया अप्रूव्ड 'auth_otp' टेम्पलेट इस्तेमाल करके OTP भेज रहे हैं
   sendWhatsAppTemplate(phone, "auth_otp", [authGeneratedOtp]); 
 }
 
@@ -175,7 +179,6 @@ function sendVahanWhatsAppOTP(moduleType) {
   let otpBox = document.getElementById('otp-box-' + moduleType); let otpInput = document.getElementById('otp-input-' + moduleType); if (otpBox) otpBox.style.display = "block";
   document.getElementById('otp-msg-' + moduleType).innerText = "✅ WhatsApp OTP Sent! Please check your phone."; 
   
-  // DO NOT AUTO-FILL OTP
   if (otpInput) { otpInput.value = ""; otpInput.focus(); }
   
   // SEND OTP VIA APPROVED TEMPLATE (Requires 'vahan_otp' template in Meta Dashboard)
