@@ -17,7 +17,7 @@ let globalBookingData = {}, customerCoords = null, fieldToFocus = null, alertCal
 let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
 
 // ==========================================================
-// WHATSAPP API HELPER FUNCTIONS (META GRAPH API - DEBUG MODE)
+// WHATSAPP API HELPER FUNCTIONS (WITH BUTTON OTP FIX)
 // ==========================================================
 function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
   if (!WHATSAPP_API_URL || !WHATSAPP_API_KEY) return;
@@ -28,6 +28,21 @@ function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
     return { type: "text", text: String(p) };
   });
   
+  // Body ka parameter
+  let components = [
+    { type: "body", parameters: parameters }
+  ];
+
+  // FIX FOR ERROR 131008: Agar Authentication template hai, toh Button ke liye bhi OTP parameter dena hoga
+  if (templateName === "auth_otp" || templateName === "vahan_otp") {
+    components.push({
+      type: "button",
+      sub_type: "url",
+      index: "0",
+      parameters: [ { type: "text", text: String(paramsArray[0]) } ]
+    });
+  }
+  
   let payload = {
     messaging_product: "whatsapp",
     to: cleanPhone,
@@ -35,9 +50,7 @@ function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
     template: {
       name: templateName,
       language: { code: "en" },
-      components: [
-        { type: "body", parameters: parameters }
-      ]
+      components: components
     }
   };
 
@@ -48,9 +61,8 @@ function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
   })
   .then(response => response.json())
   .then(data => {
-    // Agar Meta API koi error deta hai, toh wo screen par alert karega
     if (data.error) {
-       alert("🚨 META API ERROR: " + data.error.message);
+       alert("🚨 META API ERROR: (" + data.error.code + ") " + data.error.message);
        console.error("Meta Error Details:", data.error);
     }
   })
