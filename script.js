@@ -286,7 +286,10 @@ function processFinalBooking() {
   document.getElementById('qrSection').style.display = paymentType === "Pay Now" ? "block" : "none";
   
   if (paymentType !== "Pay Now") {
-    sendWhatsAppTemplate(phone, "job_card", [name]);
+    // ट्रिगर WhatsApp Job Card
+    setTimeout(() => {
+        sendWhatsAppTemplate(phone, "job_card", [name]);
+    }, 500);
   }
   
   if (paymentType === "Pay Now") setTimeout(triggerRazorpayPayment, 400);
@@ -301,9 +304,14 @@ function triggerRazorpayPayment() {
       globalBookingData.utr = res.razorpay_payment_id; globalBookingData.forceType = 'TAX_INVOICE'; globalBookingData.status = 'INVOICE_GENERATED';
       updateRecord(globalBookingData.id, { utr: res.razorpay_payment_id, forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED' });
       document.getElementById('successHeading').innerText = "Payment Verified! ✅";
-      generatePDFFromDB(globalBookingData.id, true);
       
-      sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
+      // ✅ FIX 1: स्क्रीन पर टैक्स इनवॉइस (A4 View) को तुरंत पॉप-अप (Modal) में दिखाना 
+      viewJobCardModal(globalBookingData.id, false);
+      
+      // ✅ FIX 2: WhatsApp पर 'tax_invoice' तुरंत ट्रिगर करना
+      setTimeout(() => {
+          sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
+      }, 500);
     },
     prefill: { contact: globalBookingData.phone }, theme: { color: "#FF5A00" }
   });
@@ -315,10 +323,22 @@ function handleCustomerUtrInput() {
   if (utr.length >= 4) {
     globalBookingData.utr = utr; globalBookingData.forceType = 'TAX_INVOICE'; globalBookingData.status = 'INVOICE_GENERATED';
     updateRecord(globalBookingData.id, { utr: utr, forceType: 'TAX_INVOICE', status: 'INVOICE_GENERATED' });
-    document.getElementById('pdfDownloadBtn').innerText = "👁️ View & Download Paid Tax Invoice (PDF)";
-    document.getElementById('pdfDownloadBtn').style.background = "#16A34A";
     
-    sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
+    let pdfBtn = document.getElementById('pdfDownloadBtn');
+    if(pdfBtn) {
+       pdfBtn.innerText = "👁️ View & Download Paid Tax Invoice (PDF)";
+       pdfBtn.style.background = "#16A34A";
+    }
+    
+    // ✅ FIX 1: स्क्रीन पर टैक्स इनवॉइस (A4 View) को तुरंत पॉप-अप (Modal) में दिखाना 
+    viewJobCardModal(globalBookingData.id, false);
+    
+    // ✅ FIX 2: WhatsApp पर 'tax_invoice' तुरंत ट्रिगर करना
+    setTimeout(() => {
+        sendWhatsAppTemplate(globalBookingData.phone, "tax_invoice", [globalBookingData.name]);
+    }, 500);
+  } else {
+    showUiAlert("⚠️", "Invalid UTR", "Please enter a valid UTR/Reference number.");
   }
 }
 
