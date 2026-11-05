@@ -48,22 +48,6 @@ function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
   }).catch(function(e) { console.error("WA Template Error:", e); });
 }
 
-function sendMetaTextMsg(toPhone, textMsg) {
-  if (!WHATSAPP_API_URL || !WHATSAPP_API_KEY) return;
-  let cleanPhone = "91" + toPhone.replace(/[^0-9]/g, '').slice(-10);
-  let payload = {
-    messaging_product: "whatsapp",
-    to: cleanPhone,
-    type: "text",
-    text: { body: textMsg }
-  };
-  fetch(WHATSAPP_API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + WHATSAPP_API_KEY },
-    body: JSON.stringify(payload)
-  }).catch(e=>{});
-}
-
 // ==========================================================
 // SMART NUMBER PLATE FORMATTER (AS 01 AB 1234)
 // ==========================================================
@@ -147,18 +131,13 @@ function sendAuthOTP() {
   }
   authGeneratedOtp = String(Math.floor(1000 + Math.random() * 9000));
   
-  // Show OTP section, but leave the box EMPTY for the user to type
+  // Show OTP section, leave the box EMPTY for the user to type
   document.getElementById('authOtpSection').style.display = "block"; 
   document.getElementById('authOtp').value = ""; 
   document.getElementById('authOtp').focus();
   
-  let msg = "🔐 *MoGo Login OTP*\nYour login OTP is *" + authGeneratedOtp + "*. Do not share this with anyone.";
-  
-  // Try sending as text message first
-  sendMetaTextMsg(phone, msg);
-  
-  // Optional: Also try sending via template
-  // sendWhatsAppTemplate(phone, "auth_otp", [authGeneratedOtp]); 
+  // SEND OTP VIA APPROVED TEMPLATE (Requires 'auth_otp' template in Meta Dashboard)
+  sendWhatsAppTemplate(phone, "auth_otp", [authGeneratedOtp]); 
 }
 
 function verifyAuthOTP() {
@@ -199,11 +178,8 @@ function sendVahanWhatsAppOTP(moduleType) {
   // DO NOT AUTO-FILL OTP
   if (otpInput) { otpInput.value = ""; otpInput.focus(); }
   
-  let msg = "🔐 *MoGo Vahan Check OTP*\nYour verification OTP for vehicle *" + regNo + "* is *" + generatedOtp + "*.";
-  sendMetaTextMsg(cPhone, msg);
-  
-  // Optional Template fallback
-  // sendWhatsAppTemplate(cPhone, "vahan_otp", [regNo, generatedOtp]);
+  // SEND OTP VIA APPROVED TEMPLATE (Requires 'vahan_otp' template in Meta Dashboard)
+  sendWhatsAppTemplate(cPhone, "vahan_otp", [regNo, generatedOtp]);
 }
 
 async function verifyVahanOTPAndFetch(moduleType) {
