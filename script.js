@@ -9,7 +9,6 @@ const _RZP_SYNC_TOKEN = "cnpwX2xpdmVfVHNxVnN3Q2NPdTZOUVM6UTY2NzkzeEQxSGFkYnRjbnF
 // ==========================================================
 // OFFICIAL META WHATSAPP CLOUD API CONFIGURATION
 // ==========================================================
-// नया टोकन यहाँ सेट कर दिया गया है
 const WHATSAPP_API_KEY = "EAAdt66Ozx5UBS49ZCjckZBrZBfNa8j59l1uJC2NxZC4OvsZCskZC3hNPGXPqNzYZBhIBv6fv7oy1bD7xq54aSEF8IM7flMa0MTagHtWvxaBdUkc9ZAH33l1fUGYPZCIQRU5DnrQWT9ixN9LFUOq7pkEKO5jhLwXFSprObxEsugFpOxuVZAoO46UpsZCA6qPZAb0gqHaEWgZDZD"; 
 const WHATSAPP_API_URL = "https://graph.facebook.com/v17.0/1358291930706909/messages"; 
 
@@ -18,7 +17,7 @@ let globalBookingData = {}, customerCoords = null, fieldToFocus = null, alertCal
 let selectedInsurancePlan = { name: "1-Yr Third-Party Bike Policy (Partner Agency)", price: 714 };
 
 // ==========================================================
-// WHATSAPP API HELPER FUNCTIONS (META GRAPH API)
+// WHATSAPP API HELPER FUNCTIONS (META GRAPH API - DEBUG MODE)
 // ==========================================================
 function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
   if (!WHATSAPP_API_URL || !WHATSAPP_API_KEY) return;
@@ -46,7 +45,18 @@ function sendWhatsAppTemplate(toPhone, templateName, paramsArray) {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + WHATSAPP_API_KEY },
     body: JSON.stringify(payload)
-  }).catch(function(e) { console.error("WA Template Error:", e); });
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Agar Meta API koi error deta hai, toh wo screen par alert karega
+    if (data.error) {
+       alert("🚨 META API ERROR: " + data.error.message);
+       console.error("Meta Error Details:", data.error);
+    }
+  })
+  .catch(function(e) { 
+    alert("🚨 NETWORK ERROR: " + e.message); 
+  });
 }
 
 // ==========================================================
@@ -125,7 +135,6 @@ function handleGoogleCredentialResponse(response) {
   }
 }
 
-// नया auth_otp टेम्पलेट यहाँ सेट किया गया है
 let authGeneratedOtp = "";
 function sendAuthOTP() {
   let phone = document.getElementById('authPhone').value.trim();
@@ -135,12 +144,10 @@ function sendAuthOTP() {
   }
   authGeneratedOtp = String(Math.floor(1000 + Math.random() * 9000));
   
-  // OTP बॉक्स दिखाएगा लेकिन ऑटो-फिल नहीं करेगा
   document.getElementById('authOtpSection').style.display = "block"; 
   document.getElementById('authOtp').value = ""; 
   document.getElementById('authOtp').focus();
   
-  // नया अप्रूव्ड 'auth_otp' टेम्पलेट इस्तेमाल करके OTP भेज रहे हैं
   sendWhatsAppTemplate(phone, "auth_otp", [authGeneratedOtp]); 
 }
 
@@ -181,7 +188,6 @@ function sendVahanWhatsAppOTP(moduleType) {
   
   if (otpInput) { otpInput.value = ""; otpInput.focus(); }
   
-  // SEND OTP VIA APPROVED TEMPLATE (Requires 'vahan_otp' template in Meta Dashboard)
   sendWhatsAppTemplate(cPhone, "vahan_otp", [regNo, generatedOtp]);
 }
 
